@@ -1,0 +1,99 @@
+import { Activity, BookOpen, Gauge, KeyRound, Radio, Upload, Webhook } from "lucide-react";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+
+import { Badge } from "@/components/ui/badge";
+import { BentoGrid, FeatureCard } from "@/components/ui/blocks";
+import { Button } from "@/components/ui/button";
+import { CodeBlock } from "@/components/ui/code-block";
+import { PageHero } from "@/components/ui/page-hero";
+import { Section, SectionHeader } from "@/components/ui/section";
+import { mergeSamples } from "@/content/api-samples";
+import { Link } from "@/i18n/navigation";
+import { initPage, pageMetadata } from "@/lib/page";
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/developers">): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "home.developers" });
+  return pageMetadata(locale, "/developers", "Developers", t("subtitle"));
+}
+
+export default async function DevelopersPage({ params }: PageProps<"/[locale]/developers">) {
+  await initPage(params);
+  const t = await getTranslations();
+  return (
+    <>
+      <PageHero
+        eyebrow={t("nav.developers")}
+        title={t("home.developers.title")}
+        subtitle={t("home.developers.subtitle")}
+        breadcrumbs={[{ label: t("common.home"), href: "/" }, { label: t("nav.developers") }]}
+        aside={<CodeBlock samples={mergeSamples().slice(0, 1)} title="curl" />}
+      >
+        <div className="flex flex-wrap gap-3">
+          <Button asChild variant="primary">
+            <Link href="/developers/api">{t("nav.developersItems.api.title")}</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/dashboard">{t("dashboard.createKey")}</Link>
+          </Button>
+        </div>
+      </PageHero>
+      <Section>
+        <SectionHeader title="Built for real integrations" />
+        <BentoGrid className="mt-8">
+          <FeatureCard
+            icon={KeyRound}
+            title="Free API keys"
+            body="Create as many as 20 keys from your dashboard and revoke them any time."
+            color="#5B4BFF"
+          />
+          <FeatureCard
+            icon={Upload}
+            title="Resumable uploads"
+            body="Send large files in chunks and resume from the server’s offset after a failure."
+            color="#12B5A6"
+          />
+          <FeatureCard
+            icon={Radio}
+            title="Live progress"
+            body="Follow every task over Server-Sent Events, or poll the task endpoint."
+            color="#F97316"
+          />
+          <FeatureCard
+            icon={Gauge}
+            title="Fair-use limits"
+            body="Clear 429 responses with Retry-After and an exact reset time."
+            color="#10B981"
+          />
+          <FeatureCard
+            icon={BookOpen}
+            title="OpenAPI"
+            body="A complete interactive reference at /docs and the raw spec at /openapi.json."
+            color="#2F80ED"
+            className="sm:col-span-2"
+          />
+          <FeatureCard
+            icon={Webhook}
+            title="Webhooks"
+            body="Get notified when tasks finish, without polling."
+            color="#8B5CF6"
+            badge={<Badge>{t("home.bento.comingLater")}</Badge>}
+          />
+          <FeatureCard
+            icon={Activity}
+            title="Status"
+            body="Live health of the API, database and storage."
+            color="#EC4899"
+          />
+        </BentoGrid>
+      </Section>
+      <Section tone="surface">
+        <SectionHeader title="Merge two PDFs in three languages" />
+        <CodeBlock samples={mergeSamples()} className="mt-8" />
+      </Section>
+    </>
+  );
+}

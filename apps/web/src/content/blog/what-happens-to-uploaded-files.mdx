@@ -1,0 +1,40 @@
+"Your files are safe" is easy to say. Here is exactly what happens to a file on <Brand />, step by step, so you can judge for yourself.
+
+## 1. The upload
+
+Your browser sends the file in chunks of a few megabytes. If the connection drops, the upload resumes from the last chunk the server confirmed instead of starting over. In production, all traffic travels over HTTPS.
+
+Each chunk is encrypted before it is written to storage. On our own disks that means AES-256-GCM; on S3-compatible object storage, server-side AES-256 encryption.
+
+## 2. The inspection
+
+When the last chunk arrives, we look at the file's actual contents rather than trusting its name. A file called `report.pdf` that is really an image, an executable or a disguised archive is rejected with an explanation.
+
+PDFs get extra checks. We count pages and internal objects, and we measure how much compressed data would expand. This blocks so-called decompression bombs, small files built to expand into gigabytes and exhaust a server.
+
+## 3. The processing
+
+The tool runs in its own operating system process with strict limits on time, memory and output size, inside a private working folder. It can't see other people's jobs. If it misbehaves or runs too long, it is stopped. Progress messages stream back to your browser while it works.
+
+When the job finishes, the working folder is deleted. Only the encrypted results are kept.
+
+## 4. The download
+
+You receive a link that is cryptographically signed and expires after 15 minutes. It works only while the file still exists. Copying it to someone else works until it expires, which is why the result screen tells you how long it lasts.
+
+## 5. The deletion
+
+A background sweeper runs continuously. One hour after processing, both your uploads and the results are deleted from storage. If you are signed in, you can choose 24 hours instead in Settings. **Delete now** on the result screen removes everything immediately.
+
+For guests, file names are erased at the same moment, and the small remaining record (which tool, when, how big) is deleted after 48 hours. That record only exists to apply daily fair-use limits.
+
+## What we never do
+
+- We never open your files to look at them.
+- We never write file contents to logs. Passwords, tokens and file names are redacted from logs automatically.
+- We never use your documents for advertising or to train AI models.
+
+<Callout tone="success" title="Read more">
+  The <a href="/security">security page</a> lists every protection that is running today, and the{" "}
+  <a href="/legal/privacy">privacy policy</a> covers the rest.
+</Callout>

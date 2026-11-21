@@ -1,0 +1,181 @@
+name: pdfnova
+
+x-api-env: &api-env
+  ENVIRONMENT: ${ENVIRONMENT:-development}
+  LOG_JSON: "true"
+  SECRET_KEY: ${SECRET_KEY:?set SECRET_KEY in .env}
+  STORAGE_ENCRYPTION_KEY: ${STORAGE_ENCRYPTION_KEY:?set STORAGE_ENCRYPTION_KEY in .env}
+  DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-pdfnova}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/${POSTGRES_DB:-pdfnova}
+  REDIS_URL: redis://redis:6379/0
+  QUEUE_BACKEND: arq
+  RATE_LIMIT_BACKEND: redis
+  STORAGE_BACKEND: s3
+  S3_BUCKET: ${S3_BUCKET:-pdfnova}
+  S3_ENDPOINT_URL: ${S3_ENDPOINT_URL:-http://objectstore:8333}
+  S3_SERVER_SIDE_ENCRYPTION: ${S3_SERVER_SIDE_ENCRYPTION:-false}
+  S3_REGION: ${S3_REGION:-us-east-1}
+  S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-pdfnova}
+  S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?set S3_SECRET_ACCESS_KEY in .env}
+  PUBLIC_API_URL: ${PUBLIC_URL:-http://localhost:8080}
+  PUBLIC_WEB_URL: ${PUBLIC_URL:-http://localhost:8080}
+  CORS_ORIGINS: '["${PUBLIC_URL:-http://localhost:8080}"]'
+  COOKIE_SECURE: ${COOKIE_SECURE:-false}
+  EMAIL_BACKEND: ${EMAIL_BACKEND:-console}
+  SMTP_HOST: ${SMTP_HOST:-}
+  SMTP_PORT: ${SMTP_PORT:-587}
+  SMTP_USERNAME: ${SMTP_USERNAME:-}
+  SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+  EMAIL_FROM: ${EMAIL_FROM:-no-reply@pdfnova.app}
+  GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+  GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+  GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+  GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+  SENTRY_DSN: ${SENTRY_DSN:-}
+  JOB_TIMEOUT_SECONDS: ${JOB_TIMEOUT_SECONDS:-300}
+  JOB_MEMORY_LIMIT_MB: ${JOB_MEMORY_LIMIT_MB:-2048}
+
+x-api-build: &api-build
+  context: .
+  dockerfile: apps/api/Dockerfile
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pdfnova}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-pdfnova}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pdfnova} -d ${POSTGRES_DB:-pdfnova}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  redis:
+    image: valkey/valkey:9.0-alpine
+    command: ["valkey-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  objectstore:
+    image: chrislusf/seaweedfs:4.51
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        printf '{"identities":[{"name":"pdfnova","credentials":[{"accessKey":"%s","secretKey":"%s"}],"actions":["Admin","Read","Write","List","Tagging"]}]}'
+        "$$S3_ACCESS_KEY_ID" "$$S3_SECRET_ACCESS_KEY" > /tmp/s3.json &&
+        exec weed server -dir=/data -s3 -s3.port=8333 -s3.config=/tmp/s3.json -filer.encryptVolumeData
+    environment:
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-pdfnova}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?set S3_SECRET_ACCESS_KEY in .env}
+    volumes:
+      - objectstore-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:9333/cluster/status || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  api:
+    build:
+      <<: *api-build
+      target: api
+    environment: *api-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      objectstore:
+        condition: service_healthy
+    restart: unless-stopped
+
+  worker:
+    build:
+      <<: *api-build
+      target: worker
+    environment:
+      <<: *api-env
+      WORKER_CLASS: DefaultWorker
+    depends_on:
+      api:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4g
+    restart: unless-stopped
+
+  worker-priority:
+    build:
+      <<: *api-build
+      target: worker
+    environment:
+      <<: *api-env
+      WORKER_CLASS: HighPriorityWorker
+    depends_on:
+      api:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4g
+    restart: unless-stopped
+
+  office-worker:
+    build:
+      <<: *api-build
+      target: office-worker
+    environment:
+      <<: *api-env
+      WORKER_CLASS: OfficeWorker
+    depends_on:
+      api:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4g
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        API_INTERNAL_URL: http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+    volumes:
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      web:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  redis-data:
+  objectstore-data:

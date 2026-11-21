@@ -1,0 +1,814 @@
+{
+  "common": {
+    "free": "Free",
+    "getStarted": "Get started",
+    "startNow": "Start now",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "createAccount": "Create a free account",
+    "search": "Search",
+    "searchTools": "Search tools",
+    "searchPlaceholder": "Search tools, like “compress” or “jpg”",
+    "learnMore": "Learn more",
+    "viewAll": "View all",
+    "allTools": "All tools",
+    "comingSoon": "Coming soon",
+    "popular": "Popular",
+    "new": "New",
+    "open": "Open",
+    "close": "Close",
+    "copy": "Copy",
+    "copied": "Copied",
+    "back": "Back",
+    "home": "Home",
+    "skipToContent": "Skip to content",
+    "loading": "Loading…",
+    "tryAgain": "Try again",
+    "goHome": "Go home",
+    "browseTools": "Browse tools",
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "readMore": "Read more",
+    "minutesRead": "{minutes} min read",
+    "onThisPage": "On this page",
+    "lastUpdated": "Last updated {date}",
+    "relatedTools": "Related tools",
+    "dismiss": "Dismiss",
+    "dashboard": "Dashboard",
+    "settings": "Settings"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "label": "Theme",
+    "switchTo": "{current} theme. Switch to {next} theme"
+  },
+  "language": {
+    "label": "Language"
+  },
+  "nav": {
+    "tools": "Tools",
+    "solutions": "Solutions",
+    "developers": "Developers",
+    "resources": "Resources",
+    "searchShortcut": "Search",
+    "toolsIntro": "Every tool is free, with no sign-up needed.",
+    "seeAllTools": "See all {count} tools",
+    "solutionsIntro": "Workflows tuned for the way you work.",
+    "developersItems": {
+      "developers": {
+        "title": "Developer overview",
+        "description": "What you can build with the API."
+      },
+      "api": {
+        "title": "API reference",
+        "description": "Endpoints, auth, errors and examples."
+      },
+      "workflows": {
+        "title": "Workflows",
+        "description": "Chain tools into repeatable pipelines."
+      },
+      "status": {
+        "title": "System status",
+        "description": "Live health of the service."
+      }
+    },
+    "resourcesItems": {
+      "features": {
+        "title": "Features",
+        "description": "Everything the platform can do."
+      },
+      "howItWorks": {
+        "title": "How it works",
+        "description": "From upload to auto-delete."
+      },
+      "security": {
+        "title": "Security and privacy",
+        "description": "How your files are protected."
+      },
+      "blog": {
+        "title": "Blog",
+        "description": "Practical guides for documents."
+      },
+      "help": {
+        "title": "Help center",
+        "description": "Answers to common questions."
+      },
+      "changelog": {
+        "title": "Changelog",
+        "description": "What shipped and what is next."
+      },
+      "about": {
+        "title": "About",
+        "description": "Why this is free, and how it stays that way."
+      },
+      "compare": {
+        "title": "Overview",
+        "description": "Everything included, at a glance."
+      }
+    },
+    "quickBar": "Quick tools"
+  },
+  "announcement": {
+    "label": "Announcement"
+  },
+  "footer": {
+    "tagline": "Every document task, done beautifully. Free for everyone.",
+    "privacyNote": "Files are encrypted at rest and deleted automatically.",
+    "product": "Product",
+    "company": "Company",
+    "resources": "Resources",
+    "legal": "Legal",
+    "rights": "© {brand}. Free for everyone.",
+    "status": "System status",
+    "social": "Follow us",
+    "links": {
+      "allTools": "All tools",
+      "features": "Features",
+      "workflows": "Workflows",
+      "developers": "Developers",
+      "apiReference": "API reference",
+      "about": "About",
+      "contact": "Contact",
+      "support": "Support the project",
+      "changelog": "Changelog",
+      "blog": "Blog",
+      "help": "Help center",
+      "security": "Security and privacy",
+      "howItWorks": "How it works",
+      "compare": "Overview",
+      "shortcuts": "Keyboard shortcuts",
+      "accessibility": "Accessibility",
+      "terms": "Terms of service",
+      "privacy": "Privacy policy",
+      "cookies": "Cookie policy",
+      "acceptableUse": "Acceptable use"
+    }
+  },
+  "palette": {
+    "title": "Command palette",
+    "placeholder": "Search tools and pages…",
+    "empty": "No results for “{query}”.",
+    "tools": "Tools",
+    "pages": "Pages",
+    "actions": "Actions",
+    "toggleTheme": "Toggle theme",
+    "shortcutHint": "Press {keys} anywhere to open"
+  },
+  "categories": {
+    "organize": {
+      "label": "Organize",
+      "title": "Organize PDF pages",
+      "description": "Merge, split, reorder and extract pages until the document reads exactly right."
+    },
+    "optimize": {
+      "label": "Optimize",
+      "title": "Optimize PDF files",
+      "description": "Make PDFs smaller, searchable, repaired and ready for the web."
+    },
+    "convert_to_pdf": {
+      "label": "Convert to PDF",
+      "title": "Convert anything to PDF",
+      "description": "Turn images, Office files, web pages and text into clean, shareable PDFs."
+    },
+    "convert_from_pdf": {
+      "label": "Convert from PDF",
+      "title": "Convert PDF to other formats",
+      "description": "Get editable Word, Excel, PowerPoint, images and text out of any PDF."
+    },
+    "edit": {
+      "label": "Edit",
+      "title": "Edit PDF documents",
+      "description": "Rotate, number, watermark, crop, annotate and fill forms without desktop software."
+    },
+    "security": {
+      "label": "Security",
+      "title": "Secure and sign PDFs",
+      "description": "Protect, unlock, sign, redact and compare documents with confidence."
+    },
+    "ai": {
+      "label": "AI",
+      "title": "AI document tools",
+      "description": "Summarize, translate, chat with and extract data from documents."
+    },
+    "image": {
+      "label": "Image",
+      "title": "Image tools",
+      "description": "Compress, resize, crop, convert and clean up images."
+    }
+  },
+  "home": {
+    "metaTitle": "Free PDF and document tools",
+    "eyebrow": "100% free · No sign-up · Private by design",
+    "titleStart": "Every document task,",
+    "titleGradient": "done beautifully",
+    "subtitle": "Merge, split, compress, convert, edit, sign and secure your files in seconds. Everything is free for everyone, and your files delete themselves.",
+    "dropTitle": "Drop any file, we’ll show what you can do",
+    "dropSubtitle": "PDF, Word, Excel, PowerPoint, images and more. Or click to browse.",
+    "detected": "{count, plural, one {# file} other {# files}} · {size}",
+    "clear": "Clear",
+    "unknownFiles": "{count, plural, one {One file has} other {# files have}} a format we don’t recognize yet.",
+    "suggestionsTitle": "Here’s what you can do right now:",
+    "noSuggestions": "Tools for these files are on their way.",
+    "noDetection": "We couldn’t detect the file type.",
+    "mergeTip": "Tip: drop another PDF to merge them together.",
+    "trust": {
+      "free": "Free for everyone",
+      "noSignup": "No sign-up needed",
+      "autoDelete": "Files auto-deleted after 1 hour",
+      "anyDevice": "Works on any device"
+    },
+    "quick": {
+      "eyebrow": "Start here",
+      "title": "The tools people reach for most",
+      "subtitle": "Pick one and you’re two clicks from a finished file."
+    },
+    "grid": {
+      "eyebrow": "Every tool",
+      "title": "One place for every document job",
+      "subtitle": "{count} tools across {categories} categories, growing with every release.",
+      "noResults": "No tools match “{query}”.",
+      "noResultsHint": "Try a shorter word, like “pdf” or “image”."
+    },
+    "bento": {
+      "eyebrow": "Why it feels different",
+      "title": "Built to be fast, private and genuinely free",
+      "speed": {
+        "title": "Fast by default",
+        "body": "Resumable uploads, streaming progress and isolated workers keep every task moving."
+      },
+      "privacy": {
+        "title": "Private by design",
+        "body": "AES-256 encryption at rest, sandboxed processing and automatic deletion."
+      },
+      "batch": {
+        "title": "Batch friendly",
+        "body": "Up to 100 files per task, with per-file status and one ZIP to download."
+      },
+      "offline": {
+        "title": "On-device mode",
+        "body": "Selected tools will run entirely in your browser, so files never leave your device."
+      },
+      "api": {
+        "title": "A real API",
+        "body": "Every tool is available over REST with API keys and live progress events."
+      },
+      "ai": {
+        "title": "AI that helps",
+        "body": "Summaries, translation and data extraction, with your own key if you prefer."
+      },
+      "workflows": {
+        "title": "Workflows",
+        "body": "Chain tools like OCR, compress and protect into one repeatable run."
+      },
+      "free": {
+        "title": "100% free",
+        "body": "No plans, no paywalls, no watermarks. Fair-use limits only protect the servers."
+      },
+      "comingLater": "In a later release"
+    },
+    "how": {
+      "eyebrow": "How it works",
+      "title": "Two clicks from file to finished",
+      "steps": {
+        "upload": {
+          "title": "Drop your files",
+          "body": "Uploads resume automatically if your connection drops."
+        },
+        "choose": {
+          "title": "Pick what to do",
+          "body": "We detect the file type and suggest the right tools."
+        },
+        "download": {
+          "title": "Download and done",
+          "body": "Watch real progress, download, and delete instantly."
+        }
+      }
+    },
+    "privacy": {
+      "eyebrow": "Privacy",
+      "title": "Your files have a short, safe life",
+      "subtitle": "Every file follows the same lifecycle, whether you have an account or not.",
+      "steps": {
+        "upload": {
+          "title": "Encrypted upload",
+          "body": "TLS in transit, AES-256 at rest from the first byte stored."
+        },
+        "process": {
+          "title": "Isolated processing",
+          "body": "Each job runs in its own sandbox with strict time and memory limits."
+        },
+        "download": {
+          "title": "Signed download",
+          "body": "Links are private, signed and expire after 15 minutes."
+        },
+        "delete": {
+          "title": "Automatic deletion",
+          "body": "Gone after 1 hour, or the moment you press Delete now."
+        }
+      },
+      "cta": "Read about security"
+    },
+    "demo": {
+      "eyebrow": "See it in action",
+      "title": "What happens to your files",
+      "note": "Illustration only. Your real files are processed on our servers and never shown here.",
+      "merge": "Merge",
+      "compress": "Compress",
+      "mergeCaption": "Three PDFs become one document, in the order you choose.",
+      "compressCaption": "Images are re-encoded and streams packed to shrink the file."
+    },
+    "useCases": {
+      "eyebrow": "Use cases",
+      "title": "Made for the way you work"
+    },
+    "workflows": {
+      "eyebrow": "Workflows",
+      "title": "Chain tools into one smooth run",
+      "subtitle": "Scan, OCR, compress and protect in a single pass. Save it, share it, run it again.",
+      "cta": "Browse workflows"
+    },
+    "developers": {
+      "eyebrow": "For developers",
+      "title": "The same engine, as an API",
+      "subtitle": "Create a task, upload with resumable chunks, start it and stream progress over Server-Sent Events. Free API keys with fair-use rate limits.",
+      "cta": "Read the API reference"
+    },
+    "languages": {
+      "title": "Accessible and multilingual",
+      "body": "Keyboard-first navigation, screen reader labels and right-to-left layouts. Available in English and اردو."
+    },
+    "faq": {
+      "eyebrow": "FAQ",
+      "title": "Questions, answered",
+      "items": {
+        "free": {
+          "q": "Is it really free?",
+          "a": "Yes. Every tool and feature is free for everyone. There are no paid plans and no watermarks. Generous fair-use limits keep the service fast for all."
+        },
+        "account": {
+          "q": "Do I need an account?",
+          "a": "No. An account is optional and only adds conveniences like history, API keys, longer file retention and access across devices."
+        },
+        "retention": {
+          "q": "How long do you keep my files?",
+          "a": "Files are deleted automatically one hour after processing. Signed-in users can choose 24 hours instead. You can always delete instantly."
+        },
+        "safe": {
+          "q": "Is it safe for confidential documents?",
+          "a": "Files are encrypted at rest with AES-256, processed in isolated sandboxes and never inspected by people or written to logs."
+        },
+        "limits": {
+          "q": "Are there any limits?",
+          "a": "Only fair-use limits that protect the servers: up to 200 MB per file, 100 files per task, and hourly and daily task caps that normal use never reaches."
+        },
+        "interrupted": {
+          "q": "What if my upload is interrupted?",
+          "a": "Uploads are resumable. When your connection returns, the upload continues from where it stopped."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready when you are",
+      "subtitle": "Drop a file to begin. No account, no cost, no catch."
+    }
+  },
+  "allTools": {
+    "metaTitle": "All tools",
+    "title": "All tools",
+    "subtitle": "Every tool is free. Search, filter by category or format, and save your favorites.",
+    "filters": "Filters",
+    "category": "Category",
+    "format": "Input format",
+    "allCategories": "All categories",
+    "allFormats": "All formats",
+    "offlineOnly": "Works offline in your browser",
+    "offlineEmpty": "On-device tools arrive in a later release. Until then every tool runs on our secure servers.",
+    "availableOnly": "Available now",
+    "sort": "Sort",
+    "sortPopular": "Most popular",
+    "sortAz": "A to Z",
+    "sortCategory": "By category",
+    "grid": "Grid view",
+    "list": "List view",
+    "favorites": "Favorites",
+    "recent": "Recently used",
+    "addFavorite": "Add {name} to favorites",
+    "removeFavorite": "Remove {name} from favorites",
+    "results": "{count, plural, one {# tool} other {# tools}}",
+    "formats": {
+      "pdf": "PDF",
+      "image": "Images",
+      "word": "Word",
+      "excel": "Excel",
+      "powerpoint": "PowerPoint",
+      "html": "HTML",
+      "text": "Text and Markdown",
+      "epub": "EPUB"
+    }
+  },
+  "category": {
+    "toolsTitle": "{category} tools",
+    "faqTitle": "Common questions",
+    "workflowsTitle": "Workflows that use these tools",
+    "otherCategories": "Explore other categories"
+  },
+  "toolPage": {
+    "pagesShort": "{count, plural, one {# page} other {# pages}}",
+    "breadcrumbTools": "Tools",
+    "unavailableTitle": "{name} isn’t available yet",
+    "unavailableBody": "We’re building it now. Every tool will be free when it ships.",
+    "offlineError": "We couldn't reach the server to load this tool. Check your connection and refresh the page.",
+    "seeAvailable": "See available tools",
+    "select": "Select {kinds} files",
+    "dropHint": "Drop {count, plural, one {your file} other {at least # files}} here, up to {size} each.",
+    "dropDragging": "Release to add your files",
+    "pasteHint": "You can also paste files with {keys}.",
+    "importUrl": "Import from a link",
+    "importUrlLabel": "File link",
+    "importUrlPlaceholder": "https://example.com/report.pdf",
+    "importUrlButton": "Import",
+    "importUrlHelp": "Public http or https links only. Private network addresses are blocked for security.",
+    "addMore": "Add more files",
+    "addMoreHint": "Drop files or click to browse.",
+    "dragToReorder": "Drag to reorder {name}",
+    "moveUp": "Move {name} up",
+    "moveDown": "Move {name} down",
+    "remove": "Remove {name}",
+    "retry": "Retry",
+    "uploading": "Uploading {percent}%",
+    "waiting": "Waiting",
+    "pages": "{count, plural, one {# page} other {# pages}}",
+    "options": "Options",
+    "noOptions": "This tool has no extra options.",
+    "presets": "Presets",
+    "summary": "Summary",
+    "summaryLine": "{files, plural, one {# file} other {# files}} · {pages, plural, one {# page} other {# pages}} · {size}",
+    "estimate": "About {duration}",
+    "privacyLine": "Encrypted and deleted automatically.",
+    "needMore": "Add {count, plural, one {# more file} other {# more files}} to continue.",
+    "uploadingButton": "Uploading…",
+    "accountHint": "Signed-in users can keep files for 24 hours.",
+    "processing": "Working on it",
+    "cancel": "Cancel",
+    "readyTitle": "Your file is ready",
+    "readyStats": "{output} from {count, plural, one {# file} other {# files}} ({input} in) in {seconds}s",
+    "download": "Download {name}",
+    "downloadAll": "Download all (ZIP)",
+    "copyLink": "Copy download link",
+    "linkCopied": "Download link copied. It expires in 15 minutes.",
+    "deleteNow": "Delete now",
+    "deleted": "Your files were deleted.",
+    "deletedNote": "These files have been deleted from our servers.",
+    "startOver": "Start over",
+    "autoDelete": "Files are deleted automatically in {time}.",
+    "continueWith": "Continue with another tool",
+    "failedTitle": "This task did not finish.",
+    "suggestions": "Suggested next",
+    "limitReset": "You can try again at {time}.",
+    "howToTitle": "How to use {name} in 3 steps",
+    "highlightsTitle": "Why use {name} here",
+    "faqTitle": "{name}: common questions",
+    "privacyTitle": "Your privacy",
+    "privacyBody": "Your files are encrypted while stored, processed in an isolated sandbox and deleted automatically after one hour. Nobody looks at them, and their contents never reach our logs.",
+    "relatedTitle": "Related tools",
+    "mergeBookmarks": "Add a bookmark for each file",
+    "mergeBookmarksHint": "Readers can jump straight to each original document.",
+    "mergeKeepOutline": "Keep existing bookmarks",
+    "mergeKeepOutlineHint": "Nest each file’s own outline under its bookmark.",
+    "pagesPlaceholder": "All {count} pages, or e.g. 1-3, 5",
+    "pagesPlaceholderUnknown": "All pages, or e.g. 1-3, 5",
+    "pagesLabel": "Pages to include from {name}",
+    "rotateLabel": "Rotate pages of {name}",
+    "rotateNone": "No rotation",
+    "rotateDegrees": "Rotate {degrees}°",
+    "outputName": "Output file name",
+    "presetAll": "Everything, in order",
+    "presetFirstPages": "First page of each file",
+    "presetNoBookmarks": "No bookmarks",
+    "lockedFiles": "Unlock the password-protected files to continue."
+  },
+  "auth": {
+    "panelTitle": "Your documents, handled.",
+    "panelBody": "An account is optional. It adds history, API keys, 24-hour retention and access from every device. Everything stays free."
+  },
+  "dashboard": {
+    "metaTitle": "Dashboard",
+    "greeting": "Welcome back{name, select, empty {} other {, {name}}}",
+    "subtitle": "Your recent files, usage and keys in one place.",
+    "signInRequired": "Sign in to see your dashboard",
+    "signInBody": "Your history, API keys and usage live here. Accounts are free and optional.",
+    "quickLaunch": "Quick launch",
+    "recent": "Recent files",
+    "recentEmpty": "Files you process while signed in appear here until they are deleted.",
+    "usage": "Fair-use meter",
+    "usageHint": "Limits reset on a rolling window. They keep the service fast for everyone.",
+    "hourly": "Tasks this hour",
+    "daily": "Tasks today",
+    "ai": "Shared AI requests today",
+    "ownKey": "Using your own AI key: no AI cap applies.",
+    "resetsAt": "Resets at {time}",
+    "apiKeys": "API keys",
+    "apiKeysEmpty": "Create a key to use the REST API from scripts and apps.",
+    "createKey": "Create key",
+    "keyName": "Key name",
+    "keyCreated": "Copy this key now. It won’t be shown again.",
+    "revoke": "Revoke",
+    "revoked": "Revoked",
+    "lastUsed": "Last used {date}",
+    "neverUsed": "Never used",
+    "apiUsage": "API activity (14 days)",
+    "workflows": "Saved workflows",
+    "workflowsEmpty": "The workflow builder arrives in a later release. Your saved workflows will appear here.",
+    "activity": "Activity",
+    "statuses": {
+      "created": "Waiting for files",
+      "queued": "Queued",
+      "running": "Processing",
+      "succeeded": "Completed",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "expired": "Expired"
+    },
+    "filesDeleted": "Files deleted",
+    "expiresIn": "Deletes in {time}"
+  },
+  "settings": {
+    "metaTitle": "Settings",
+    "title": "Settings",
+    "profile": "Profile",
+    "displayName": "Display name",
+    "email": "Email",
+    "save": "Save changes",
+    "saved": "Saved.",
+    "preferences": "Preferences",
+    "retention": "Keep my files for 24 hours",
+    "retentionHint": "Off: files are deleted 1 hour after processing. You can always delete instantly.",
+    "security": "Security",
+    "twoFactor": "Two-step verification",
+    "twoFactorOn": "On. Your account asks for a code when you sign in.",
+    "twoFactorOff": "Off. Add a code from an authenticator app for stronger protection.",
+    "enable": "Turn on",
+    "disable": "Turn off",
+    "scanCode": "Add this key to your authenticator app, then enter the 6-digit code.",
+    "verificationCode": "Verification code",
+    "recoveryCodes": "Recovery codes",
+    "recoveryHint": "Store these somewhere safe. Each code works once if you lose your device.",
+    "password": "Password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "changePassword": "Change password",
+    "sessions": "Active sessions",
+    "thisDevice": "This device",
+    "signOutSession": "Sign out",
+    "ai": "Bring your own AI key",
+    "aiHint": "Use your own provider key to skip the shared AI fair-use cap. It is encrypted at rest and only the last four characters are shown.",
+    "aiProvider": "Provider",
+    "aiKey": "API key",
+    "aiSaved": "Using {provider} key ending in {last4}",
+    "remove": "Remove",
+    "data": "Your data",
+    "export": "Download my data",
+    "exportHint": "A JSON file with your account, API keys and task history.",
+    "deleteAccount": "Delete account",
+    "deleteHint": "Permanently deletes your account, keys and all stored files. This cannot be undone.",
+    "deleteConfirm": "Delete my account",
+    "confirmEmail": "Type your email to confirm",
+    "language": "Language",
+    "theme": "Theme"
+  },
+  "contact": {
+    "metaTitle": "Contact",
+    "title": "Get in touch",
+    "subtitle": "Questions, bugs, ideas or privacy requests. A real person reads every message.",
+    "name": "Your name",
+    "email": "Email",
+    "topic": "Topic",
+    "message": "Message",
+    "messageHint": "At least 10 characters.",
+    "send": "Send message",
+    "sent": "Message sent",
+    "topics": {
+      "support": "Help with a tool",
+      "bug": "Report a bug",
+      "feature": "Suggest a feature",
+      "privacy": "Privacy request",
+      "security": "Security report",
+      "other": "Something else"
+    },
+    "website": "Leave this field empty"
+  },
+  "status": {
+    "metaTitle": "System status",
+    "title": "System status",
+    "subtitle": "Live health checks from the service, refreshed every 30 seconds.",
+    "operational": "All systems operational",
+    "degraded": "Some systems are degraded",
+    "unreachable": "We can’t reach the service right now",
+    "checkedAt": "Checked {time}",
+    "components": {
+      "api": "API",
+      "database": "Database",
+      "storage": "File storage"
+    },
+    "ok": "Operational",
+    "error": "Disrupted"
+  },
+  "errors": {
+    "notFoundCode": "404",
+    "notFoundTitle": "This page took a wrong turn",
+    "notFoundBody": "The page you’re looking for doesn’t exist or has moved. Your files are safe.",
+    "errorCode": "Something broke",
+    "errorTitle": "We hit an unexpected problem",
+    "errorBody": "It’s on our side, not yours. Try again, and if it keeps happening, contact support.",
+    "reference": "Reference {digest}"
+  },
+  "offline": {
+    "title": "You’re offline",
+    "body": "Check your connection. Anything you were uploading will resume when you’re back online."
+  },
+  "maintenance": {
+    "title": "Scheduled maintenance",
+    "body": "We’re making improvements and will be back shortly. Your files are safe and retention timers are paused."
+  },
+  "shortcuts": {
+    "metaTitle": "Keyboard shortcuts",
+    "title": "Keyboard shortcuts",
+    "subtitle": "Move faster without the mouse.",
+    "items": {
+      "palette": "Open the command palette",
+      "shortcuts": "Show keyboard shortcuts",
+      "search": "Focus tool search",
+      "theme": "Toggle light and dark theme",
+      "paste": "Paste files into a tool",
+      "close": "Close dialogs and menus"
+    }
+  },
+  "onboarding": {
+    "metaTitle": "Welcome",
+    "step": "Step {current} of {total}",
+    "next": "Next",
+    "finish": "Start using tools",
+    "skip": "Skip",
+    "steps": {
+      "welcome": {
+        "title": "Welcome aboard",
+        "body": "Everything here is free. Your account adds history, API keys and longer retention."
+      },
+      "retention": {
+        "title": "How long should we keep files?",
+        "body": "By default files are deleted 1 hour after processing. You can keep them for 24 hours instead."
+      },
+      "start": {
+        "title": "Pick your first tool",
+        "body": "Here are the tools people use most. You can always press Ctrl+K to find anything."
+      }
+    }
+  },
+  "workflowsPage": {
+    "metaTitle": "Workflows",
+    "eyebrow": "Workflows",
+    "title": "Repeatable document pipelines",
+    "subtitle": "Ready-made recipes that chain tools together. The visual builder and one-click runs arrive in a later release.",
+    "notYet": "Available in a later release",
+    "notYetBody": "Workflows need the tools they chain. As each tool ships, its workflows become runnable here.",
+    "builderTitle": "Workflow builder",
+    "builderBody": "Drag tools onto a canvas, connect them and save the pipeline. This is the planned builder, shown as a preview.",
+    "steps": "{count} steps",
+    "useWorkflow": "Use this workflow"
+  },
+  "support": {
+    "metaTitle": "Support the project",
+    "title": "Help keep it free",
+    "subtitle": "Every tool stays free for everyone. If it saved you time, a contribution helps cover servers and development.",
+    "githubSponsors": "GitHub Sponsors",
+    "buyMeACoffee": "Buy Me a Coffee",
+    "kofi": "Ko-fi",
+    "other": "Other ways to help",
+    "otherItems": {
+      "share": "Tell a friend or colleague who fights with documents.",
+      "feedback": "Report bugs and suggest features through the contact page.",
+      "translate": "Help translate the interface into your language."
+    }
+  },
+  "password": {
+    "needed": "This PDF is password-protected. Enter its password to continue.",
+    "unlock": "Unlock",
+    "unlocked": "Unlocked for this task only",
+    "show": "Show password",
+    "hide": "Hide password",
+    "wrong": "That password is not correct. Try again.",
+    "failed": "We couldn't check the password. Try again.",
+    "privacy": "Your password is used only for this task and is never stored."
+  },
+  "pageGrid": {
+    "quick": {
+      "all": "All",
+      "none": "None",
+      "odd": "Odd",
+      "even": "Even",
+      "invert": "Invert"
+    },
+    "zoom": "Zoom",
+    "selectedCount": "{count, plural, =0 {No pages selected} one {# of {total} pages selected} other {# of {total} pages selected}}",
+    "pageLabel": "Page {page} of {total}",
+    "rotatePage": "Rotate page {page}",
+    "splitAfter": "Split after page {page}",
+    "rangeLabel": "Pages",
+    "rangePlaceholder": "e.g. 1-3, 5, 8-end (of {count})",
+    "rangeHelp": "Use ranges, odd, even, last, or !3 to exclude.",
+    "errors": {
+      "invalid": "“{token}” is not a valid page or range.",
+      "outOfRange": "“{token}” is outside this document, which has {count} pages.",
+      "empty": "The range selects no pages.",
+      "emptyExclusion": "“{token}” needs a page after “!”."
+    }
+  },
+  "pageTools": {
+    "gridLabel": "Pages of {name}",
+    "unlockForPreview": "Unlock this file to see its pages.",
+    "waitingForUpload": "Pages appear here once the upload finishes.",
+    "reset": "Reset",
+    "filesCount": "{count, plural, one {Will create # file} other {Will create # files}}",
+    "rotate": {
+      "angle": "Rotation",
+      "right": "90° right",
+      "half": "180°",
+      "left": "90° left",
+      "perPage": "{count, plural, one {# page has its own rotation} other {# pages have their own rotation}}",
+      "summary": "{count, plural, one {Rotating # page} other {Rotating # pages}}",
+      "batch": "{count, plural, one {Same rotation for # file} other {Same rotation for # files}}"
+    },
+    "remove": {
+      "hint": "Click pages to mark them for removal.",
+      "none": "Select the pages to remove.",
+      "all": "You can't remove every page.",
+      "summary": "Removing {removed}, {remaining} remain"
+    },
+    "extract": {
+      "mode": "Output",
+      "single": "One PDF",
+      "separate": "Separate files",
+      "none": "Select the pages to extract.",
+      "summarySingle": "{count, plural, one {# page into one PDF} other {# pages into one PDF}}"
+    },
+    "split": {
+      "mode": "Split by",
+      "modes": {
+        "ranges": "Ranges",
+        "every": "Every N pages",
+        "size": "File size",
+        "bookmarks": "Bookmarks",
+        "blank": "Blank pages",
+        "each": "Every page"
+      },
+      "ranges": "Ranges (one per line)",
+      "rangesHint": "Or click the scissors between pages to place split points.",
+      "markersActive": "Ranges come from the split points you placed.",
+      "clearMarkers": "Clear split points",
+      "merge": "Merge ranges into one PDF",
+      "mergeHint": "Combine all ranges into a single file instead of one file each.",
+      "every": "Pages per file",
+      "size": "Maximum size per file (MB)",
+      "threshold": "Blank detection sensitivity",
+      "removeBlank": "Remove separator pages",
+      "removeBlankHint": "Drop the blank pages used as separators.",
+      "keepBookmarks": "Keep bookmarks",
+      "keepBookmarksHint": "Copy matching bookmarks into each new file.",
+      "template": "File name template",
+      "templateHint": "Use {name}, {part}, {start} and {end}.",
+      "noRanges": "Add at least one range or split point."
+    },
+    "organize": {
+      "hint": "Drag pages to reorder. Select pages to rotate, duplicate, delete or move them.",
+      "empty": "Keep at least one page.",
+      "summary": "{count, plural, one {# page in the new PDF} other {# pages in the new PDF}}",
+      "waiting": "Pages appear here once uploads finish.",
+      "undo": "Undo",
+      "redo": "Redo",
+      "rotateLeft": "Rotate left",
+      "rotateRight": "Rotate right",
+      "duplicate": "Duplicate",
+      "delete": "Delete",
+      "blank": "Blank page",
+      "reverse": "Reverse",
+      "sortOriginal": "Original order",
+      "moveTo": "Move to position",
+      "selectionHint": "{count, plural, =0 {Click a page to select it. Ctrl or Shift adds to the selection.} one {# page selected} other {# pages selected}}",
+      "listLabel": "Pages in output order",
+      "pageLabel": "Position {position}: page {page} of {name}",
+      "blankLabel": "Position {position}: blank page",
+      "moved": "Page moved from position {from} to {to}",
+      "movedTo": "{count, plural, one {# page moved to position {position}} other {# pages moved to position {position}}}",
+      "deleted": "{count, plural, one {# page deleted} other {# pages deleted}}",
+      "dragInstructions": "Press Space or Enter to pick up a page. Use the arrow keys to move it, Space or Enter to drop it, and Escape to cancel.",
+      "pickedUp": "Picked up the page at position {position}.",
+      "over": "Over position {position}.",
+      "notOver": "Not over a position.",
+      "dropped": "Dropped at position {position}.",
+      "cancelled": "Move cancelled."
+    }
+  }
+}

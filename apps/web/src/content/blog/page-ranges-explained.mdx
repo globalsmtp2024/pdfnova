@@ -1,0 +1,36 @@
+Many tools ask which pages you want. Instead of clicking through dozens of thumbnails, you can type a short page range. Once you know the rules, it's the fastest way to select exactly what you need.
+
+## The basics
+
+| You type | You get                        |
+| -------- | ------------------------------ |
+| `3`      | Page 3                         |
+| `1-3`    | Pages 1, 2 and 3               |
+| `1-3, 5` | Pages 1, 2, 3 and 5            |
+| `8-`     | Page 8 to the end              |
+| `-2`     | Pages 1 and 2                  |
+| `last`   | The final page                 |
+| `8-last` | Page 8 to the end, written out |
+
+Spaces are optional, so `1-3,5` and `1 - 3, 5` mean the same thing. Leaving the field empty, or typing `all`, selects every page.
+
+## Order matters
+
+Pages are used in the order you write them. That gives you two useful tricks:
+
+- **Reorder while selecting.** `3, 1, 2` puts page 3 first.
+- **Reverse a section.** `5-1` gives pages 5, 4, 3, 2 and 1.
+
+You can also repeat pages. `1, 1` includes page 1 twice, which is handy for a cover sheet that should appear in two places.
+
+## Common mistakes
+
+- **Page 0 doesn't exist.** Pages are numbered from 1.
+- **Ranges past the end are rejected.** If a file has 10 pages, `9-12` is an error. Use `9-last` instead and it will always work.
+- **Letters other than `last` aren't allowed.** Write numbers, commas, dashes and `last`.
+
+When something is wrong, the tool tells you which part of the range it couldn't understand and how many pages the document has, before any processing starts.
+
+## Where you can use page ranges
+
+On <Brand /> you can use page ranges in Merge PDF today. You set one for each file, so you can take pages 1 to 3 from one document and page 7 to the end from another in a single run. Upcoming tools such as Split, Extract pages, Rotate and Page numbers will accept the same syntax.
