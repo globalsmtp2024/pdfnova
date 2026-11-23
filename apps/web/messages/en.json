@@ -1272,6 +1272,13 @@
     "format_jpg": "JPG",
     "format_webp": "WebP",
     "dpi": "Resolution (DPI)",
-    "pages": "Pages (e.g. 1-3, 5, last)"
+    "pages": "Pages (e.g. 1-3, 5, last)",
+    "font": "Font",
+    "font_noto-sans": "Sans-serif",
+    "font_noto-serif": "Serif",
+    "font_noto-sans-mono": "Monospace",
+    "size": "Font size",
+    "page_markers": "Add page markers",
+    "page_separators": "Separate pages with a line"
   }
 }
