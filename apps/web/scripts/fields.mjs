@@ -242,6 +242,13 @@ const FIELDS = {
   "mode_text": ["Text only", "صرف متن"],
   "mode_visual": ["Appearance only", "صرف ظاہری شکل"],
   "visual_dpi": ["Comparison detail (DPI)", "موازنے کی تفصیل (DPI)"],
+  "presets": ["Sensitive data to find", "تلاش کے لیے حساس ڈیٹا"],
+  "presets_email": ["Email addresses", "ای میل پتے"],
+  "presets_phone": ["Phone numbers", "فون نمبر"],
+  "presets_card": ["Card numbers (checked)", "کارڈ نمبر (جانچ شدہ)"],
+  "presets_cnic": ["CNIC numbers", "شناختی کارڈ نمبر"],
+  "presets_iban": ["IBAN (checked)", "IBAN (جانچ شدہ)"],
+  "presets_ssn": ["US SSN", "امریکی SSN"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

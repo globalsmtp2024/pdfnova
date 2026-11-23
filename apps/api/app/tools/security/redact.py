@@ -1,10 +1,12 @@
-import re
 import zlib
-from collections.abc import Sequence
-from typing import Any
+from collections import Counter
+from collections.abc import Callable, Sequence
+from dataclasses import dataclass
+from typing import Any, Literal
 
 import pikepdf
 import pypdfium2 as pdfium
+import regex
 from PIL import Image, ImageDraw
 from pydantic import Field
 
@@ -19,17 +21,90 @@ from app.tools.base import (
     OutputFile,
     Tool,
     ToolCategory,
+    ToolFailedError,
     ToolOptions,
 )
 from app.tools.pdfkit import open_pdf, output_pdf, pdf_name, save_pdf
 
 MAX_REDACT_PIXELS = 60_000_000
+REGEX_TIMEOUT_SECONDS = 2.0
 Box = tuple[float, float, float, float]
+PresetName = Literal["email", "phone", "card", "cnic", "iban", "ssn"]
+
+
+def luhn_valid(text: str) -> bool:
+    digits = [int(ch) for ch in text if ch.isdigit()]
+    if not 13 <= len(digits) <= 19:
+        return False
+    total = 0
+    for index, digit in enumerate(reversed(digits)):
+        value = digit * 2 if index % 2 else digit
+        total += value - 9 if value > 9 else value
+    return total % 10 == 0
+
+
+def iban_valid(text: str) -> bool:
+    compact = "".join(text.split()).upper()
+    if not 15 <= len(compact) <= 34 or not compact.isalnum():
+        return False
+    rearranged = compact[4:] + compact[:4]
+    number = "".join(str(int(ch, 36)) for ch in rearranged)
+    return int(number) % 97 == 1
+
+
+def ssn_valid(text: str) -> bool:
+    area, group, serial = text.split("-")
+    return area not in {"000", "666"} and not area.startswith("9") and group != "00" and serial != "0000"
+
+
+def phone_valid(text: str) -> bool:
+    digits = sum(ch.isdigit() for ch in text)
+    return 9 <= digits <= 15
+
+
+def cnic_valid(text: str) -> bool:
+    digits = "".join(ch for ch in text if ch.isdigit())
+    return len(digits) == 13 and digits[0] in "1234567"
+
+
+PRESETS: dict[str, tuple[str, Callable[[str], bool] | None]] = {
+    "email": (r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}", None),
+    "phone": (
+        r"(?<!\d)(?:(?:\+|00)\d{1,3}[\s\-.]?)?(?:\(?\d{2,4}\)?[\s\-.]?)\d{3,4}[\s\-.]?\d{3,4}(?!\d)"
+        r"|(?<!\d)0\d{3}[\s\-]?\d{7}(?!\d)",
+        phone_valid,
+    ),
+    "card": (r"(?<!\d)(?:\d[ \-]?){12,18}\d(?!\d)", luhn_valid),
+    "cnic": (r"(?<!\d)\d{5}-\d{7}-\d(?!\d)|(?<![\d-])\d{13}(?![\d-])", cnic_valid),
+    "iban": (r"\b[A-Z]{2}\d{2}(?: ?[A-Z0-9]{4}){2,7}(?: ?[A-Z0-9]{1,3})?\b", iban_valid),
+    "ssn": (r"(?<!\d)\d{3}-\d{2}-\d{4}(?!\d)", ssn_valid),
+}
+
+
+@dataclass(frozen=True)
+class Matcher:
+    name: str
+    pattern: "regex.Pattern[str]"
+    validator: Callable[[str], bool] | None = None
+
+    def spans(self, text: str) -> list[tuple[int, int]]:
+        found: list[tuple[int, int]] = []
+        try:
+            for match in self.pattern.finditer(text, timeout=REGEX_TIMEOUT_SECONDS):
+                if match.end() > match.start() and (self.validator is None or self.validator(match.group())):
+                    found.append((match.start(), match.end()))
+        except TimeoutError as exc:
+            raise ToolFailedError(
+                "A search pattern took too long to evaluate. Simplify it and try again.",
+                code="pattern_timeout",
+            ) from exc
+        return found
 
 
 class RedactOptions(ToolOptions):
     boxes: list[str] = Field(default_factory=list, max_length=2000)
     patterns: list[str] = Field(default_factory=list, max_length=100)
+    presets: list[PresetName] = Field(default_factory=list, max_length=6)
     ignore_case: bool = True
     dpi: int = Field(default=200, ge=100, le=300)
     strip_metadata: bool = True
@@ -51,17 +126,25 @@ def parse_box(line: str, page_count: int) -> tuple[int, Box]:
     return page - 1, (x, y, x + width, y + height)
 
 
-def compile_patterns(patterns: list[str], ignore_case: bool) -> list[re.Pattern[str]]:
-    flags = re.IGNORECASE if ignore_case else 0
-    compiled: list[re.Pattern[str]] = []
+def compile_patterns(patterns: list[str], ignore_case: bool) -> list[Matcher]:
+    flags = regex.IGNORECASE if ignore_case else 0
+    compiled: list[Matcher] = []
     for pattern in patterns:
         if len(pattern) > 300:
             raise ToolInputError("Search patterns can be at most 300 characters long.")
         try:
-            compiled.append(re.compile(pattern, flags))
-        except re.error as exc:
+            compiled.append(Matcher("custom", regex.compile(pattern, flags)))
+        except regex.error as exc:
             raise ToolInputError(f"“{pattern}” is not a valid pattern: {exc}.") from exc
     return compiled
+
+
+def build_matchers(options: RedactOptions) -> list[Matcher]:
+    matchers = [
+        Matcher(name, regex.compile(PRESETS[name][0]), PRESETS[name][1])
+        for name in dict.fromkeys(options.presets)
+    ]
+    return matchers + compile_patterns(options.patterns, options.ignore_case)
 
 
 def user_to_visual(geometry: PageGeometry, x: float, y: float) -> tuple[float, float]:
@@ -75,22 +158,29 @@ def user_to_visual(geometry: PageGeometry, x: float, y: float) -> tuple[float, f
     return dx, dy
 
 
+def page_text(textpage: Any) -> str:
+    count = textpage.count_chars()
+    text = textpage.get_text_range()
+    if len(text) != count:
+        text = "".join(textpage.get_text_range(position, 1) for position in range(count))
+    return str(text)
+
+
 def pattern_boxes(
-    document: pdfium.PdfDocument, index: int, geometry: PageGeometry, patterns: list[re.Pattern[str]]
-) -> list[Box]:
-    if not patterns:
-        return []
+    document: pdfium.PdfDocument, index: int, geometry: PageGeometry, matchers: list[Matcher]
+) -> tuple[list[Box], Counter[str]]:
+    if not matchers:
+        return [], Counter()
     page = document[index]
     textpage = page.get_textpage()
     try:
-        count = textpage.count_chars()
-        text = textpage.get_text_range()
-        if len(text) != count:
-            text = "".join(textpage.get_text_range(position, 1) for position in range(count))
+        text = page_text(textpage)
         boxes: list[Box] = []
-        for pattern in patterns:
-            for match in pattern.finditer(text):
-                for position in range(match.start(), match.end()):
+        counts: Counter[str] = Counter()
+        for matcher in matchers:
+            for start, end in matcher.spans(text):
+                counts[matcher.name] += 1
+                for position in range(start, end):
                     if text[position].isspace():
                         continue
                     left, bottom, right, top = textpage.get_charbox(position)
@@ -104,10 +194,32 @@ def pattern_boxes(
                             max(first[1], second[1]) + 1,
                         )
                     )
-        return boxes
+        return boxes, counts
     finally:
         textpage.close()
         page.close()
+
+
+def verify_output(path: Any, matchers: list[Matcher], redacted_pages: set[int]) -> tuple[int, int]:
+    document = pdfium.PdfDocument(str(path))
+    leftovers = 0
+    text_on_redacted = 0
+    try:
+        for index in range(len(document)):
+            page = document[index]
+            textpage = page.get_textpage()
+            try:
+                text = page_text(textpage)
+            finally:
+                textpage.close()
+                page.close()
+            if index in redacted_pages:
+                text_on_redacted += len(text.strip())
+            for matcher in matchers:
+                leftovers += len(matcher.spans(text))
+    finally:
+        document.close()
+    return leftovers, text_on_redacted
 
 
 def raster_page(pdf: pikepdf.Pdf, index: int, image: Image.Image, geometry: PageGeometry) -> None:
@@ -125,15 +237,27 @@ def raster_page(pdf: pikepdf.Pdf, index: int, image: Image.Image, geometry: Page
     page.obj.Resources = pikepdf.Dictionary(XObject=pikepdf.Dictionary(Im0=pdf.make_indirect(stream)))
     page.obj.Contents = pdf.make_stream(f"q {width:.4f} 0 0 {height:.4f} 0 0 cm /Im0 Do Q".encode("ascii"))
     page.obj.MediaBox = pikepdf.Array([0, 0, width, height])
-    for key in ("/CropBox", "/TrimBox", "/BleedBox", "/ArtBox", "/Rotate", "/Annots", "/Metadata", "/Thumb", "/AA"):
+    for key in (
+        "/CropBox",
+        "/TrimBox",
+        "/BleedBox",
+        "/ArtBox",
+        "/Rotate",
+        "/Annots",
+        "/Metadata",
+        "/Thumb",
+        "/AA",
+    ):
         if key in page.obj:
             del page.obj[key]
 
 
 def redact_with(ctx: JobContext[Any], options: RedactOptions) -> list[OutputFile]:
     item: InputFile = ctx.inputs[0]
-    patterns = compile_patterns(options.patterns, options.ignore_case)
+    matchers = build_matchers(options)
     document = pdfium.PdfDocument(str(item.path))
+    found: Counter[str] = Counter()
+    pages_redacted: dict[int, int] = {}
     try:
         with open_pdf(item) as pdf:
             count = len(pdf.pages)
@@ -141,12 +265,13 @@ def redact_with(ctx: JobContext[Any], options: RedactOptions) -> list[OutputFile
             for line in options.boxes:
                 index, box = parse_box(line, count)
                 manual.setdefault(index, []).append(box)
-            redacted = 0
             for index in range(count):
                 ctx.ensure_not_cancelled()
-                ctx.report(index / count, f"Checking page {index + 1}")
+                ctx.report(index / count * 0.7, f"Checking page {index + 1}")
                 geometry = page_geometry(pdf.pages[index])
-                boxes = manual.get(index, []) + pattern_boxes(document, index, geometry, patterns)
+                matched, counts = pattern_boxes(document, index, geometry, matchers)
+                found.update(counts)
+                boxes = manual.get(index, []) + matched
                 if not boxes:
                     continue
                 scale = options.dpi / 72
@@ -168,8 +293,8 @@ def redact_with(ctx: JobContext[Any], options: RedactOptions) -> list[OutputFile
                         fill=(0, 0, 0),
                     )
                 raster_page(pdf, index, image, geometry)
-                redacted += 1
-            if redacted == 0:
+                pages_redacted[index] = len(boxes)
+            if not pages_redacted:
                 raise ToolInputError("Nothing matched, so no pages were changed.")
             if options.strip_metadata:
                 for key in list(pdf.docinfo.keys()):
@@ -180,14 +305,38 @@ def redact_with(ctx: JobContext[Any], options: RedactOptions) -> list[OutputFile
             save_pdf(pdf, target)
     finally:
         document.close()
-    return [output_pdf(target)]
+    ctx.report(0.85, "Verifying the result")
+    leftovers, hidden_text = verify_output(target, matchers, set(pages_redacted))
+    if leftovers or hidden_text:
+        target.unlink(missing_ok=True)
+        raise ToolFailedError(
+            "Verification failed: some sensitive text could still be extracted, so no file was produced.",
+            code="redaction_verification_failed",
+        )
+    report = ctx.output_path("redaction-report.txt")
+    lines = [
+        "Redaction report",
+        f"Pages redacted: {len(pages_redacted)} of {count}",
+        f"Areas blacked out: {sum(pages_redacted.values())}",
+    ]
+    for name, total in sorted(found.items()):
+        lines.append(f"Pattern matches removed ({name}): {total}")
+    for index, total in sorted(pages_redacted.items()):
+        lines.append(f"  Page {index + 1}: {total} area(s)")
+    lines.append("Verification: the output was re-read and no text matching your patterns remains.")
+    lines.append("Verification: redacted pages contain no extractable text (they were rebuilt as images).")
+    lines.append("The report lists counts only; it never repeats the redacted content.")
+    report.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return [output_pdf(target), OutputFile(path=report, filename=report.name, mime_type="text/plain")]
 
 
 class RedactTool(Tool[RedactOptions]):
     slug = "redact"
     name = "Redact PDF"
     category = ToolCategory.SECURITY
-    summary = "Permanently black out areas or text patterns. Redacted pages are rebuilt without the hidden text."
+    summary = (
+        "Permanently black out areas or text patterns. Redacted pages are rebuilt without the hidden text."
+    )
     input_spec = InputSpec(
         min_files=1, max_files=1, accepted_kinds=frozenset({FileKind.PDF}), allow_encrypted_pdf=True
     )
@@ -195,8 +344,8 @@ class RedactTool(Tool[RedactOptions]):
     seconds_per_page = 0.2
 
     def validate_options_against_inputs(self, files: Sequence[InputFileInfo], options: RedactOptions) -> None:
-        if not options.boxes and not options.patterns:
-            raise ToolInputError("Add at least one box or search pattern to redact.")
+        if not options.boxes and not options.patterns and not options.presets:
+            raise ToolInputError("Add at least one box, preset or search pattern to redact.")
         compile_patterns(options.patterns, options.ignore_case)
         for info in files:
             if info.page_count is not None:

@@ -65,7 +65,7 @@ Phase 4
 - [x] 10 Create PDF forms (add fields) and auto-detect form fields
 - [x] 11 E-sign requests (fields, SMTP email links, single-use tokens, decline, audit trail, certificate, dashboard)
 - [x] 12 Compare PDF visual overlay diff + downloadable report
-- [ ] 13 Redact pattern library (email, phone, Luhn card, CNIC, IBAN, SSN) + mandatory verification report
+- [x] 13 Redact pattern library (email, phone, Luhn card, CNIC, IBAN, SSN) + mandatory verification report
 
 Phase 5
 - [ ] 14 Smart Split and AI rename

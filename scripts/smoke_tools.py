@@ -122,6 +122,44 @@ def compare_ok(outputs: list[tuple[str, bytes]]) -> str | None:
     return pdfs_open([o for o in outputs if o[0].endswith(".pdf")])
 
 
+def pii_pdf() -> bytes:
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    lines = [
+        "Contact: jane.doe@example.com",
+        "Phone: +92 300 1234567",
+        "Card: 4111 1111 1111 1111",
+        "Order: 4111 1111 1111 1112",
+        "CNIC: 35202-1234567-1",
+        "IBAN: GB82 WEST 1234 5698 7654 32",
+        "SSN: 123-45-6789",
+        "Safe line stays here",
+    ]
+    for number, line in enumerate(lines):
+        pdf.drawString(72, 760 - number * 24, line)
+    pdf.showPage()
+    pdf.save()
+    return buffer.getvalue()
+
+
+def pii_redacted_ok(outputs: list[tuple[str, bytes]]) -> str | None:
+    import pypdfium2 as pdfium
+
+    names = [name for name, _ in outputs]
+    if "redaction-report.txt" not in names:
+        return "report missing"
+    report = next(data for name, data in outputs if name.endswith(".txt")).decode()
+    for label in ("email", "card", "cnic", "iban", "ssn"):
+        if f"({label})" not in report:
+            return f"{label} not matched: {report}"
+    if "jane" in report or "4111" in report:
+        return "report leaks content"
+    document = pdfium.PdfDocument(next(data for name, data in outputs if name.endswith(".pdf")))
+    if document[0].get_textpage().get_text_range().strip():
+        return "text remains"
+    return None
+
+
 def page_count(expected: int) -> Check:
     def check(outputs: list[tuple[str, bytes]]) -> str | None:
         with pikepdf.open(io.BytesIO(outputs[0][1])) as pdf:
@@ -480,6 +518,7 @@ CASES: list[Case] = [
     Case("edit-pdf", pdf_upload(2), {"operations": [{"type": "replace_text", "page": 1, "x": 11, "y": 8, "width": 16, "height": 3, "text": "Replaced heading", "size": 12}, {"type": "find_replace", "find": "lazy", "replace": "sleepy"}]}, check=text_edit_ok),
     Case("create-form", pdf_upload(1), {"fields": form_specs()}, check=form_fields_ok),
     Case("detect-form-fields", [("flat.pdf", flat_form_pdf(), "application/pdf")], {}, check=form_fields_ok),
+    Case("redact", [("pii.pdf", pii_pdf(), "application/pdf")], {"presets": ["email", "phone", "card", "cnic", "iban", "ssn"]}, check=pii_redacted_ok),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

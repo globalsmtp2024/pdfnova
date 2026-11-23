@@ -26,7 +26,16 @@ type JsonSchema = {
 };
 
 type FieldKind =
-  "boolean" | "enum" | "number" | "integer" | "text" | "area" | "lines" | "image" | "skip";
+  | "boolean"
+  | "enum"
+  | "multi"
+  | "number"
+  | "integer"
+  | "text"
+  | "area"
+  | "lines"
+  | "image"
+  | "skip";
 
 const LONG_TEXT_FIELDS = new Set([
   "text",
@@ -59,6 +68,7 @@ function kindOf(name: string, schema: JsonSchema): FieldKind {
   if (type === "boolean") return "boolean";
   if (type === "integer") return "integer";
   if (type === "number") return "number";
+  if (type === "array" && schema.items?.enum) return "multi";
   if (type === "array" && (schema.items?.type === "string" || !schema.items?.type)) return "lines";
   if (type === "string") {
     return LONG_TEXT_FIELDS.has(name) || (schema.maxLength ?? 0) > 400 ? "area" : "text";
@@ -119,7 +129,9 @@ export function useSchemaPanel(
       }
       continue;
     }
-    if (field.kind === "lines") {
+    if (field.kind === "multi") {
+      if (Array.isArray(value) && value.length) payload[field.name] = value;
+    } else if (field.kind === "lines") {
       const lines = String(value)
         .split("\n")
         .map((line) => line.trim())
@@ -157,6 +169,34 @@ export function useSchemaPanel(
           checked={Boolean(current(name, fallback))}
           onChange={(value) => set(name, value)}
         />
+      );
+    }
+    if (kind === "multi") {
+      const chosen = (current(name, []) as string[]) ?? [];
+      return (
+        <fieldset key={name} className="flex flex-col gap-1.5">
+          <legend className="mb-1 text-sm font-medium">{label(name)}</legend>
+          {(field.items?.enum ?? []).map((option) => {
+            const value = String(option);
+            return (
+              <label key={value} className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={chosen.includes(value)}
+                  onChange={(event) =>
+                    set(
+                      name,
+                      event.target.checked
+                        ? [...chosen, value]
+                        : chosen.filter((entry) => entry !== value),
+                    )
+                  }
+                />
+                {optionLabel(name, option)}
+              </label>
+            );
+          })}
+        </fieldset>
       );
     }
     return (

@@ -1627,7 +1627,14 @@
     "mode_both": "ظاہری شکل اور متن",
     "mode_text": "صرف متن",
     "mode_visual": "صرف ظاہری شکل",
-    "visual_dpi": "موازنے کی تفصیل (DPI)"
+    "visual_dpi": "موازنے کی تفصیل (DPI)",
+    "presets": "تلاش کے لیے حساس ڈیٹا",
+    "presets_email": "ای میل پتے",
+    "presets_phone": "فون نمبر",
+    "presets_card": "کارڈ نمبر (جانچ شدہ)",
+    "presets_cnic": "شناختی کارڈ نمبر",
+    "presets_iban": "IBAN (جانچ شدہ)",
+    "presets_ssn": "امریکی SSN"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",

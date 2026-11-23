@@ -1491,7 +1491,14 @@
     "mode_both": "Appearance and text",
     "mode_text": "Text only",
     "mode_visual": "Appearance only",
-    "visual_dpi": "Comparison detail (DPI)"
+    "visual_dpi": "Comparison detail (DPI)",
+    "presets": "Sensitive data to find",
+    "presets_email": "Email addresses",
+    "presets_phone": "Phone numbers",
+    "presets_card": "Card numbers (checked)",
+    "presets_cnic": "CNIC numbers",
+    "presets_iban": "IBAN (checked)",
+    "presets_ssn": "US SSN"
   },
   "tools": {
     "remove-annotations": {
