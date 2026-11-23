@@ -4,15 +4,22 @@ import pkgutil
 from functools import lru_cache
 from typing import Any
 
+import structlog
+
 from app.core.errors import NotFoundError
 from app.tools.base import Tool
+
+logger = structlog.get_logger()
 
 
 def _all_tool_classes() -> list[type[Tool[Any]]]:
     import app.tools as tools_package
 
     for module_info in pkgutil.walk_packages(tools_package.__path__, prefix="app.tools."):
-        importlib.import_module(module_info.name)
+        try:
+            importlib.import_module(module_info.name)
+        except ModuleNotFoundError as error:
+            logger.error("tool_module_skipped", module=module_info.name, missing=error.name)
     found: list[type[Tool[Any]]] = []
     pending: list[type[Tool[Any]]] = list(Tool.__subclasses__())
     while pending:
