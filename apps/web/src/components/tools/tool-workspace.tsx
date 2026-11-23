@@ -29,7 +29,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { FileCard } from "@/components/tools/file-card";
 import { acceptForKinds, describeKinds } from "@/components/tools/file-kinds";
-import { TOOL_PANELS, useNoPanel } from "@/components/tools/panels/registry";
+import { FALLBACK_PANEL, TOOL_PANELS } from "@/components/tools/panels/registry";
 import { PasswordPrompt } from "@/components/tools/password-prompt";
 import { ResultPanel } from "@/components/tools/result-panel";
 import { ToolIcon } from "@/components/tools/tool-icon";
@@ -138,8 +138,8 @@ export function ToolWorkspace({
   const spec = description.input_spec;
   const accept = acceptForKinds(spec.accepted_kinds);
   const enoughFiles = session.files.length >= spec.min_files;
-  const usePanel = TOOL_PANELS[definition.slug] ?? useNoPanel;
-  const panel = usePanel(session.files);
+  const usePanel = TOOL_PANELS[definition.slug] ?? FALLBACK_PANEL;
+  const panel = usePanel(session.files, description.options_schema);
   const toolProblem = panel && session.allReady ? panel.problem : null;
   const canStart = session.allReady && enoughFiles && !session.starting && !toolProblem;
   const canAddMore = session.files.length < spec.max_files;
@@ -384,7 +384,7 @@ export function ToolWorkspace({
       <aside aria-label={t("options")} className="lg:sticky lg:top-24 lg:self-start">
         <div className="flex flex-col gap-4 rounded-(--radius-card) border border-border bg-surface p-5 shadow-lifted">
           <h2 className="font-display text-lg font-semibold">{t("options")}</h2>
-          {panel ? panel.options : <p className="text-sm text-muted">{t("noOptions")}</p>}
+          {panel?.options ?? <p className="text-sm text-muted">{t("noOptions")}</p>}
           <div className="flex flex-col gap-2 rounded-xl bg-surface-muted/70 p-3 text-xs text-muted">
             <p className="font-medium text-foreground">
               {t("summaryLine", {

@@ -11,6 +11,7 @@ import { useUnlockPanel } from "@/components/tools/panels/unlock";
 import { useFlattenPanel } from "@/components/tools/panels/flatten";
 import { useMetadataPanel } from "@/components/tools/panels/metadata";
 import { useMergePanel } from "@/components/tools/panels/merge";
+import { useSchemaPanel } from "@/components/tools/panels/schema";
 import type { LocalFile } from "@/components/tools/use-tool-session";
 
 export type ToolPanelView = {
@@ -24,7 +25,7 @@ export type ToolPanelView = {
   renderFileExtras?: (file: LocalFile) => ReactNode;
 };
 
-export type ToolPanelHook = (files: LocalFile[]) => ToolPanelView;
+export type ToolPanelHook = (files: LocalFile[], schema?: Record<string, unknown>) => ToolPanelView;
 
 function useRotatePanel(files: LocalFile[]): ToolPanelView {
   return usePageTool("rotate", files);
@@ -49,6 +50,8 @@ function useOrganizePanel(files: LocalFile[]): ToolPanelView {
 export function useNoPanel(): null {
   return null;
 }
+
+export const FALLBACK_PANEL: ToolPanelHook = useSchemaPanel;
 
 export const TOOL_PANELS: Record<string, ToolPanelHook> = {
   rotate: useRotatePanel,

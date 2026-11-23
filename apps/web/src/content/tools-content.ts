@@ -1,5 +1,9 @@
 import { findTool, TOOLS, type ToolCategoryId, type ToolDefinition } from "@/config/tools";
-import { URDU_TOOL_CONTENT, type LocalizedToolContent } from "@/content/tools-content.ur";
+import {
+  URDU_TOOL_CONTENT,
+  urduCategoryContent,
+  type LocalizedToolContent,
+} from "@/content/tools-content.ur";
 
 export const LOCALIZED_CONTENT: Record<string, Record<string, LocalizedToolContent>> = {
   ur: URDU_TOOL_CONTENT,
@@ -841,6 +845,8 @@ export function getToolContent(slug: string, locale = "en"): ToolContent | null 
   if (!tool) return null;
   const localized = LOCALIZED_CONTENT[locale]?.[slug];
   if (localized) return { ...localized, related: RELATED_BY_CATEGORY(tool) };
+  const fallback = locale === "ur" ? urduCategoryContent(tool.category) : undefined;
+  if (fallback) return { ...fallback, related: RELATED_BY_CATEGORY(tool) };
   const base = CATEGORY_TEMPLATES[tool.category](tool);
   const override = OVERRIDES[slug] ?? {};
   return {

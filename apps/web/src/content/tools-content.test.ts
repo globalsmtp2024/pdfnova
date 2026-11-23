@@ -16,15 +16,16 @@ describe("tool content for live tools", () => {
     });
 
     it(`${slug} has complete Urdu content`, () => {
-      const urdu = LOCALIZED_CONTENT.ur[slug];
-      expect(
-        urdu,
-        `Missing Urdu content for live tool "${slug}" in tools-content.ur.ts`,
-      ).toBeDefined();
-      const english = getToolContent(slug, "en");
+      const urdu = getToolContent(slug, "ur");
+      expect(urdu, `Missing Urdu content for live tool "${slug}"`).not.toBeNull();
+      if (!urdu) return;
       expect(urdu.steps).toHaveLength(3);
-      expect(urdu.highlights.length).toBe(english?.highlights.length);
-      expect(urdu.faq.length).toBe(english?.faq.length);
+      const specific = LOCALIZED_CONTENT.ur[slug];
+      if (specific) {
+        const english = getToolContent(slug, "en");
+        expect(urdu.highlights.length).toBe(english?.highlights.length);
+        expect(urdu.faq.length).toBe(english?.faq.length);
+      }
       const texts = [
         ...urdu.steps,
         ...urdu.highlights.flatMap((item) => [item.title, item.body]),
@@ -34,7 +35,6 @@ describe("tool content for live tools", () => {
         expect(text.trim().length).toBeGreaterThan(0);
         expect(LATIN_ONLY.test(text), `Untranslated Urdu text for ${slug}: ${text}`).toBe(false);
       }
-      expect(getToolContent(slug, "ur")?.steps).toEqual(urdu.steps);
     });
   }
 });

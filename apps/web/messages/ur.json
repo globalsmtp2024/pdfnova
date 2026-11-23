@@ -1335,5 +1335,27 @@
     "formsHint": "اگر دو فائلوں میں ایک ہی نام کا فیلڈ ہو تو بعد والے کے نام سے پہلے فائل نمبر لگ جاتا ہے، جیسے 2_name۔",
     "estimate": "{pages, plural, one {# صفحہ} other {# صفحات}}، تقریباً {size}",
     "empty": "کم از کم ایک صفحہ رکھیں۔"
+  },
+  "schemaFields": {
+    "summary": "{count, plural, other {# فائلیں پروسیس کے لیے تیار}}",
+    "requiredField": "{field} درکار ہے۔",
+    "imageTooLarge": "یہ تصویر 3 MB سے بڑی ہے۔",
+    "page_size": "صفحے کا سائز",
+    "page_size_fit": "تصویر کے مطابق",
+    "page_size_a4": "A4",
+    "page_size_letter": "لیٹر",
+    "orientation": "رخ",
+    "orientation_auto": "خودکار",
+    "orientation_portrait": "عمودی",
+    "orientation_landscape": "افقی",
+    "margin_mm": "حاشیہ (ملی میٹر)",
+    "merge": "سب کو ایک PDF میں ملائیں",
+    "quality": "معیار (40-100)",
+    "format": "فارمیٹ",
+    "format_png": "PNG",
+    "format_jpg": "JPG",
+    "format_webp": "WebP",
+    "dpi": "ریزولوشن (DPI)",
+    "pages": "صفحات (مثلاً 1-3، 5، last)"
   }
 }

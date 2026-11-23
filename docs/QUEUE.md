@@ -2,8 +2,8 @@
 
 Handoff file. Tick a box only when the tool is implemented and its smoke case passes. Failures go to FAILED.md.
 
-- [ ] 1 Image to PDF (JPG, PNG, WebP, TIFF)
-- [ ] 2 PDF to JPG/PNG
+- [x] 1 Image to PDF (JPG, PNG, WebP, TIFF)
+- [x] 2 PDF to JPG/PNG
 - [ ] 3 PDF to Text
 - [ ] 4 PDF to Markdown
 - [ ] 5 Text to PDF
