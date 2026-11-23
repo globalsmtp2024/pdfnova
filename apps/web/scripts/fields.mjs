@@ -102,6 +102,16 @@ const FIELDS = {
   layout_sheet_per_table: ["One sheet per table", "ہر جدول کے لیے الگ شیٹ"],
   layout_sheet_per_page: ["One sheet per page", "ہر صفحے کے لیے الگ شیٹ"],
   fallback_to_text: ["Use text lines when no table is found", "جدول نہ ملنے پر متن کی سطریں استعمال کریں"],
+  landscape: ["Landscape", "افقی"],
+  print_backgrounds: ["Print background colours", "پس منظر کے رنگ بھی چھاپیں"],
+  language: ["Language", "زبان"],
+  language_eng: ["English", "انگریزی"],
+  language_urd: ["Urdu", "اردو"],
+  "language_eng+urd": ["English and Urdu", "انگریزی اور اردو"],
+  "page_size_A4": ["A4", "A4"],
+  "page_size_A3": ["A3", "A3"],
+  "page_size_Letter": ["Letter", "لیٹر"],
+  "page_size_Legal": ["Legal", "لیگل"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

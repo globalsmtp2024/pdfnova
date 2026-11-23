@@ -1354,7 +1354,17 @@
     "layout": "Layout",
     "layout_sheet_per_table": "One sheet per table",
     "layout_sheet_per_page": "One sheet per page",
-    "fallback_to_text": "Use text lines when no table is found"
+    "fallback_to_text": "Use text lines when no table is found",
+    "landscape": "Landscape",
+    "print_backgrounds": "Print background colours",
+    "language": "Language",
+    "language_eng": "English",
+    "language_urd": "Urdu",
+    "language_eng+urd": "English and Urdu",
+    "page_size_A4": "A4",
+    "page_size_A3": "A3",
+    "page_size_Letter": "Letter",
+    "page_size_Legal": "Legal"
   },
   "tools": {
     "remove-annotations": {

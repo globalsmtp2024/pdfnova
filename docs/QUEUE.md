@@ -27,9 +27,9 @@ Handoff file. Tick a box only when the tool is implemented and its smoke case pa
 - [x] 23 Compare PDF (text diff)
 - [x] 24 PDF to Word (own converter, pdfplumber + python-docx)
 - [x] 25 PDF to Excel (pdfplumber tables)
-- [ ] 26 Word/PowerPoint/Excel to PDF (soffice)
-- [ ] 27 HTML to PDF and URL to PDF (Chromium, SSRF-safe)
-- [ ] 28 OCR PDF (Tesseract, English + Urdu)
+- [x] 26 Word/PowerPoint/Excel to PDF (soffice)
+- [x] 27 HTML to PDF and URL to PDF (Chromium, SSRF-safe)
+- [x] 28 OCR PDF (Tesseract, English + Urdu)
 - [ ] 29 AI Summarizer (provider abstraction, Anthropic default, BYOK, simple fair-use budget)
 - [ ] 30 Chat with PDF (page citations)
 - [ ] 31 Translate PDF (text-block overlay)
@@ -44,3 +44,6 @@ Handoff file. Tick a box only when the tool is implemented and its smoke case pa
 Not in the queue and staying "Coming soon": full editor, e-sign requests, digital signatures, teams, admin panel, PWA, cloud integrations.
 
 ## Notes
+
+- 26 and 28 are implemented but Coming soon locally: see docs/FAILED.md (no soffice, no tesseract on this machine).
+- 27 HTML to PDF and URL to PDF run in headless Chrome with all network access blocked; URL to PDF takes a page fetched through Import from a link.

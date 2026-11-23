@@ -86,6 +86,19 @@ def contains_text(needle: str) -> Check:
     return check
 
 
+HTML_SAMPLE = "<!doctype html><html><body><h1>Hello</h1><p>Rendered page</p></body></html>"
+
+
+def docx_sample() -> bytes:
+    from docx import Document
+
+    buffer = io.BytesIO()
+    document = Document()
+    document.add_paragraph("Office smoke")
+    document.save(buffer)
+    return buffer.getvalue()
+
+
 def zip_has(member: str) -> Check:
     import zipfile
 
@@ -178,6 +191,10 @@ CASES: list[Case] = [
     Case("compare", pdf_upload(2) + [("other.pdf", sample_pdf(3), "application/pdf")], check=contains_text("Page 1")),
     Case("pdf-to-word", pdf_upload(), {}, check=zip_has("word/document.xml")),
     Case("pdf-to-excel", pdf_upload(), {}, check=zip_has("xl/workbook.xml")),
+    Case("html-to-pdf", [("page.html", HTML_SAMPLE.encode("utf-8"), "text/html")]),
+    Case("url-to-pdf", [("page.html", HTML_SAMPLE.encode("utf-8"), "text/html")]),
+    Case("word-to-pdf", [("doc.docx", docx_sample(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document")]),
+    Case("ocr", [("scan.png", sample_image("PNG", (800, 300)), "image/png")]),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

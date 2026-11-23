@@ -1450,7 +1450,17 @@
     "layout": "ترتیب",
     "layout_sheet_per_table": "ہر جدول کے لیے الگ شیٹ",
     "layout_sheet_per_page": "ہر صفحے کے لیے الگ شیٹ",
-    "fallback_to_text": "جدول نہ ملنے پر متن کی سطریں استعمال کریں"
+    "fallback_to_text": "جدول نہ ملنے پر متن کی سطریں استعمال کریں",
+    "landscape": "افقی",
+    "print_backgrounds": "پس منظر کے رنگ بھی چھاپیں",
+    "language": "زبان",
+    "language_eng": "انگریزی",
+    "language_urd": "اردو",
+    "language_eng+urd": "انگریزی اور اردو",
+    "page_size_A4": "A4",
+    "page_size_A3": "A3",
+    "page_size_Letter": "لیٹر",
+    "page_size_Legal": "لیگل"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",

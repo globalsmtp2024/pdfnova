@@ -39,4 +39,6 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "compare",
   "pdf-to-word",
   "pdf-to-excel",
+  "html-to-pdf",
+  "url-to-pdf",
 ]);
