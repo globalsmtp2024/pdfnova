@@ -90,4 +90,4 @@ Phase 7
 - [x] 29 Deletion sweeper and verified Delete-now
 - [x] 30 Deployment files and docs/DEPLOYMENT_VPS.md
 - [x] 31 Legal and info pages
-- [ ] 32 .env.example + startup validation, Makefile, README quick start
+- [x] 32 .env.example + startup validation, Makefile, README quick start

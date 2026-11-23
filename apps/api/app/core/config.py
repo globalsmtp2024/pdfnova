@@ -1,3 +1,4 @@
+import base64
 from enum import StrEnum
 from functools import lru_cache
 from pathlib import Path
@@ -93,14 +94,63 @@ class Settings(BaseSettings):
     qpdf_binary: str | None = None
 
     @model_validator(mode="after")
-    def _validate_production(self) -> "Settings":
+    def _validate_consistency(self) -> "Settings":
+        problems: list[str] = []
+        if self.queue_backend == "arq" and not self.redis_url:
+            problems.append("REDIS_URL is required when QUEUE_BACKEND=arq")
+        if self.rate_limit_backend == "redis" and not self.redis_url:
+            problems.append("REDIS_URL is required when RATE_LIMIT_BACKEND=redis")
+        if self.storage_backend == "s3" and not (self.s3_access_key_id and self.s3_secret_access_key):
+            problems.append("S3_ACCESS_KEY_ID and S3_SECRET_ACCESS_KEY are required when STORAGE_BACKEND=s3")
+        if self.email_backend == "smtp" and not self.smtp_host:
+            problems.append("SMTP_HOST is required when EMAIL_BACKEND=smtp")
+        for label, first, second in (
+            ("GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET", self.google_client_id, self.google_client_secret),
+            ("GITHUB_CLIENT_ID/GITHUB_CLIENT_SECRET", self.github_client_id, self.github_client_secret),
+            (
+                "CLOUD_GOOGLE_CLIENT_ID/CLOUD_GOOGLE_CLIENT_SECRET",
+                self.cloud_google_client_id,
+                self.cloud_google_client_secret,
+            ),
+            (
+                "CLOUD_DROPBOX_APP_KEY/CLOUD_DROPBOX_APP_SECRET",
+                self.cloud_dropbox_app_key,
+                self.cloud_dropbox_app_secret,
+            ),
+            (
+                "CLOUD_MICROSOFT_CLIENT_ID/CLOUD_MICROSOFT_CLIENT_SECRET",
+                self.cloud_microsoft_client_id,
+                self.cloud_microsoft_client_secret,
+            ),
+        ):
+            if bool(first) != bool(second):
+                problems.append(f"{label} must be set together")
+        try:
+            key = base64.b64decode(self.storage_encryption_key.get_secret_value(), validate=True)
+        except ValueError:
+            problems.append("STORAGE_ENCRYPTION_KEY must be base64")
+        else:
+            if len(key) != 32:
+                problems.append("STORAGE_ENCRYPTION_KEY must decode to exactly 32 bytes")
         if self.environment is Environment.PRODUCTION:
             if self.secret_key.get_secret_value().startswith("dev-insecure"):
-                raise ValueError("SECRET_KEY must be set in production")
+                problems.append("SECRET_KEY must be set in production")
+            elif len(self.secret_key.get_secret_value()) < 32:
+                problems.append("SECRET_KEY must be at least 32 characters in production")
             if self.storage_encryption_key.get_secret_value().startswith("ZGV2LWluc2VjdXJl"):
-                raise ValueError("STORAGE_ENCRYPTION_KEY must be set in production")
+                problems.append("STORAGE_ENCRYPTION_KEY must be set in production")
             if not self.cookie_secure:
-                raise ValueError("COOKIE_SECURE must be true in production")
+                problems.append("COOKIE_SECURE must be true in production")
+            if self.webhook_allow_private:
+                problems.append("WEBHOOK_ALLOW_PRIVATE must be false in production")
+            if self.cloud_test_provider:
+                problems.append("CLOUD_TEST_PROVIDER must be false in production")
+            if not self.public_web_url.startswith("https://"):
+                problems.append("PUBLIC_WEB_URL must use https in production")
+            if not self.public_api_url.startswith("https://") and "localhost" not in self.public_api_url:
+                problems.append("PUBLIC_API_URL must use https in production")
+        if problems:
+            raise ValueError("Invalid configuration: " + "; ".join(problems))
         return self
 
     @property

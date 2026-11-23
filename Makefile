@@ -1,4 +1,4 @@
-.PHONY: dev down logs env test test-api test-web lint lint-api lint-web api web migrate
+.PHONY: dev down logs env test test-api test-web lint lint-api lint-web api web migrate seed
 
 API_DIR := apps/api
 WEB_DIR := apps/web
@@ -29,6 +29,9 @@ web:
 
 migrate:
 	cd $(API_DIR) && .venv/bin/python -m alembic upgrade head
+
+seed:
+	cd $(API_DIR) && .venv/bin/python -m alembic upgrade head && .venv/bin/python -m app.seed --admin
 
 test: test-api test-web
 
