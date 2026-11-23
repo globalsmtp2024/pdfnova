@@ -1,7 +1,10 @@
 import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import createNextIntlPlugin from "next-intl/plugin";
 
+const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const apiOrigin = process.env.API_INTERNAL_URL ?? "http://localhost:8000";
 const isDev = process.env.NODE_ENV !== "production";
 
@@ -45,7 +48,7 @@ const nextConfig: NextConfig = {
     globalNotFound: true,
   },
   turbopack: {
-    root: "C:/python",
+    root: repositoryRoot,
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],

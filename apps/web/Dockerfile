@@ -22,8 +22,9 @@ ENV NODE_ENV=production \
     HOSTNAME=0.0.0.0
 RUN groupadd --system app && useradd --system --gid app --home /app app
 COPY --from=build --chown=app:app /repo/apps/web/.next/standalone ./
-COPY --from=build --chown=app:app /repo/apps/web/.next/static ./.next/static
-COPY --from=build --chown=app:app /repo/apps/web/public ./public
+COPY --from=build --chown=app:app /repo/apps/web/.next/static ./apps/web/.next/static
+COPY --from=build --chown=app:app /repo/apps/web/public ./apps/web/public
+WORKDIR /app/apps/web
 USER app
 EXPOSE 3000
 HEALTHCHECK --interval=15s --timeout=5s --start-period=20s --retries=5 \

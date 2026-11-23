@@ -1,0 +1,23 @@
+[Unit]
+Description=PDFNova job worker (%i)
+After=pdfnova-api.service redis-server.service
+Wants=pdfnova-api.service
+
+[Service]
+User=pdfnova
+Group=pdfnova
+WorkingDirectory=/opt/pdfnova/apps/api
+EnvironmentFile=/etc/pdfnova/pdfnova.env
+Environment=HOME=/var/lib/pdfnova/home
+ExecStart=/opt/pdfnova/apps/api/.venv/bin/arq app.jobs.worker.%i
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/pdfnova /var/log/pdfnova
+MemoryMax=4G
+CPUQuota=200%
+
+[Install]
+WantedBy=multi-user.target

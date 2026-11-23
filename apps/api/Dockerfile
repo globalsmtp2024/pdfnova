@@ -14,6 +14,8 @@ RUN apt-get update \
         tesseract-ocr-ara \
         fonts-dejavu-core \
         fonts-noto-core \
+        fonts-noto \
+        chromium \
         tini \
     && rm -rf /var/lib/apt/lists/*
 
@@ -24,6 +26,12 @@ WORKDIR /app
 COPY apps/api/pyproject.toml ./
 RUN pip install --upgrade pip \
     && pip install .
+
+ENV U2NET_HOME=/opt/models/u2net \
+    REMBG_HOME=/opt/models/u2net
+RUN mkdir -p /opt/models/u2net \
+    && python -c "from rembg import new_session; new_session('u2netp')" \
+    && chmod -R a+rX /opt/models
 
 COPY apps/api/app ./app
 COPY apps/api/alembic ./alembic
@@ -44,6 +52,10 @@ HEALTHCHECK --interval=15s --timeout=5s --start-period=20s --retries=5 \
     CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health/live', timeout=4).status == 200 else 1)"
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["sh", "-c", "alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips='*' --workers ${API_WORKERS:-2}"]
+
+FROM base AS background
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD ["python", "-m", "app.jobs.background"]
 
 FROM base AS worker
 ENTRYPOINT ["/usr/bin/tini", "--"]

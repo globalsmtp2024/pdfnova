@@ -1,23 +1,31 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import { setRequestLocale } from "next-intl/server";
 
 import { EsignDetail } from "@/components/esign/esign-detail";
 
-export async function generateMetadata({
+export const metadata: Metadata = { title: "Signature request", robots: { index: false } };
+
+async function DetailContent({
   params,
-}: PageProps<"/[locale]/dashboard/signatures/[id]">): Promise<Metadata> {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "esign" });
-  return { title: t("title"), robots: { index: false } };
+}: {
+  params: PageProps<"/[locale]/dashboard/signatures/[id]">["params"];
+}) {
+  const { locale, id } = await params;
+  setRequestLocale(locale);
+  return <EsignDetail id={id} />;
 }
 
-export default async function Page({ params }: PageProps<"/[locale]/dashboard/signatures/[id]">) {
-  const { locale, id } = await params;
-  const { setRequestLocale } = await import("next-intl/server");
-  setRequestLocale(locale);
+export function generateStaticParams() {
+  return [{ id: "preview" }];
+}
+
+export default function Page({ params }: PageProps<"/[locale]/dashboard/signatures/[id]">) {
   return (
     <div className="container-page py-10">
-      <EsignDetail id={id} />
+      <Suspense fallback={null}>
+        <DetailContent params={params} />
+      </Suspense>
     </div>
   );
 }

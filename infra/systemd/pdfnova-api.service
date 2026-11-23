@@ -1,0 +1,23 @@
+[Unit]
+Description=PDFNova API
+After=network-online.target postgresql.service redis-server.service
+Wants=network-online.target
+
+[Service]
+User=pdfnova
+Group=pdfnova
+WorkingDirectory=/opt/pdfnova/apps/api
+EnvironmentFile=/etc/pdfnova/pdfnova.env
+Environment=BACKGROUND_WORKERS_IN_API=false
+ExecStartPre=/opt/pdfnova/apps/api/.venv/bin/alembic upgrade head
+ExecStart=/opt/pdfnova/apps/api/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips=127.0.0.1 --workers 3
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/pdfnova /var/log/pdfnova
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

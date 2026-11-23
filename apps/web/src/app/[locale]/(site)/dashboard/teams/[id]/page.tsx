@@ -1,22 +1,27 @@
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Suspense } from "react";
+import { setRequestLocale } from "next-intl/server";
 
 import { TeamDetailView } from "@/components/teams/team-detail";
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/dashboard/teams/[id]">): Promise<Metadata> {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "teams" });
-  return { title: t("title"), robots: { index: false } };
-}
+export const metadata: Metadata = { title: "Team", robots: { index: false } };
 
-export default async function Page({ params }: PageProps<"/[locale]/dashboard/teams/[id]">) {
+async function TeamContent({ params }: { params: PageProps<"/[locale]/dashboard/teams/[id]">["params"] }) {
   const { locale, id } = await params;
   setRequestLocale(locale);
+  return <TeamDetailView id={id} />;
+}
+
+export function generateStaticParams() {
+  return [{ id: "preview" }];
+}
+
+export default function Page({ params }: PageProps<"/[locale]/dashboard/teams/[id]">) {
   return (
     <div className="container-page py-10">
-      <TeamDetailView id={id} />
+      <Suspense fallback={null}>
+        <TeamContent params={params} />
+      </Suspense>
     </div>
   );
 }

@@ -1,0 +1,23 @@
+[Unit]
+Description=PDFNova web
+After=pdfnova-api.service
+Wants=pdfnova-api.service
+
+[Service]
+User=pdfnova
+Group=pdfnova
+WorkingDirectory=/opt/pdfnova/apps/web/.next/standalone/apps/web
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOSTNAME=127.0.0.1
+Environment=API_INTERNAL_URL=http://127.0.0.1:8000
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

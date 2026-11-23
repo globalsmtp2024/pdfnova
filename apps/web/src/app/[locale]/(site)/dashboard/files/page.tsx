@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 
 import { LibraryPage } from "@/components/library/library-page";
@@ -21,7 +22,9 @@ export default async function Page({ params }: PageProps<"/[locale]/dashboard/fi
         <h1 className="font-display text-3xl font-semibold">{t("title")}</h1>
         <p className="text-muted">{t("subtitle")}</p>
       </div>
-      <LibraryPage />
+      <Suspense fallback={null}>
+        <LibraryPage />
+      </Suspense>
     </div>
   );
 }

@@ -88,6 +88,6 @@ Phase 6
 Phase 7
 - [x] 28 Security fixes (IDOR, rate limits, regex timeouts, formula-injection guard, headers/CSP, SSRF re-check)
 - [x] 29 Deletion sweeper and verified Delete-now
-- [ ] 30 Deployment files and docs/DEPLOYMENT_VPS.md
+- [x] 30 Deployment files and docs/DEPLOYMENT_VPS.md
 - [ ] 31 Legal and info pages
 - [ ] 32 .env.example + startup validation, Makefile, README quick start

@@ -1,0 +1,20 @@
+[Unit]
+Description=PDFNova webhooks, schedules and retention sweeper
+After=pdfnova-api.service
+Wants=pdfnova-api.service
+
+[Service]
+User=pdfnova
+Group=pdfnova
+WorkingDirectory=/opt/pdfnova/apps/api
+EnvironmentFile=/etc/pdfnova/pdfnova.env
+ExecStart=/opt/pdfnova/apps/api/.venv/bin/python -m app.jobs.background
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/pdfnova /var/log/pdfnova
+
+[Install]
+WantedBy=multi-user.target

@@ -54,8 +54,9 @@ def create_app(settings: Settings | None = None, container: Container | None = N
         active = container or await build_container(settings)
         app.state.container = active
         sweeper = SweeperHandle(active.sweeper) if owned and settings.queue_backend == "inline" else None
+        run_background = owned and settings.background_workers_in_api
         webhook_worker = (
-            WebhookWorker(settings, active.database) if owned and settings.webhooks_enabled else None
+            WebhookWorker(settings, active.database) if run_background and settings.webhooks_enabled else None
         )
         if webhook_worker is not None:
             webhook_worker.start()
@@ -63,7 +64,7 @@ def create_app(settings: Settings | None = None, container: Container | None = N
         site_sync = SiteSyncWorker(active.database) if owned else None
         if site_sync is not None:
             site_sync.start()
-        scheduler_worker = SchedulerWorker(active) if owned and settings.scheduler_enabled else None
+        scheduler_worker = SchedulerWorker(active) if run_background and settings.scheduler_enabled else None
         if scheduler_worker is not None:
             scheduler_worker.start()
         try:

@@ -1,0 +1,7 @@
+[Unit]
+Description=PDFNova database backup
+
+[Service]
+Type=oneshot
+User=postgres
+ExecStart=/bin/sh -c 'mkdir -p /var/backups/pdfnova && pg_dump -Fc pdfnova > /var/backups/pdfnova/pdfnova-$(date +%%F).dump && find /var/backups/pdfnova -name "*.dump" -mtime +14 -delete'

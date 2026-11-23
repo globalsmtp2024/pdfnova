@@ -1,0 +1,96 @@
+name: pdfnova
+
+x-prod-api-env: &prod-api-env
+  ENVIRONMENT: production
+  COOKIE_SECURE: "true"
+  BACKGROUND_WORKERS_IN_API: "false"
+  PUBLIC_API_URL: ${PUBLIC_URL:?set PUBLIC_URL to the https address of the site}
+  PUBLIC_WEB_URL: ${PUBLIC_URL:?set PUBLIC_URL to the https address of the site}
+  CORS_ORIGINS: '["${PUBLIC_URL}"]'
+  CLOUD_GOOGLE_CLIENT_ID: ${CLOUD_GOOGLE_CLIENT_ID:-}
+  CLOUD_GOOGLE_CLIENT_SECRET: ${CLOUD_GOOGLE_CLIENT_SECRET:-}
+  CLOUD_DROPBOX_APP_KEY: ${CLOUD_DROPBOX_APP_KEY:-}
+  CLOUD_DROPBOX_APP_SECRET: ${CLOUD_DROPBOX_APP_SECRET:-}
+  CLOUD_MICROSOFT_CLIENT_ID: ${CLOUD_MICROSOFT_CLIENT_ID:-}
+  CLOUD_MICROSOFT_CLIENT_SECRET: ${CLOUD_MICROSOFT_CLIENT_SECRET:-}
+  CLOUD_MICROSOFT_TENANT: ${CLOUD_MICROSOFT_TENANT:-common}
+  AI_SHARED_API_KEY: ${AI_SHARED_API_KEY:-}
+  AI_SHARED_PROVIDER: ${AI_SHARED_PROVIDER:-anthropic}
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "20m"
+    max-file: "5"
+
+services:
+  postgres:
+    logging: *logging
+    ports: !reset []
+
+  redis:
+    logging: *logging
+    ports: !reset []
+
+  objectstore:
+    logging: *logging
+    ports: !reset []
+
+  api:
+    logging: *logging
+    environment:
+      <<: *prod-api-env
+      API_WORKERS: ${API_WORKERS:-3}
+
+  background:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: background
+    environment:
+      <<: *prod-api-env
+      SECRET_KEY: ${SECRET_KEY:?set SECRET_KEY in .env}
+      STORAGE_ENCRYPTION_KEY: ${STORAGE_ENCRYPTION_KEY:?set STORAGE_ENCRYPTION_KEY in .env}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-pdfnova}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/${POSTGRES_DB:-pdfnova}
+      REDIS_URL: redis://redis:6379/0
+      QUEUE_BACKEND: arq
+      RATE_LIMIT_BACKEND: redis
+      STORAGE_BACKEND: s3
+      S3_BUCKET: ${S3_BUCKET:-pdfnova}
+      S3_ENDPOINT_URL: ${S3_ENDPOINT_URL:-http://objectstore:8333}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-pdfnova}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?set S3_SECRET_ACCESS_KEY in .env}
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-smtp}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      EMAIL_FROM: ${EMAIL_FROM:-no-reply@pdfnova.app}
+    depends_on:
+      api:
+        condition: service_healthy
+    logging: *logging
+    restart: unless-stopped
+
+  worker:
+    logging: *logging
+
+  worker-priority:
+    logging: *logging
+
+  office-worker:
+    logging: *logging
+
+  web:
+    logging: *logging
+
+  nginx:
+    logging: *logging
+    ports: !override
+      - "80:80"
+      - "443:443"
+    volumes: !override
+      - ./infra/nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot:ro
