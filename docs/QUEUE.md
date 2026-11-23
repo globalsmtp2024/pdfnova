@@ -77,7 +77,7 @@ Phase 6
 - [x] 18 Batch runner UI with per-file status and retry-failed
 - [x] 19 My files workspace (save outputs, folders, rename, tags, search, trash, quota meter)
 - [x] 20 Teams (invite, roles, shared folders/workflows, central permission module)
-- [ ] 21 API keys with scopes, webhooks, OpenAPI docs page, SDK skeletons, CLI
+- [x] 21 API keys with scopes, webhooks, OpenAPI docs page, SDK skeletons, CLI
 - [ ] 22 Cloud import/export (Drive, Dropbox, OneDrive behind CloudProvider with test double)
 - [ ] 23 PWA (manifest, service worker, offline page, share-target)
 - [ ] 24 Private mode (client-side pdf-lib tools)

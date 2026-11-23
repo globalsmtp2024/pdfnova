@@ -22,6 +22,7 @@ from app.fair_use import get_fair_use
 from app.files.sniff import FileKind
 from app.jobs.sandbox import SandboxError, SandboxLimits, SandboxRequest, SandboxSuccess, run_in_sandbox
 from app.models.task import FileRole, FileStatus, Task, TaskFile, TaskStatus
+from app.services.webhooks import enqueue as enqueue_webhook
 from app.storage.base import Storage, task_output_key
 from app.tools.base import InputFile, OutputFile, safe_filename
 from app.tools.registry import ToolRegistry
@@ -300,6 +301,20 @@ class JobEngine:
                 task.progress = 1.0
                 task.progress_label = "Done"
                 self._finish(task, TaskStatus.SUCCEEDED, None, None)
+                await enqueue_webhook(
+                    session,
+                    task.user_id,
+                    "task.succeeded",
+                    {
+                        "task_id": task.id,
+                        "tool": task.tool_slug,
+                        "outputs": [
+                            {"id": f.id, "filename": f.original_name, "size": f.size_bytes}
+                            for f in stored
+                            if f.kind != "archive"
+                        ],
+                    },
+                )
             await session.commit()
 
     async def _mark_failed(self, task_id: str, error: SandboxError) -> None:
@@ -309,6 +324,18 @@ class JobEngine:
                 return
             status = TaskStatus.CANCELLED if error.code == "cancelled" else TaskStatus.FAILED
             self._finish(task, status, error.code, error.message)
+            if status is TaskStatus.FAILED:
+                await enqueue_webhook(
+                    session,
+                    task.user_id,
+                    "task.failed",
+                    {
+                        "task_id": task.id,
+                        "tool": task.tool_slug,
+                        "error_code": error.code,
+                        "error": error.message,
+                    },
+                )
             await session.commit()
 
     async def _requeue_or_fail(self, task_id: str) -> None:

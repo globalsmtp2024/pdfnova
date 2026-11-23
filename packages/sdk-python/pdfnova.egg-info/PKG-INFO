@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: pdfnova
+Version: 0.1.0
+Summary: Python client and command line tool for the PDFNova API
+License: MIT
+Requires-Python: >=3.9
+Requires-Dist: httpx>=0.27

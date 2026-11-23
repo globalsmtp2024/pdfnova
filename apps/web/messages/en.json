@@ -535,7 +535,9 @@
       "expired": "Expired"
     },
     "filesDeleted": "Files deleted",
-    "expiresIn": "Deletes in {time}"
+    "expiresIn": "Deletes in {time}",
+    "keyScopes": "Scopes",
+    "keyAllScopes": "All scopes (created before scopes existed)"
   },
   "settings": {
     "metaTitle": "Settings",
@@ -2017,6 +2019,40 @@
       "admin": "Admin",
       "member": "Member",
       "viewer": "Viewer"
+    }
+  },
+  "webhooks": {
+    "title": "Webhooks",
+    "subtitle": "Get a signed HTTPS request when a task finishes or a signature request completes.",
+    "signInTitle": "Sign in to manage webhooks",
+    "signInBody": "Webhooks are tied to your account.",
+    "signIn": "Sign in",
+    "secretTitle": "Copy your signing secret now",
+    "secretBody": "It is shown only once. Use it to verify the X-PDFNova-Signature header.",
+    "addTitle": "Add a webhook",
+    "url": "Endpoint URL (https)",
+    "description": "Description (optional)",
+    "events": "Events",
+    "add": "Add webhook",
+    "secretEnding": "secret ending {last4}",
+    "active": "Active",
+    "paused": "Paused",
+    "test": "Send test",
+    "testQueued": "Test delivery queued",
+    "pause": "Pause",
+    "resume": "Resume",
+    "delete": "Delete",
+    "showLog": "Show delivery log",
+    "hideLog": "Hide delivery log",
+    "noDeliveries": "No deliveries yet.",
+    "retry": "Retry",
+    "attempts": "{count, plural, one {# attempt} other {# attempts}}",
+    "emptyTitle": "No webhooks yet",
+    "emptyBody": "Add an endpoint to receive events.",
+    "status": {
+      "pending": "Retrying",
+      "delivered": "Delivered",
+      "failed": "Failed"
     }
   }
 }

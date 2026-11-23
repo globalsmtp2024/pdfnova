@@ -12,6 +12,7 @@ from app.core.errors import AuthenticationError, RateLimitedError
 from app.core.security import decode_jwt, encode_jwt, hash_token
 from app.db.base import new_id, utcnow
 from app.models.user import ApiKey, User
+from app.services.api_scopes import enforce as enforce_scope
 from app.services.principal import Principal
 
 API_KEY_PREFIX = "pnk_"
@@ -58,7 +59,7 @@ def _bearer_token(request: Request) -> str | None:
     return value.strip() if scheme.lower() == "bearer" and value.strip() else None
 
 
-async def _authenticate_api_key(raw: str, session: AsyncSession) -> tuple[User, str]:
+async def _authenticate_api_key(raw: str, session: AsyncSession, request: Request) -> tuple[User, str]:
     record = await session.scalar(select(ApiKey).where(ApiKey.key_hash == hash_token(raw)))
     if record is None or record.revoked_at is not None:
         raise AuthenticationError(
@@ -67,6 +68,7 @@ async def _authenticate_api_key(raw: str, session: AsyncSession) -> tuple[User, 
     user = await session.get(User, record.user_id)
     if user is None or not user.is_active:
         raise AuthenticationError("This API key is invalid or has been revoked.")
+    enforce_scope(record.scopes, request.method, request.url.path)
     now = utcnow()
     if record.last_used_at is None or now - record.last_used_at > timedelta(seconds=60):
         record.last_used_at = now
@@ -77,7 +79,7 @@ async def _authenticate_api_key(raw: str, session: AsyncSession) -> tuple[User, 
 async def _authenticate(request: Request, session: AsyncSession) -> tuple[User | None, str | None]:
     bearer = _bearer_token(request)
     if bearer is not None and bearer.startswith(API_KEY_PREFIX):
-        user, key_id = await _authenticate_api_key(bearer, session)
+        user, key_id = await _authenticate_api_key(bearer, session, request)
         return user, key_id
     return await _load_user(request, session), None
 
@@ -87,7 +89,7 @@ async def _load_user(request: Request, session: AsyncSession) -> User | None:
     if not token:
         return None
     if token.startswith(API_KEY_PREFIX):
-        user, _ = await _authenticate_api_key(token, session)
+        user, _ = await _authenticate_api_key(token, session, request)
         return user
     decoded = decode_jwt(token, "access")
     if decoded is None:

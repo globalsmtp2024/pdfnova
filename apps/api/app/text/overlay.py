@@ -250,9 +250,7 @@ class OverlayDocument:
     def vector_stamp(
         self, content: str, width: float, height: float, opacity: float, blend: str | None = None
     ) -> Stamp:
-        state = pikepdf.Dictionary(
-            Type=pikepdf.Name.ExtGState, ca=round(opacity, 3), CA=round(opacity, 3)
-        )
+        state = pikepdf.Dictionary(Type=pikepdf.Name.ExtGState, ca=round(opacity, 3), CA=round(opacity, 3))
         if blend:
             state["/BM"] = pikepdf.Name("/" + blend)
         resources = pikepdf.Dictionary(ExtGState=pikepdf.Dictionary(GS0=self.pdf.make_indirect(state)))

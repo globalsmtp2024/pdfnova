@@ -10,7 +10,16 @@ from app.text.fonts import FontKey
 from app.text.geometry import multiply, page_geometry, stamp_matrix
 from app.text.images import decode_image_data, prepare_image
 from app.text.overlay import OverlayDocument, TextStyle, parse_hex_color
-from app.tools.base import InputFile, InputFileInfo, InputSpec, JobContext, OutputFile, Tool, ToolCategory, ToolOptions
+from app.tools.base import (
+    InputFile,
+    InputFileInfo,
+    InputSpec,
+    JobContext,
+    OutputFile,
+    Tool,
+    ToolCategory,
+    ToolOptions,
+)
 from app.tools.edit.stamping import STAMP_SPEC, check_expression, checked_color, select_pages, stamp_each
 from app.tools.pdfkit import open_pdf, output_pdf, pdf_name, save_pdf
 from app.files.sniff import FileKind
@@ -185,7 +194,9 @@ class FillFormsTool(Tool[FillFormOptions]):
         assignments: dict[str, str] = {}
         for line in options.values:
             if "=" not in line:
-                raise ToolInputError(f"“{line}” is not a field value.", hint="Write one per line: name = value")
+                raise ToolInputError(
+                    f"“{line}” is not a field value.", hint="Write one per line: name = value"
+                )
             name, value = (part.strip() for part in line.split("=", 1))
             assignments[name] = value
         with open_pdf(item) as pdf:

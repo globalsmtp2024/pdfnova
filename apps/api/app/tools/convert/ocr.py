@@ -60,7 +60,10 @@ class OcrPdfTool(Tool[OcrOptions]):
     category = ToolCategory.OPTIMIZE
     summary = "Make scanned PDFs searchable and selectable with English and Urdu recognition."
     input_spec = InputSpec(
-        min_files=1, max_files=5, accepted_kinds=frozenset({FileKind.PDF, FileKind.IMAGE}), allow_encrypted_pdf=True
+        min_files=1,
+        max_files=5,
+        accepted_kinds=frozenset({FileKind.PDF, FileKind.IMAGE}),
+        allow_encrypted_pdf=True,
     )
     options_schema = OcrOptions
     seconds_per_page = 3.0

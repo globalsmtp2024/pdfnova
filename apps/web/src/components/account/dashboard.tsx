@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Check, Copy, FileClock, FolderHeart, KeyRound, Layers, LogIn, PenLine, Users, Workflow } from "lucide-react";
+import { Activity, Check, Copy, FileClock, FolderHeart, KeyRound, Layers, LogIn, PenLine, Users, Webhook, Workflow } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState, type FormEvent, type ReactNode } from "react";
 
@@ -16,6 +16,7 @@ import { toastError } from "@/components/ui/toaster";
 import { findTool, POPULAR_TOOL_SLUGS } from "@/config/tools";
 import { Link } from "@/i18n/navigation";
 import {
+  API_SCOPES,
   useApiKeys,
   useApiUsage,
   useCreateApiKey,
@@ -101,12 +102,13 @@ function ApiKeysPanel() {
   const create = useCreateApiKey();
   const revoke = useRevokeApiKey();
   const [name, setName] = useState("");
+  const [scopes, setScopes] = useState<string[]>(["tasks:read", "tasks:write"]);
   const [secret, setSecret] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     try {
-      const created = await create.mutateAsync(name.trim() || "API key");
+      const created = await create.mutateAsync({ name: name.trim() || "API key", scopes });
       setSecret(created.secret);
       setName("");
     } catch (error) {
@@ -140,21 +142,40 @@ function ApiKeysPanel() {
           </div>
         </Callout>
       ) : null}
-      <form onSubmit={submit} className="flex gap-2">
-        <label htmlFor="key-name" className="sr-only">
-          {t("keyName")}
-        </label>
-        <Input
-          id="key-name"
-          placeholder={t("keyName")}
-          value={name}
-          maxLength={80}
-          onChange={(event) => setName(event.target.value)}
-          className="h-10"
-        />
-        <Button type="submit" variant="solid" loading={create.isPending}>
-          {t("createKey")}
-        </Button>
+      <form onSubmit={submit} className="flex flex-col gap-3">
+        <div className="flex gap-2">
+          <label htmlFor="key-name" className="sr-only">
+            {t("keyName")}
+          </label>
+          <Input
+            id="key-name"
+            placeholder={t("keyName")}
+            value={name}
+            maxLength={80}
+            onChange={(event) => setName(event.target.value)}
+            className="h-10"
+          />
+          <Button type="submit" variant="solid" loading={create.isPending}>
+            {t("createKey")}
+          </Button>
+        </div>
+        <fieldset className="grid grid-cols-2 gap-x-4 gap-y-1">
+          <legend className="mb-1 text-xs font-medium text-muted">{t("keyScopes")}</legend>
+          {API_SCOPES.map((scope) => (
+            <label key={scope} className="flex items-center gap-2 text-xs">
+              <input
+                type="checkbox"
+                checked={scopes.includes(scope)}
+                onChange={(event) =>
+                  setScopes(
+                    event.target.checked ? [...scopes, scope] : scopes.filter((entry) => entry !== scope),
+                  )
+                }
+              />
+              <code dir="ltr">{scope}</code>
+            </label>
+          ))}
+        </fieldset>
       </form>
       {keys.isPending ? (
         <Skeleton className="h-16" />
@@ -172,6 +193,9 @@ function ApiKeysPanel() {
                   {key.last_used_at
                     ? t("lastUsed", { date: date(key.last_used_at) })
                     : t("neverUsed")}
+                </p>
+                <p className="text-xs text-muted" dir="ltr">
+                  {key.scopes ? key.scopes.join(", ") : t("keyAllScopes")}
                 </p>
               </div>
               {key.revoked_at ? (
@@ -323,6 +347,12 @@ export function Dashboard() {
           <p className="text-sm text-muted">{t("esign.subtitle")}</p>
           <Link href="/dashboard/signatures" className="text-sm font-medium text-primary underline">
             {t("esign.newRequest")}
+          </Link>
+        </Panel>
+        <Panel title={t("webhooks.title")} icon={Webhook}>
+          <p className="text-sm text-muted">{t("webhooks.subtitle")}</p>
+          <Link href="/dashboard/webhooks" className="text-sm font-medium text-primary underline">
+            {t("webhooks.title")}
           </Link>
         </Panel>
         <Panel title={t("teams.title")} icon={Users}>

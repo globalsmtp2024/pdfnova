@@ -1,0 +1,17 @@
+[project]
+name = "pdfnova"
+version = "0.1.0"
+description = "Python client and command line tool for the PDFNova API"
+requires-python = ">=3.9"
+dependencies = ["httpx>=0.27"]
+license = { text = "MIT" }
+
+[project.scripts]
+pdfnova = "pdfnova.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["pdfnova*"]

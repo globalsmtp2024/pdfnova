@@ -98,7 +98,19 @@ class ResizePagesTool(Tool[ResizeOptions]):
                     place_forms(
                         result,
                         sheet,
-                        [(form, left, bottom, width, height, margin, margin, sheet_w - 2 * margin, sheet_h - 2 * margin)],
+                        [
+                            (
+                                form,
+                                left,
+                                bottom,
+                                width,
+                                height,
+                                margin,
+                                margin,
+                                sheet_w - 2 * margin,
+                                sheet_h - 2 * margin,
+                            )
+                        ],
                     )
                     ctx.report(index / len(source.pages), "Resizing pages")
                 copy_document_info(source, result)
@@ -162,7 +174,11 @@ class NUpBookletTool(Tool[NUpOptions]):
                     slots = list(range(count))
                     columns, rows = GRIDS[options.per_sheet]
                     per_sheet = options.per_sheet
-                    sheet_w, sheet_h = (max(width, height), min(width, height)) if columns > rows else (min(width, height), max(width, height))
+                    sheet_w, sheet_h = (
+                        (max(width, height), min(width, height))
+                        if columns > rows
+                        else (min(width, height), max(width, height))
+                    )
                 cell_w = (sheet_w - 2 * margin - gap * (columns - 1)) / columns
                 cell_h = (sheet_h - 2 * margin - gap * (rows - 1)) / rows
                 for start in range(0, len(slots), per_sheet):

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import JSON, Boolean, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, IdMixin, TimestampMixin, UTCDateTime
@@ -38,6 +38,7 @@ class ApiKey(IdMixin, TimestampMixin, Base):
     name: Mapped[str] = mapped_column(String(80))
     prefix: Mapped[str] = mapped_column(String(16))
     key_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    scopes: Mapped[list[str] | None] = mapped_column(JSON, nullable=True)
     last_used_at: Mapped[datetime | None] = mapped_column(UTCDateTime(), nullable=True)
     revoked_at: Mapped[datetime | None] = mapped_column(UTCDateTime(), nullable=True)
 

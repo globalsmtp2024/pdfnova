@@ -1,0 +1,2 @@
+[console_scripts]
+pdfnova = pdfnova.cli:main

@@ -40,7 +40,8 @@ def parse_bookmark(line: str, page_count: int) -> tuple[str, int, int]:
     parts = [part.strip() for part in line.split("|")]
     if len(parts) < 2 or not parts[0]:
         raise ToolInputError(
-            f"“{line}” is not a bookmark.", hint="Write one per line as: Title | page | level (level optional)."
+            f"“{line}” is not a bookmark.",
+            hint="Write one per line as: Title | page | level (level optional).",
         )
     try:
         page = int(parts[1])
@@ -48,7 +49,9 @@ def parse_bookmark(line: str, page_count: int) -> tuple[str, int, int]:
     except ValueError as exc:
         raise ToolInputError(f"“{line}” has a page or level that is not a number.") from exc
     if not 1 <= page <= page_count:
-        raise ToolInputError(f"Bookmark “{parts[0]}” points at page {page}, but the document has {page_count}.")
+        raise ToolInputError(
+            f"Bookmark “{parts[0]}” points at page {page}, but the document has {page_count}."
+        )
     if level < 1 or level > 8:
         raise ToolInputError("Bookmark levels run from 1 to 8.")
     return parts[0][:200], page - 1, level
@@ -253,6 +256,9 @@ class HyperlinksTool(Tool[LinkOptions]):
             save_pdf(pdf, target)
         listing = ctx.output_path(f"{item.stem}-links.txt")
         listing.write_text("\n".join(report) + "\n" if report else "No links found.\n", encoding="utf-8")
-        if not (options.remove_all or options.remove_external or options.add_links or replacements) and not report:
+        if (
+            not (options.remove_all or options.remove_external or options.add_links or replacements)
+            and not report
+        ):
             raise ToolFailedError("This PDF has no links.", code="no_links")
         return [output_pdf(target), OutputFile(path=listing, filename=listing.name, mime_type="text/plain")]

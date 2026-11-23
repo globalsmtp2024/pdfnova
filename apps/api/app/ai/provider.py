@@ -45,7 +45,9 @@ class HttpProvider:
         if response.status_code in {401, 403}:
             raise ToolFailedError("The AI key was rejected by the provider.", code="ai_key_rejected")
         if response.status_code == 429:
-            raise ToolFailedError("The AI provider is rate limiting this key. Try again soon.", code="ai_rate_limited")
+            raise ToolFailedError(
+                "The AI provider is rate limiting this key. Try again soon.", code="ai_rate_limited"
+            )
         if response.status_code >= 400:
             raise ToolFailedError("The AI provider returned an error.", code="ai_provider_error")
         return self._text(response.json())
@@ -90,7 +92,9 @@ class HttpProvider:
                 return "".join(part.get("text", "") for part in payload["candidates"][0]["content"]["parts"])
             return str(payload["choices"][0]["message"]["content"])
         except (KeyError, IndexError, TypeError) as exc:
-            raise ToolFailedError("The AI provider sent an unexpected answer.", code="ai_bad_response") from exc
+            raise ToolFailedError(
+                "The AI provider sent an unexpected answer.", code="ai_bad_response"
+            ) from exc
 
 
 def provider_for(ctx: JobContext[Any]) -> Provider:

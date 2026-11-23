@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 import { Badge } from "@/components/ui/badge";
-import { Callout } from "@/components/ui/blocks";
 import { CodeBlock } from "@/components/ui/code-block";
 import { PageHero } from "@/components/ui/page-hero";
 import { mergeSamples } from "@/content/api-samples";
@@ -25,7 +24,9 @@ const SECTIONS = [
   { id: "quickstart", title: "Quickstart" },
   ...ENDPOINT_GROUPS.map((group) => ({ id: group.id, title: group.title })),
   { id: "rate-limits", title: "Rate limits" },
+  { id: "scopes", title: "Key scopes" },
   { id: "webhooks", title: "Webhooks" },
+  { id: "sdks", title: "SDKs and CLI" },
   { id: "errors", title: "Errors" },
   { id: "changelog", title: "API changelog" },
 ];
@@ -176,11 +177,67 @@ export default async function ApiReferencePage({ params }: PageProps<"/[locale]/
             />
           </section>
           <section className="flex flex-col gap-4">
+            <Heading id="scopes">Key scopes</Heading>
+            <p className="text-muted">
+              Choose what a key may do when you create it. A key without a needed scope receives a
+              403 response. Keys can never change your account settings or create other keys.
+              Write scopes include the matching read scope.
+            </p>
+            <CodeBlock
+              samples={[
+                {
+                  id: "scopes",
+                  label: "Scopes",
+                  code: "tasks:read  tasks:write      tasks, uploads, results\nlibrary:read  library:write  My files and team files\nesign:read  esign:write      signature requests you own\nteams:read  teams:write      teams you belong to\nwebhooks:manage              webhook endpoints",
+                },
+              ]}
+            />
+          </section>
+          <section className="flex flex-col gap-4">
             <Heading id="webhooks">Webhooks</Heading>
-            <Callout tone="info" title={t("home.bento.comingLater")}>
-              Webhook notifications on task completion are planned. Until then, follow the events
-              stream or poll the task endpoint.
-            </Callout>
+            <p className="text-muted">
+              Add an https endpoint in your dashboard and pick events: task.succeeded, task.failed,
+              esign.completed and esign.declined. Each delivery is a JSON POST signed with your
+              endpoint secret in the X-PDFNova-Signature header (t=timestamp,v1=hex HMAC-SHA256 of
+              “timestamp.body”). Failed deliveries are retried after 30 seconds, 2 minutes, 10
+              minutes, 1 hour and 6 hours, and every attempt appears in the delivery log.
+            </p>
+            <CodeBlock
+              samples={[
+                {
+                  id: "py",
+                  label: "Python",
+                  code: "import hashlib, hmac\n\ndef verify(secret, header, body: bytes) -> bool:\n    parts = dict(p.split('=', 1) for p in header.split(','))\n    signed = f\"{parts['t']}.\".encode() + body\n    expected = hmac.new(secret.encode(), signed, hashlib.sha256).hexdigest()\n    return hmac.compare_digest(expected, parts['v1'])",
+                },
+                {
+                  id: "node",
+                  label: "Node",
+                  code: "import { createHmac, timingSafeEqual } from 'node:crypto';\n\nexport function verify(secret, header, body) {\n  const parts = Object.fromEntries(header.split(',').map((p) => p.split('=')));\n  const expected = createHmac('sha256', secret).update(`${parts.t}.${body}`).digest('hex');\n  return timingSafeEqual(Buffer.from(expected), Buffer.from(parts.v1));\n}",
+                },
+              ]}
+            />
+          </section>
+          <section className="flex flex-col gap-4">
+            <Heading id="sdks">SDKs and CLI</Heading>
+            <p className="text-muted">
+              Small official clients wrap upload, start, wait and download. The Python package also
+              installs the pdfnova command. The full interactive reference is at /docs and the raw
+              OpenAPI document at /openapi.json.
+            </p>
+            <CodeBlock
+              samples={[
+                {
+                  id: "cli",
+                  label: "CLI",
+                  code: "pip install pdfnova\nexport PDFNOVA_API_KEY=pnk_your_key\npdfnova run compress report.pdf -o out\npdfnova run rotate report.pdf -O angle=90",
+                },
+                {
+                  id: "js",
+                  label: "JavaScript",
+                  code: "import { Client } from 'pdfnova';\n\nconst client = new Client(process.env.PDFNOVA_API_KEY);\nconst files = await client.run('rotate', ['report.pdf'], { angle: 90 });",
+                },
+              ]}
+            />
           </section>
           <section className="flex flex-col gap-4">
             <Heading id="errors">Errors</Heading>

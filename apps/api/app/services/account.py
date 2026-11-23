@@ -13,6 +13,7 @@ from app.core.security import generate_token, hash_token, verify_password
 from app.db.base import utcnow
 from app.models.task import Task
 from app.models.user import ApiKey, User
+from app.services.api_scopes import clean_scopes
 from app.storage.base import task_prefix
 
 AI_PROVIDERS = ("anthropic", "openai", "google", "mistral")
@@ -78,16 +79,26 @@ class AccountService:
         )
         return list(rows)
 
-    async def create_api_key(self, user: User, name: str) -> tuple[ApiKey, str]:
+    async def create_api_key(
+        self, user: User, name: str, scopes: list[str] | None = None
+    ) -> tuple[ApiKey, str]:
         active = [key for key in await self.list_api_keys(user) if key.revoked_at is None]
         if len(active) >= MAX_ACTIVE_API_KEYS:
             raise AppError(
                 f"You can have up to {MAX_ACTIVE_API_KEYS} active API keys.",
                 hint="Revoke a key you no longer use.",
             )
+        try:
+            checked = clean_scopes(scopes)
+        except ValueError as exc:
+            raise AppError(str(exc), hint="Choose scopes from the list shown in the dashboard.") from exc
         raw = API_KEY_PREFIX + generate_token(30)
         record = ApiKey(
-            user_id=user.id, name=name.strip()[:80] or "API key", prefix=raw[:12], key_hash=hash_token(raw)
+            user_id=user.id,
+            name=name.strip()[:80] or "API key",
+            prefix=raw[:12],
+            key_hash=hash_token(raw),
+            scopes=checked,
         )
         self._session.add(record)
         await self._session.flush()

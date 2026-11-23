@@ -2,7 +2,6 @@ import { Activity, BookOpen, Gauge, KeyRound, Radio, Upload, Webhook } from "luc
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
-import { Badge } from "@/components/ui/badge";
 import { BentoGrid, FeatureCard } from "@/components/ui/blocks";
 import { Button } from "@/components/ui/button";
 import { CodeBlock } from "@/components/ui/code-block";
@@ -78,9 +77,8 @@ export default async function DevelopersPage({ params }: PageProps<"/[locale]/de
           <FeatureCard
             icon={Webhook}
             title="Webhooks"
-            body="Get notified when tasks finish, without polling."
+            body="Signed HTTPS callbacks with retries and a delivery log when tasks or signature requests finish."
             color="#8B5CF6"
-            badge={<Badge>{t("home.bento.comingLater")}</Badge>}
           />
           <FeatureCard
             icon={Activity}

@@ -26,6 +26,7 @@ from app.models.esign import (
     SignRequestStatus,
 )
 from app.services.email import action_email
+from app.services.webhooks import enqueue as enqueue_webhook
 from app.text.geometry import page_geometry
 from app.text.images import check_image, decode_image_data
 from app.text.overlay import OverlayDocument, TextStyle
@@ -314,6 +315,12 @@ async def decline(
     await record_event(
         session, request, "declined", recipient.id, ip_hash, {"reason": recipient.decline_reason or ""}
     )
+    await enqueue_webhook(
+        session,
+        request.owner_id,
+        "esign.declined",
+        {"request_id": request.id, "title": request.title, "signer": recipient.name},
+    )
     await session.commit()
     owner = await owner_of(session, request)
     if owner is not None:
@@ -439,6 +446,12 @@ async def finalize(container: Container, session: AsyncSession, request: SignReq
     request.status = SignRequestStatus.COMPLETED.value
     request.completed_at = utcnow()
     await record_event(session, request, "completed")
+    await enqueue_webhook(
+        session,
+        request.owner_id,
+        "esign.completed",
+        {"request_id": request.id, "title": request.title, "signers": len(request.recipients)},
+    )
     await session.flush()
     await session.refresh(request, attribute_names=["events"])
     with pikepdf.open(io.BytesIO(content.getvalue())) as pdf:

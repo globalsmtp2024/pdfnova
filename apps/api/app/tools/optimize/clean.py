@@ -69,12 +69,18 @@ def gray_content(page: pikepdf.Page) -> bytes | None:
         operands, operator = instruction.operands, str(instruction.operator)
         if operator in {"rg", "RG"} and len(operands) == 3:
             gray = luminance(*(float(value) for value in operands))
-            output.append(pikepdf.ContentStreamInstruction([gray], pikepdf.Operator(operator[0].lower() if operator == "rg" else "G")))
+            output.append(
+                pikepdf.ContentStreamInstruction(
+                    [gray], pikepdf.Operator(operator[0].lower() if operator == "rg" else "G")
+                )
+            )
             changed = True
         elif operator in {"k", "K"} and len(operands) == 4:
             cyan, magenta, yellow, black = (float(value) for value in operands)
             gray = (1 - black) * luminance(1 - cyan, 1 - magenta, 1 - yellow)
-            output.append(pikepdf.ContentStreamInstruction([gray], pikepdf.Operator("g" if operator == "k" else "G")))
+            output.append(
+                pikepdf.ContentStreamInstruction([gray], pikepdf.Operator("g" if operator == "k" else "G"))
+            )
             changed = True
         else:
             output.append(instruction)
@@ -91,7 +97,10 @@ def gray_images(pdf: pikepdf.Pdf, quality: int) -> int:
                 continue
             try:
                 image = PdfImage(raw)
-                if str(raw.get("/ColorSpace")) in {"/DeviceGray", "/CalGray"} or image.colorspace == "/DeviceGray":
+                if (
+                    str(raw.get("/ColorSpace")) in {"/DeviceGray", "/CalGray"}
+                    or image.colorspace == "/DeviceGray"
+                ):
                     continue
                 pil = image.as_pil_image().convert("L")
                 buffer = io.BytesIO()

@@ -807,6 +807,80 @@ def run_teams(client: httpx.Client) -> str:
     return "ok"
 
 
+def run_webhooks(client: httpx.Client) -> str:
+    import hashlib
+    import hmac
+    import json
+    import threading
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    problem = sign_in_new_user(client, "hooks")
+    if problem:
+        return problem
+    received: list[tuple[dict, bytes]] = []
+
+    class Receiver(BaseHTTPRequestHandler):
+        def do_POST(self) -> None:
+            body = self.rfile.read(int(self.headers["Content-Length"]))
+            received.append((dict(self.headers), body))
+            code = 500 if self.path == "/fail" else 200
+            self.send_response(code)
+            self.end_headers()
+
+        def log_message(self, *args: object) -> None:
+            return
+
+    server = HTTPServer(("127.0.0.1", 0), Receiver)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    port = server.server_address[1]
+    good = client.post("/api/v1/webhooks", json={"url": f"http://127.0.0.1:{port}/ok", "events": ["task.succeeded"]})
+    bad = client.post("/api/v1/webhooks", json={"url": f"http://127.0.0.1:{port}/fail", "events": ["task.succeeded"]})
+    if good.status_code != 201 or bad.status_code != 201:
+        return f"create {good.status_code} {good.text[:100]}"
+    secret = good.json()["secret"]
+    task = client.post("/api/v1/tasks", json={"tool": "rotate"}).json()
+    name, data, mime = pdf_upload()[0]
+    client.post(f"/api/v1/tasks/{task['id']}/files", files=[("file", (name, data, mime))])
+    client.post(f"/api/v1/tasks/{task['id']}/start", json={"options": {"angle": 90}})
+    for _ in range(40):
+        time.sleep(0.5)
+        if len(received) >= 2:
+            break
+    if len(received) < 2:
+        return f"deliveries received {len(received)}"
+    headers, body = next((h, b) for h, b in received if h.get("X-PDFNova-Event") == "task.succeeded")
+    stamp, _, digest = headers["X-PDFNova-Signature"].partition(",")
+    timestamp = stamp.removeprefix("t=")
+    expected = hmac.new(secret.encode(), f"{timestamp}.".encode() + body, hashlib.sha256).hexdigest()
+    if digest.removeprefix("v1=") != expected:
+        return "bad signature"
+    if json.loads(body)["data"]["task_id"] != task["id"]:
+        return "wrong payload"
+    log = client.get(f"/api/v1/webhooks/{bad.json()['id']}/deliveries").json()
+    if not log or log[0]["status"] != "pending" or log[0]["attempts"] != 1 or not log[0]["last_error"]:
+        return f"failed delivery not logged {log}"
+    ok_log = client.get(f"/api/v1/webhooks/{good.json()['id']}/deliveries").json()
+    if ok_log[0]["status"] != "delivered":
+        return "good delivery not logged"
+    if client.post(f"/api/v1/webhooks/{good.json()['id']}/test").status_code != 202:
+        return "test ping failed"
+    server.shutdown()
+    key = client.post("/api/v1/me/api-keys", json={"name": "read only", "scopes": ["tasks:read"]})
+    if key.status_code != 201:
+        return f"key {key.status_code} {key.text[:100]}"
+    bearer = {"Authorization": f"Bearer {key.json()['secret']}"}
+    with httpx.Client(base_url=BASE, timeout=30) as api:
+        if api.get(f"/api/v1/tasks/{task['id']}", headers=bearer).status_code != 200:
+            return "read scope rejected"
+        if api.post("/api/v1/tasks", json={"tool": "rotate"}, headers=bearer).status_code != 403:
+            return "write allowed with read-only key"
+        if api.get("/api/v1/library/files", headers=bearer).status_code != 403:
+            return "library readable without scope"
+        if api.get("/api/v1/me/api-keys", headers=bearer).status_code != 403:
+            return "key can manage keys"
+    return "ok"
+
+
 def main() -> int:
     only = set(sys.argv[1].split(",")) if len(sys.argv) > 1 else None
     failures = 0
@@ -816,6 +890,10 @@ def main() -> int:
         if only and "workflow-templates" in only:
             outcome = run_workflow_templates(client)
             print(f"{'workflow-templates':20} {outcome}")
+            failures += outcome != "ok"
+        if only and "webhooks" in only:
+            outcome = run_webhooks(client)
+            print(f"{'webhooks':20} {outcome}")
             failures += outcome != "ok"
         if only and "teams" in only:
             outcome = run_teams(client)

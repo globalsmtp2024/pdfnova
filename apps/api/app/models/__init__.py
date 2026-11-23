@@ -10,6 +10,7 @@ from app.models.esign import (
 from app.models.library import LibraryFile, LibraryFolder
 from app.models.team import Team, TeamInvite, TeamMember, TeamRole, TeamWorkflow
 from app.models.task import AiUsageEvent, FileRole, FileStatus, Task, TaskFile, TaskStatus
+from app.models.webhook import Webhook, WebhookDelivery
 from app.models.user import (
     ApiKey,
     ContactMessage,
@@ -48,4 +49,6 @@ __all__ = [
     "TeamRole",
     "TeamWorkflow",
     "User",
+    "Webhook",
+    "WebhookDelivery",
 ]

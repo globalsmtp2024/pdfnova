@@ -80,6 +80,7 @@ known-first-party = ["app", "tests"]
 "app/services/auth.py" = ["S105"]
 "app/services/oauth.py" = ["S106"]
 "app/tools/security/digital.py" = ["S105"]
+"app/api/routes/webhooks.py" = ["S105"]
 "app/tools/optimize/repair.py" = ["S603"]
 "app/tools/convert/external.py" = ["S603", "S108"]
 

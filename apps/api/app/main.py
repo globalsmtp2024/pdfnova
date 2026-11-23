@@ -19,6 +19,7 @@ from app.api.routes import (
     tasks,
     teams,
     tools,
+    webhooks,
 )
 from app.container import Container, build_container
 from app.core.brand import get_brand
@@ -28,6 +29,7 @@ from app.core.logging import configure_logging
 from app.core.metrics import metrics_middleware
 from app.core.middleware import build_http_middleware
 from app.jobs.sweeper import SweeperHandle
+from app.services.webhooks import WebhookWorker
 
 
 def create_app(settings: Settings | None = None, container: Container | None = None) -> FastAPI:
@@ -47,9 +49,16 @@ def create_app(settings: Settings | None = None, container: Container | None = N
         active = container or await build_container(settings)
         app.state.container = active
         sweeper = SweeperHandle(active.sweeper) if owned and settings.queue_backend == "inline" else None
+        webhook_worker = (
+            WebhookWorker(settings, active.database) if owned and settings.webhooks_enabled else None
+        )
+        if webhook_worker is not None:
+            webhook_worker.start()
         try:
             yield
         finally:
+            if webhook_worker is not None:
+                await webhook_worker.stop()
             if sweeper is not None:
                 await sweeper.stop()
             if owned:
@@ -94,6 +103,7 @@ def create_app(settings: Settings | None = None, container: Container | None = N
         esign.router,
         library.router,
         teams.router,
+        webhooks.router,
     ):
         app.include_router(router)
     return app

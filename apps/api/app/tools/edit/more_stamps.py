@@ -59,9 +59,7 @@ class HeaderFooterOptions(ToolOptions):
 
 
 def render_tokens(template: str, number: int, total: int, today: str) -> str:
-    return (
-        template.replace("{n}", str(number)).replace("{total}", str(total)).replace("{date}", today)
-    )
+    return template.replace("{n}", str(number)).replace("{total}", str(total)).replace("{date}", today)
 
 
 def apply_header_footer(pdf: pikepdf.Pdf, overlay: OverlayDocument, options: HeaderFooterOptions) -> int:
@@ -85,7 +83,13 @@ def apply_header_footer(pdf: pikepdf.Pdf, overlay: OverlayDocument, options: Hea
         for template, anchor in slots:
             stamp = overlay.text_stamp(render_tokens(template, index + 1, count, today), style)
             center = anchor_center(
-                anchor, geometry.visual_width, geometry.visual_height, stamp.width, stamp.height, margin, margin
+                anchor,
+                geometry.visual_width,
+                geometry.visual_height,
+                stamp.width,
+                stamp.height,
+                margin,
+                margin,
             )
             overlay.place(page, stamp, stamp_matrix(geometry, center, stamp.width, stamp.height, 0.0))
     return len(chosen)
@@ -211,7 +215,11 @@ class BackgroundTool(Tool[BackgroundOptions]):
 
     def run(self, ctx: JobContext[BackgroundOptions]) -> list[OutputFile]:
         options = ctx.options
-        prepared = prepare_image(decode_image_data(options.image_data)) if options.mode == "image" and options.image_data else None
+        prepared = (
+            prepare_image(decode_image_data(options.image_data))
+            if options.mode == "image" and options.image_data
+            else None
+        )
         red, green, blue = parse_hex_color(options.color)
 
         def stamper(pdf: pikepdf.Pdf, overlay: OverlayDocument, _: InputFile) -> int:
@@ -250,4 +258,3 @@ class BackgroundTool(Tool[BackgroundOptions]):
             return len(chosen)
 
         return stamp_each(ctx, stamper, "background", "Adding background")
-

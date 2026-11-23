@@ -215,9 +215,7 @@ class TextToPdfTool(Tool[TextToPdfOptions]):
         def handle(item: InputFile, _: int) -> list[OutputFile]:
             text = decode_text(item.path)
             block = Block(text=text, size=options.size, font=font, preserve=font == "noto-sans-mono")
-            pdf = render_blocks(
-                [block], page_dimensions(options.page_size), options.margin_mm * 72 / 25.4
-            )
+            pdf = render_blocks([block], page_dimensions(options.page_size), options.margin_mm * 72 / 25.4)
             with pdf:
                 target = ctx.output_path(pdf_name(item.stem, "text"))
                 save_pdf(pdf, target)
@@ -262,7 +260,14 @@ def markdown_blocks(text: str, options: MarkdownToPdfOptions) -> list[Block]:
             level = int(token.tag[1])
             content = inline_text(tokens[index + 1])
             blocks.append(
-                Block(content, base * HEADING_SIZES[level], True, font, space_before=base, space_after=base * 0.5)
+                Block(
+                    content,
+                    base * HEADING_SIZES[level],
+                    True,
+                    font,
+                    space_before=base,
+                    space_after=base * 0.5,
+                )
             )
         elif token.type in {"bullet_list_open", "ordered_list_open"}:
             list_stack.append([0 if token.type == "bullet_list_open" else 1])
@@ -280,7 +285,14 @@ def markdown_blocks(text: str, options: MarkdownToPdfOptions) -> list[Block]:
             blocks.append(Block(content, base, False, font, indent=14.0 * depth if depth else 0.0))
         elif token.type in {"fence", "code_block"}:
             blocks.append(
-                Block(token.content.rstrip("\n"), base * 0.9, False, "noto-sans-mono", indent=10.0, preserve=True)
+                Block(
+                    token.content.rstrip("\n"),
+                    base * 0.9,
+                    False,
+                    "noto-sans-mono",
+                    indent=10.0,
+                    preserve=True,
+                )
             )
         elif token.type == "hr":
             blocks.append(Block("—" * 20, base, False, font, space_before=base * 0.5))
@@ -317,9 +329,7 @@ class MarkdownToPdfTool(Tool[MarkdownToPdfOptions]):
             blocks = markdown_blocks(decode_text(item.path), options)
             if not blocks:
                 raise ToolFailedError("This file has no content to convert.", code="empty_input")
-            pdf = render_blocks(
-                blocks, page_dimensions(options.page_size), options.margin_mm * 72 / 25.4
-            )
+            pdf = render_blocks(blocks, page_dimensions(options.page_size), options.margin_mm * 72 / 25.4)
             with pdf:
                 target = ctx.output_path(pdf_name(item.stem, "markdown"))
                 save_pdf(pdf, target)

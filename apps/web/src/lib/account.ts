@@ -21,10 +21,23 @@ export type Usage = {
   uses_own_ai_key: boolean;
   retention_seconds: number;
 };
+export const API_SCOPES = [
+  "tasks:read",
+  "tasks:write",
+  "library:read",
+  "library:write",
+  "esign:read",
+  "esign:write",
+  "teams:read",
+  "teams:write",
+  "webhooks:manage",
+] as const;
+
 export type ApiKey = {
   id: string;
   name: string;
   prefix: string;
+  scopes: string[] | null;
   created_at: string;
   last_used_at: string | null;
   revoked_at: string | null;
@@ -98,10 +111,10 @@ export function useUpdateProfile() {
 export function useCreateApiKey() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (name: string) =>
+    mutationFn: (input: { name: string; scopes: string[] | null }) =>
       apiJson<ApiKey & { secret: string }>("/api/v1/me/api-keys", {
         method: "POST",
-        json: { name },
+        json: input,
       }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["api-keys"] }),
   });

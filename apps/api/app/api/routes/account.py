@@ -52,12 +52,14 @@ class AiKeyRequest(BaseModel):
 
 class ApiKeyCreate(BaseModel):
     name: str = Field(min_length=1, max_length=80)
+    scopes: list[str] | None = Field(default=None, max_length=20)
 
 
 class ApiKeyResponse(BaseModel):
     id: str
     name: str
     prefix: str
+    scopes: list[str] | None = None
     created_at: datetime
     last_used_at: datetime | None
     revoked_at: datetime | None
@@ -131,6 +133,7 @@ def _key_response(record: Any) -> ApiKeyResponse:
         id=record.id,
         name=record.name,
         prefix=record.prefix,
+        scopes=record.scopes,
         created_at=record.created_at,
         last_used_at=record.last_used_at,
         revoked_at=record.revoked_at,
@@ -146,7 +149,7 @@ async def list_api_keys(user: CurrentUser, service: AccountDep) -> list[ApiKeyRe
 async def create_api_key(
     body: ApiKeyCreate, user: CurrentUser, service: AccountDep, session: SessionDep
 ) -> ApiKeyCreated:
-    record, raw = await service.create_api_key(user, body.name)
+    record, raw = await service.create_api_key(user, body.name, body.scopes)
     await session.commit()
     return ApiKeyCreated(**_key_response(record).model_dump(), secret=raw)
 

@@ -77,7 +77,9 @@ def prepared(image: Image.Image, fmt: ImageFormat) -> Image.Image:
             return background
         return image.convert("RGB")
     if fmt == "gif":
-        return image.convert("RGBA") if has_alpha(image) else image.convert("P", palette=Image.Palette.ADAPTIVE)
+        return (
+            image.convert("RGBA") if has_alpha(image) else image.convert("P", palette=Image.Palette.ADAPTIVE)
+        )
     if image.mode not in {"RGB", "RGBA", "L", "LA", "P", "CMYK"}:
         return image.convert("RGBA" if has_alpha(image) else "RGB")
     return image
