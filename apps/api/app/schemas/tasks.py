@@ -4,7 +4,7 @@ from typing import Annotated, Any
 from pydantic import BaseModel, Field
 
 SecretName = Annotated[str, Field(min_length=1, max_length=64, pattern=r"^[a-z][a-z0-9_]*$")]
-SecretValue = Annotated[str, Field(max_length=512)]
+SecretValue = Annotated[str, Field(max_length=98304)]
 
 
 class CreateTaskRequest(BaseModel):

@@ -12,6 +12,7 @@ import { useFlattenPanel } from "@/components/tools/panels/flatten";
 import { useMetadataPanel } from "@/components/tools/panels/metadata";
 import { useMergePanel } from "@/components/tools/panels/merge";
 import { useSignPanel } from "@/components/tools/panels/sign";
+import { useDigitalSignPanel } from "@/components/tools/panels/digital-sign";
 import { useSchemaPanel } from "@/components/tools/panels/schema";
 import type { LocalFile } from "@/components/tools/use-tool-session";
 
@@ -71,4 +72,5 @@ export const TOOL_PANELS: Record<string, ToolPanelHook> = {
   "edit-metadata": useMetadataPanel,
   merge: useMergePanel,
   sign: useSignPanel,
+  "digital-sign": useDigitalSignPanel,
 };

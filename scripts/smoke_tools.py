@@ -130,6 +130,62 @@ def subject_image() -> bytes:
     return buffer.getvalue()
 
 
+def make_p12(password: str) -> bytes:
+    import datetime
+
+    from cryptography import x509
+    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from cryptography.hazmat.primitives.serialization import pkcs12
+    from cryptography.x509.oid import NameOID
+
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "Smoke Signer")])
+    now = datetime.datetime.now(datetime.timezone.utc)
+    cert = (
+        x509.CertificateBuilder()
+        .subject_name(name)
+        .issuer_name(name)
+        .public_key(key.public_key())
+        .serial_number(x509.random_serial_number())
+        .not_valid_before(now - datetime.timedelta(days=1))
+        .not_valid_after(now + datetime.timedelta(days=30))
+        .add_extension(x509.KeyUsage(True, True, False, False, False, False, False, False, False), critical=True)
+        .sign(key, hashes.SHA256())
+    )
+    return pkcs12.serialize_key_and_certificates(
+        b"smoke", key, cert, None, serialization.BestAvailableEncryption(password.encode())
+    )
+
+
+def p12_secrets() -> dict:
+    import base64
+
+    return {"pkcs12": base64.b64encode(make_p12("smoke-p12-pass")).decode(), "pkcs12_password": "smoke-p12-pass"}
+
+
+def signed_pdf() -> bytes:
+    import base64
+
+    from pyhanko.pdf_utils.incremental_writer import IncrementalPdfFileWriter
+    from pyhanko.sign import signers
+
+    signer = signers.SimpleSigner.load_pkcs12_data(
+        base64.b64decode(p12_secrets()["pkcs12"]), other_certs=[], passphrase=b"smoke-p12-pass"
+    )
+    writer = IncrementalPdfFileWriter(io.BytesIO(sample_pdf(1)))
+    output = io.BytesIO()
+    signers.PdfSigner(signers.PdfSignatureMetadata(field_name="Sig1"), signer=signer).sign_pdf(writer, output=output)
+    return output.getvalue()
+
+
+def signed_ok(outputs: list[tuple[str, bytes]]) -> str | None:
+    from pyhanko.pdf_utils.reader import PdfFileReader
+
+    reader = PdfFileReader(io.BytesIO(outputs[0][1]))
+    return None if len(reader.embedded_signatures) == 1 else "no signature found"
+
+
 def pdf_upload(pages: int = 3) -> list[Upload]:
     return [("sample.pdf", sample_pdf(pages), "application/pdf")]
 
@@ -339,6 +395,8 @@ CASES: list[Case] = [
     Case("image-remove-background", [("p.png", subject_image(), "image/png")], {}, check=images_decode),
     Case("image-watermark", [("p.png", sample_image("PNG", (600, 400)), "image/png")], {"text": "DRAFT", "tile": True}, check=images_decode),
     Case("image-add-text", [("p.png", sample_image("PNG", (600, 400)), "image/png")], {"text": "سلام Hello"}, check=images_decode),
+    Case("digital-sign", pdf_upload(1), {"visible": True, "reason": "Smoke"}, secrets=p12_secrets(), check=signed_ok),
+    Case("verify-signatures", [("signed.pdf", signed_pdf(), "application/pdf")], {}, check=contains_text("Document unchanged since signing: yes")),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

@@ -59,7 +59,7 @@ Phase 3 leftovers
 - [x] 6 Image tools: remove background (rembg if installable), image watermark, add text to image
 
 Phase 4
-- [ ] 7 Digital signature (pyHanko, PKCS#12 in memory only, visible/invisible) and Verify signatures
+- [x] 7 Digital signature (pyHanko, PKCS#12 in memory only, visible/invisible) and Verify signatures
 - [ ] 8 Full PDF editor v1 (pdf.js canvas, text, image, shapes, highlight, draw, notes, links, undo/redo, backend operation list)
 - [ ] 9 Editor: edit existing text (redact-and-replace) and find/replace
 - [ ] 10 Create PDF forms (add fields) and auto-detect form fields

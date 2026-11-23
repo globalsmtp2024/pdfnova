@@ -1,6 +1,8 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const NAMES = {
+  "digital-sign": [["Digital signature", "Sign with your own certificate (.p12 or .pfx)."], ["ڈیجیٹل دستخط", "اپنے سرٹیفکیٹ (.p12 یا .pfx) سے دستخط کریں۔"]],
+  "verify-signatures": [["Verify signatures", "Check the digital signatures in a PDF."], ["دستخط کی توثیق", "PDF کے ڈیجیٹل دستخط جانچیں۔"]],
   "image-remove-background": [["Remove background", "Cut out subjects cleanly."], ["پس منظر ہٹائیں", "موضوع کو صاف کاٹیں۔"]],
   "image-watermark": [["Watermark image", "Protect images with text or a logo."], ["تصویر پر واٹر مارک", "متن یا لوگو سے تصاویر کو محفوظ کریں۔"]],
   "image-add-text": [["Add text to image", "Add a caption or title to an image."], ["تصویر میں متن شامل کریں", "تصویر میں کیپشن یا عنوان شامل کریں۔"]],

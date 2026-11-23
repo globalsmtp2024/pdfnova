@@ -811,6 +811,14 @@
     "image-add-text": {
       "name": "تصویر میں متن شامل کریں",
       "description": "تصویر میں کیپشن یا عنوان شامل کریں۔"
+    },
+    "digital-sign": {
+      "name": "ڈیجیٹل دستخط",
+      "description": "اپنے سرٹیفکیٹ (.p12 یا .pfx) سے دستخط کریں۔"
+    },
+    "verify-signatures": {
+      "name": "دستخط کی توثیق",
+      "description": "PDF کے ڈیجیٹل دستخط جانچیں۔"
     }
   },
   "password": {
@@ -1590,7 +1598,20 @@
     "position_bottom_right": "نیچے دائیں",
     "font_inter": "Inter",
     "font_noto-sans-arabic": "Noto Sans Arabic",
-    "font_noto-nastaliq-urdu": "نوٹو نستعلیق اردو"
+    "font_noto-nastaliq-urdu": "نوٹو نستعلیق اردو",
+    "visible": "دستخط صفحے پر دکھائیں",
+    "page": "صفحہ (نمبر یا last)",
+    "x_percent": "بائیں مقام (%)",
+    "y_percent": "اوپر مقام (%)",
+    "reason": "وجہ",
+    "location": "مقام",
+    "contact": "رابطہ",
+    "field_name": "دستخط فیلڈ کا نام",
+    "format_json": "JSON",
+    "format_text": "متن",
+    "format_both": "JSON اور متن",
+    "pkcs12": "سرٹیفکیٹ فائل (.p12 / .pfx)",
+    "pkcs12_password": "سرٹیفکیٹ پاس ورڈ"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",
@@ -1608,5 +1629,14 @@
     "y": "عمودی %",
     "width": "چوڑائی %",
     "summary": "{count, plural, other {# فائلوں پر دستخط}}"
+  },
+  "tool_digital_sign": {
+    "certificate": "سرٹیفکیٹ فائل (.p12 یا .pfx)",
+    "password": "سرٹیفکیٹ کا پاس ورڈ",
+    "note": "آپ کا سرٹیفکیٹ صرف ایک بار، میموری میں، اس دستاویز پر دستخط کے لیے استعمال ہوتا ہے اور کبھی محفوظ نہیں ہوتا۔",
+    "problems": {
+      "needCertificate": "اپنی .p12 یا .pfx سرٹیفکیٹ فائل منتخب کریں۔",
+      "tooLarge": "یہ سرٹیفکیٹ فائل 64 KB سے بڑی ہے۔"
+    }
   }
 }

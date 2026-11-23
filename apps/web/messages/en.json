@@ -1470,7 +1470,20 @@
     "position_bottom_right": "Bottom right",
     "font_inter": "Inter",
     "font_noto-sans-arabic": "Noto Sans Arabic",
-    "font_noto-nastaliq-urdu": "Noto Nastaliq Urdu"
+    "font_noto-nastaliq-urdu": "Noto Nastaliq Urdu",
+    "visible": "Show the signature on the page",
+    "page": "Page (number or last)",
+    "x_percent": "Left position (%)",
+    "y_percent": "Top position (%)",
+    "reason": "Reason",
+    "location": "Location",
+    "contact": "Contact",
+    "field_name": "Signature field name",
+    "format_json": "JSON",
+    "format_text": "Text",
+    "format_both": "JSON and text",
+    "pkcs12": "Certificate file (.p12 / .pfx)",
+    "pkcs12_password": "Certificate password"
   },
   "tools": {
     "remove-annotations": {
@@ -1536,6 +1549,14 @@
     "image-add-text": {
       "name": "Add text to image",
       "description": "Add a caption or title to an image."
+    },
+    "digital-sign": {
+      "name": "Digital signature",
+      "description": "Sign with your own certificate (.p12 or .pfx)."
+    },
+    "verify-signatures": {
+      "name": "Verify signatures",
+      "description": "Check the digital signatures in a PDF."
     }
   },
   "tool_sign": {
@@ -1554,5 +1575,14 @@
     "y": "Vertical %",
     "width": "Width %",
     "summary": "{count, plural, one {Signing # file} other {Signing # files}}"
+  },
+  "tool_digital_sign": {
+    "certificate": "Certificate file (.p12 or .pfx)",
+    "password": "Certificate password",
+    "note": "Your certificate is used once, in memory, to sign this document and is never saved.",
+    "problems": {
+      "needCertificate": "Choose your .p12 or .pfx certificate file.",
+      "tooLarge": "That certificate file is larger than 64 KB."
+    }
   }
 }

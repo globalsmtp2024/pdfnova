@@ -716,6 +716,8 @@ export const TOOLS: ToolDefinition[] = [
   tool("remove-hidden-data", "Remove JavaScript and hidden data", "optimize", "Remove scripts, attachments and metadata before sharing.", ["pdf"], ["javascript", "sanitize", "metadata", "privacy"]),
   tool("interleave-pages", "Interleave odd and even scans", "organize", "Combine front-side and back-side scans into one document.", ["pdf"], ["duplex", "odd", "even", "scan", "collate"]),
   tool("image-add-text", "Add text to image", "image", "Add a caption or title to an image.", ["image"], ["caption", "title", "text", "meme"]),
+  tool("digital-sign", "Digital signature", "security", "Sign with your own certificate (.p12 or .pfx).", ["pdf"], ["certificate", "pkcs12", "pfx", "cryptographic"]),
+  tool("verify-signatures", "Verify signatures", "security", "Check the digital signatures in a PDF.", ["pdf"], ["validate", "certificate", "integrity"]),
 ];
 
 export function findTool(slug: string): ToolDefinition | undefined {
