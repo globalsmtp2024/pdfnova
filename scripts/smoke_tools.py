@@ -1052,6 +1052,68 @@ def run_admin(client: httpx.Client) -> str:
     return "ok"
 
 
+def run_deletion(client: httpx.Client) -> str:
+    import asyncio
+    import sqlite3
+    import sys
+    from pathlib import Path
+
+    api_root = Path(__file__).resolve().parent.parent / "apps/api"
+    task = client.post("/api/v1/tasks", json={"tool": "rotate"}).json()
+    name, data, mime = pdf_upload()[0]
+    client.post(f"/api/v1/tasks/{task['id']}/files", files=[("file", (name, data, mime))])
+    client.post(f"/api/v1/tasks/{task['id']}/start", json={"options": {"angle": 90}})
+    for _ in range(120):
+        current = client.get(f"/api/v1/tasks/{task['id']}").json()
+        if current["status"] in {"succeeded", "failed"}:
+            break
+        time.sleep(0.5)
+    file_id = current["inputs"][0]["id"]
+    if client.get(f"/api/v1/files/{file_id}/pages/1/thumbnail").status_code != 200:
+        return "thumbnail failed"
+    storage_dir = api_root / "var/storage/tasks" / task["id"]
+    render = api_root / "var/work/render" / f"{file_id}.pdf"
+    if not storage_dir.exists() or not render.exists():
+        return f"derived data missing before delete: storage={storage_dir.exists()} render={render.exists()}"
+    deleted = client.delete(f"/api/v1/tasks/{task['id']}")
+    if deleted.status_code != 204 or deleted.headers.get("x-deletion-verified") != "true":
+        return f"delete {deleted.status_code} {dict(deleted.headers)}"
+    if storage_dir.exists() or render.exists():
+        return "derived data survived Delete now"
+    problem = sign_in_new_user(client, "sweep")
+    if problem:
+        return problem
+    uploaded = client.post("/api/v1/library/files", files={"file": ("old.pdf", sample_pdf(1), "application/pdf")}).json()
+    client.delete(f"/api/v1/library/files/{uploaded['id']}")
+    library_file = next(api_root.glob(f"var/storage/library/*/{uploaded['id']}"), None)
+    if library_file is None:
+        return "library object missing"
+    connection = sqlite3.connect(api_root / "var/pdfnova.db")
+    connection.execute("update library_files set deleted_at = datetime('now', '-40 days') where id = ?", (uploaded["id"],))
+    connection.commit()
+    connection.close()
+    stray = api_root / "var/work/stray-old-task"
+    stray.mkdir(parents=True, exist_ok=True)
+    import os
+
+    os.utime(stray, (time.time() - 3 * 86400, time.time() - 3 * 86400))
+    sys.path.insert(0, str(api_root))
+    from app.core.config import get_settings
+    from app.db.session import Database
+    from app.jobs.sweeper import RetentionSweeper
+    from app.storage import build_storage
+
+    settings = get_settings()
+    report = asyncio.run(RetentionSweeper(settings, Database(settings), build_storage(settings)).run_once())
+    if report.purged_trash < 1:
+        return f"trash not purged {report}"
+    if library_file.exists():
+        return "trashed file still in storage"
+    if stray.exists() or report.purged_orphans < 1:
+        return "orphan work directory not removed"
+    return "ok"
+
+
 def main() -> int:
     only = set(sys.argv[1].split(",")) if len(sys.argv) > 1 else None
     failures = 0
@@ -1061,6 +1123,10 @@ def main() -> int:
         if only and "workflow-templates" in only:
             outcome = run_workflow_templates(client)
             print(f"{'workflow-templates':20} {outcome}")
+            failures += outcome != "ok"
+        if only and "deletion" in only:
+            outcome = run_deletion(client)
+            print(f"{'deletion':20} {outcome}")
             failures += outcome != "ok"
         if only and "admin" in only:
             outcome = run_admin(client)

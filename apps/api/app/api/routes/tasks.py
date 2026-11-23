@@ -180,8 +180,8 @@ async def cancel_task(task_id: str, service: TaskServiceDep) -> TaskResponse:
 @router.delete("/tasks/{task_id}", status_code=204)
 async def delete_task(task_id: str, service: TaskServiceDep) -> Response:
     task = await service.get_owned(task_id)
-    await service.delete(task)
-    return Response(status_code=204)
+    report = await service.delete(task)
+    return Response(status_code=204, headers={"X-Deletion-Verified": "true" if report.verified else "false"})
 
 
 def _event(task: Task) -> TaskEvent:

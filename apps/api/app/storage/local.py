@@ -70,5 +70,13 @@ class LocalStorage(Storage):
         shutil.rmtree(directory, ignore_errors=True)
         return count
 
+    def count_prefix(self, prefix: str) -> int:
+        directory = self._path(prefix.rstrip("/"))
+        if not directory.exists():
+            return 0
+        if directory.is_file():
+            return 1
+        return sum(1 for entry in directory.rglob("*") if entry.is_file())
+
     def presigned_download_url(self, key: str, filename: str, ttl_seconds: int) -> str | None:
         return None

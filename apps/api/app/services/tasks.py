@@ -18,10 +18,10 @@ from app.core.secrets import seal_secrets
 from app.core.security import sign_value
 from app.db.base import new_id, utcnow
 from app.files.pdf_safety import DamagedPdfError, inspect_damaged_pdf, inspect_pdf
-from app.files.render import purge_render_cache
 from app.files.sniff import FileKind, UnsafeFileError, sniff_file
 from app.models.task import FileRole, FileStatus, Task, TaskFile, TaskStatus
 from app.schemas.tasks import TaskFileResponse, TaskResponse, UploadResponse
+from app.services.erasure import ErasureReport, erase_task_data
 from app.services.flags import require_flag
 from app.services.principal import Principal
 from app.services.quota import (
@@ -32,7 +32,7 @@ from app.services.quota import (
     ensure_task_rate,
     record_ai_usage,
 )
-from app.storage.base import task_input_key, task_prefix, upload_part_key
+from app.storage.base import task_input_key, upload_part_key
 from app.tools.base import InputFileInfo, Tool, safe_filename
 
 
@@ -392,15 +392,17 @@ class TaskService:
         await self._session.commit()
         return task
 
-    async def delete(self, task: Task) -> None:
+    async def delete(self, task: Task) -> ErasureReport:
         task.cancel_requested = True
         if not task.state.is_terminal and task.state is not TaskStatus.RUNNING:
             task.status = TaskStatus.CANCELLED.value
             task.finished_at = utcnow()
-        await asyncio.to_thread(self._container.storage.delete_prefix, task_prefix(task.id))
-        purge_render_cache(self._settings.work_root, [file.id for file in task.files])
+        report = await erase_task_data(
+            self._container.storage, self._settings.work_root, task.id, [file.id for file in task.files]
+        )
         task.files_deleted_at = utcnow()
         await self._session.commit()
+        return report
 
     def download_url(self, record: TaskFile) -> str:
         ttl = self._settings.signed_url_ttl_seconds

@@ -1,20 +1,26 @@
+from __future__ import annotations
+
 import hashlib
 import re
 import uuid
 from dataclasses import dataclass
 from datetime import timedelta
+from typing import TYPE_CHECKING
 
 from sqlalchemy import ColumnElement, and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.container import Container
 from app.core.errors import ConflictError, NotFoundError, QuotaExceededError, ToolInputError
 from app.db.base import utcnow
 from app.fair_use import get_fair_use
 from app.models.library import LibraryFile, LibraryFolder
 from app.models.task import FileRole, Task, TaskFile
 from app.services.principal import Principal
+from app.storage.base import Storage
 from app.tools.base import safe_filename
+
+if TYPE_CHECKING:
+    from app.container import Container
 
 MAX_TAGS = 12
 MAX_TAG_LENGTH = 32
@@ -267,11 +273,19 @@ async def search_files(
 
 
 async def purge_file(container: Container, session: AsyncSession, record: LibraryFile) -> None:
-    container.storage.delete(record.storage_key)
+    purge_stored(container.storage, record)
     await session.delete(record)
 
 
-async def purge_expired_trash(container: Container, session: AsyncSession) -> int:
+def purge_stored(storage: Storage, record: LibraryFile) -> None:
+    storage.delete(record.storage_key)
+    if storage.exists(record.storage_key):
+        storage.delete(record.storage_key)
+        if storage.exists(record.storage_key):
+            raise ConflictError("The stored file could not be erased. Try again.")
+
+
+async def purge_expired_trash(storage: Storage, session: AsyncSession) -> int:
     cutoff = utcnow() - timedelta(days=get_fair_use().library_trash_days)
     rows = list(
         await session.scalars(
@@ -279,6 +293,7 @@ async def purge_expired_trash(container: Container, session: AsyncSession) -> in
         )
     )
     for record in rows:
-        await purge_file(container, session, record)
+        purge_stored(storage, record)
+        await session.delete(record)
     await session.commit()
     return len(rows)

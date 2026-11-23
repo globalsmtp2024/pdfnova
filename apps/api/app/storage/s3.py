@@ -94,6 +94,14 @@ class S3Storage(Storage):
                 deleted += len(objects)
         return deleted
 
+    def count_prefix(self, prefix: str) -> int:
+        validate_key(prefix.rstrip("/"))
+        total = 0
+        paginator = self._client.get_paginator("list_objects_v2")
+        for page in paginator.paginate(Bucket=self._bucket, Prefix=prefix):
+            total += len(page.get("Contents", []))
+        return total
+
     def presigned_download_url(self, key: str, filename: str, ttl_seconds: int) -> str | None:
         return self._client.generate_presigned_url(
             "get_object",

@@ -59,6 +59,9 @@ class Storage(ABC):
     def delete_prefix(self, prefix: str) -> int: ...
 
     @abstractmethod
+    def count_prefix(self, prefix: str) -> int: ...
+
+    @abstractmethod
     def presigned_download_url(self, key: str, filename: str, ttl_seconds: int) -> str | None: ...
 
     def append_parts_to(self, keys: list[str], destination: Path) -> None:

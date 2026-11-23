@@ -20,6 +20,7 @@ from app.core.security import verify_signed_value
 from app.db.base import utcnow
 from app.models.esign import RecipientStatus, SignRequest, SignRequestStatus
 from app.services import esign as service
+from app.services.erasure import erase_prefix
 from app.services.flags import require_flag
 
 router = APIRouter(prefix="/api/v1/esign", tags=["esign"])
@@ -279,6 +280,18 @@ async def cancel_request(request_id: str, session: SessionDep, user: CurrentUser
     await service.record_event(session, request, "cancelled")
     await session.commit()
     return detail(request)
+
+
+@router.delete("/requests/{request_id}", status_code=204)
+async def delete_request(
+    request_id: str, container: ContainerDep, session: SessionDep, user: CurrentUser
+) -> Response:
+    request = await owned(session, user.id, request_id)
+    if not await erase_prefix(container.storage, f"esign/{request.id}"):
+        raise ConflictError("The stored documents could not be erased. Try again.")
+    await session.delete(request)
+    await session.commit()
+    return Response(status_code=204)
 
 
 @router.get("/requests/{request_id}/document")

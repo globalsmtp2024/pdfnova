@@ -11,9 +11,11 @@ from app.core.crypto import load_key, open_text, seal_text
 from app.core.errors import AppError, AuthenticationError, NotFoundError
 from app.core.security import generate_token, hash_token, verify_password
 from app.db.base import utcnow
+from app.models.esign import SignRequest
 from app.models.task import Task
 from app.models.user import ApiKey, User
 from app.services.api_scopes import clean_scopes
+from app.services.erasure import erase_prefix
 from app.storage.base import task_prefix
 
 AI_PROVIDERS = ("anthropic", "openai", "google", "mistral")
@@ -189,4 +191,10 @@ class AccountService:
         task_ids = list(await self._session.scalars(select(Task.id).where(Task.user_id == user.id)))
         for task_id in task_ids:
             await asyncio.to_thread(self._container.storage.delete_prefix, task_prefix(task_id))
+        await erase_prefix(self._container.storage, f"library/{user.id}")
+        request_ids = list(
+            await self._session.scalars(select(SignRequest.id).where(SignRequest.owner_id == user.id))
+        )
+        for request_id in request_ids:
+            await erase_prefix(self._container.storage, f"esign/{request_id}")
         await self._session.delete(user)
