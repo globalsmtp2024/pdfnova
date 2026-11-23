@@ -10,6 +10,7 @@ const EXTRA_PAGES = [
   "/dashboard",
   "/batch",
   "/share",
+  "/private",
   "/dashboard/files",
   "/dashboard/teams",
   "/dashboard/webhooks",

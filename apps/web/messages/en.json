@@ -2077,5 +2077,63 @@
     "nothing": "No shared files were found. Share a file to the app from your phone or open a tool to start.",
     "received": "{count, plural, one {# file received} other {# files received}}",
     "chooseTool": "Pick what to do with it"
+  },
+  "privateMode": {
+    "title": "Private mode",
+    "subtitle": "Basic PDF tools that run entirely in your browser. Your files never leave your device.",
+    "promise": "Everything on this page runs on your device. Nothing is uploaded, so it also works offline once loaded.",
+    "operations": "Tools",
+    "dropPdfs": "Drop PDF files",
+    "dropImages": "Drop images",
+    "dropHint": "Processed right here in your browser.",
+    "rejected": "Some files were not accepted.",
+    "done": "Your files are ready",
+    "downloadZip": "Download all as ZIP",
+    "run": "Process on this device",
+    "pages": "Pages (e.g. 1-3, 5, last)",
+    "newOrder": "New page order",
+    "angle": "Rotation",
+    "splitBy": "Split by",
+    "splitRanges": "Page ranges",
+    "splitEvery": "Every N pages",
+    "splitEach": "One file per page",
+    "everyN": "Pages per file",
+    "rangesList": "Ranges separated by semicolons",
+    "pageSize": "Page size",
+    "fitImage": "Fit to image",
+    "margin": "Margin (points)",
+    "op": {
+      "merge": "Merge",
+      "split": "Split",
+      "rotate": "Rotate",
+      "extract": "Extract pages",
+      "reorder": "Reorder",
+      "images": "Images to PDF",
+      "metadata": "Edit metadata"
+    },
+    "help": {
+      "merge": "Combine several PDFs into one, in the order listed.",
+      "split": "Cut a PDF into several files by ranges, every N pages or one page each.",
+      "rotate": "Turn chosen pages clockwise. Leave the pages empty to rotate all.",
+      "extract": "Keep only the pages you list, in the order you list them.",
+      "reorder": "Write the new page order, for example 3,1,2. Pages you leave out are removed.",
+      "images": "Turn JPG, PNG or WebP images into one PDF, one image per page.",
+      "metadata": "Change the title, author and other properties stored in the file."
+    },
+    "meta": {
+      "title": "Title",
+      "author": "Author",
+      "subject": "Subject",
+      "keywords": "Keywords (comma separated)",
+      "creator": "Creator",
+      "producer": "Producer"
+    },
+    "errors": {
+      "encrypted": "This PDF is password-protected. Remove the password with the Unlock tool first.",
+      "unreadable": "This file could not be read. Try Repair PDF.",
+      "pages": "Those pages are not valid for this document.",
+      "image": "One of the images could not be used.",
+      "empty": "Add the files this tool needs."
+    }
   }
 }

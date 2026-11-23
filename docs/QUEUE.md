@@ -80,7 +80,7 @@ Phase 6
 - [x] 21 API keys with scopes, webhooks, OpenAPI docs page, SDK skeletons, CLI
 - [x] 22 Cloud import/export (Drive, Dropbox, OneDrive behind CloudProvider with test double)
 - [x] 23 PWA (manifest, service worker, offline page, share-target)
-- [ ] 24 Private mode (client-side pdf-lib tools)
+- [x] 24 Private mode (client-side pdf-lib tools)
 - [ ] 25 Smart suggestions after upload and scheduled workflows
 - [ ] 26 Admin panel
 - [ ] 27 i18n completion (Urdu everywhere, RTL check, scaffold hi/ar/es/fr/de/pt/tr/id)
