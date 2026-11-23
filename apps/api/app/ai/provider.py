@@ -11,7 +11,7 @@ REQUEST_TIMEOUT_SECONDS = 120.0
 DEFAULT_MODELS = {
     "anthropic": "claude-sonnet-5-5",
     "openai": "gpt-4.1-mini",
-    "google": "gemini-2.0-flash",
+    "google": "gemini-2.5-flash",
     "mistral": "mistral-small-latest",
 }
 BASE_URLS = {
@@ -49,7 +49,10 @@ class HttpProvider:
                 "The AI provider is rate limiting this key. Try again soon.", code="ai_rate_limited"
             )
         if response.status_code >= 400:
-            raise ToolFailedError("The AI provider returned an error.", code="ai_provider_error")
+            raise ToolFailedError(
+                f"The AI provider returned an error ({response.status_code}): {self._error_detail(response)}",
+                code="ai_provider_error",
+            )
         return self._text(response.json())
 
     def _request(self, client: httpx.Client, system: str, prompt: str, max_tokens: int) -> httpx.Response:
@@ -83,6 +86,17 @@ class HttpProvider:
                 "messages": [{"role": "system", "content": system}, {"role": "user", "content": prompt}],
             },
         )
+
+    def _error_detail(self, response: httpx.Response) -> str:
+        try:
+            error = response.json().get("error")
+        except ValueError:
+            return "no details"
+        if isinstance(error, dict):
+            message = error.get("message")
+            if isinstance(message, str) and message:
+                return message[:200].replace(self.key, "***")
+        return "no details"
 
     def _text(self, payload: dict[str, Any]) -> str:
         try:
