@@ -25,15 +25,12 @@ from app.tools.base import (
 from app.tools.batch import run_each
 from app.tools.convert.office_out import OFFICE_SPEC, clean, in_any_box, line_style
 from app.tools.convert.text import validate_pages
+from app.tools.formula_guard import guarded_text
 from app.tools.pages import parse_page_ranges
 
 PPTX_MIME = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
 EMU_PER_POINT = 12700
-FORMULA_STARTS = ("=", "+", "-", "@", "\t", "\r")
-
-
-def guarded_cell(value: str) -> str:
-    return "'" + value if value.startswith(FORMULA_STARTS) else value
+guarded_cell = guarded_text
 
 
 def open_plumber(item: InputFile) -> pdfplumber.pdf.PDF:

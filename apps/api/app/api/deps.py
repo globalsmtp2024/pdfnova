@@ -187,6 +187,16 @@ async def enforce_rate_limit(request: Request, principal: PrincipalDep, containe
         )
 
 
+async def limit_by_user(container: Container, user: User, scope: str, limit: int, window: int) -> None:
+    decision = await container.rate_limiter.hit(f"{scope}:u:{user.id}", limit, window)
+    if not decision.allowed:
+        raise RateLimitedError(
+            "You are doing that too often.",
+            retry_after=decision.retry_after,
+            hint=f"Wait {decision.retry_after} seconds and try again.",
+        )
+
+
 async def limit_by_ip(request: Request, container: ContainerDep, scope: str, limit: int, window: int) -> None:
     decision = await container.rate_limiter.hit(f"{scope}:{client_ip_hash(request)}", limit, window)
     if not decision.allowed:

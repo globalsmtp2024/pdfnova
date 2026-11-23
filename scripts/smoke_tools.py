@@ -160,6 +160,18 @@ def pii_redacted_ok(outputs: list[tuple[str, bytes]]) -> str | None:
     return None
 
 
+def xlsx_formulas_inert(outputs: list[tuple[str, bytes]]) -> str | None:
+    from openpyxl import load_workbook
+
+    book = load_workbook(io.BytesIO(outputs[0][1]))
+    for sheet in book.worksheets:
+        for row in sheet.iter_rows():
+            for cell in row:
+                if cell.data_type == "f":
+                    return f"formula cell {cell.coordinate}"
+    return None
+
+
 def page_count(expected: int) -> Check:
     def check(outputs: list[tuple[str, bytes]]) -> str | None:
         with pikepdf.open(io.BytesIO(outputs[0][1])) as pdf:
@@ -535,6 +547,7 @@ CASES: list[Case] = [
     Case("ai-rename", pdf_upload(1), {}, check=name_is("Smoke test document.pdf")),
     Case("ai-categorize", pdf_upload(1), {}, check=contains_text('"category": "report"')),
     Case("ai-key-dates", pdf_upload(1), {}, check=contains_text("BEGIN:VEVENT")),
+    Case("pdf-to-excel", [("t.pdf", table_pdf(), "application/pdf")], {}, check=xlsx_formulas_inert),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

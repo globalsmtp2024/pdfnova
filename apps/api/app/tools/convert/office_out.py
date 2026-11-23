@@ -23,6 +23,7 @@ from app.tools.base import (
 )
 from app.tools.batch import run_each
 from app.tools.convert.text import validate_pages
+from app.tools.formula_guard import append_text_row
 from app.tools.pages import parse_page_ranges
 
 DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -207,14 +208,14 @@ class PdfToExcelTool(Tool[PdfToExcelOptions]):
                         sheet = workbook.create_sheet(sheet_title(f"Page {index + 1}", used))
                         for table in tables:
                             for row in table:
-                                sheet.append([clean(str(cell or ""))[:MAX_CELL] for cell in row])
+                                append_text_row(sheet, [clean(str(cell or ""))[:MAX_CELL] for cell in row])
                             sheet.append([])
                         written += 1
                         continue
                     for number, table in enumerate(tables, start=1):
                         sheet = workbook.create_sheet(sheet_title(f"Page {index + 1} Table {number}", used))
                         for row in table:
-                            sheet.append([clean(str(cell or ""))[:MAX_CELL] for cell in row])
+                            append_text_row(sheet, [clean(str(cell or ""))[:MAX_CELL] for cell in row])
                         written += 1
             if written == 0:
                 raise ToolFailedError("No tables or text were found in this PDF.", code="nothing_found")

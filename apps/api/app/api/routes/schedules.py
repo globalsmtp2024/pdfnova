@@ -4,7 +4,7 @@ from fastapi import APIRouter, Response
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 
-from app.api.deps import ContainerDep, CurrentUser, SessionDep
+from app.api.deps import ContainerDep, CurrentUser, SessionDep, limit_by_user
 from app.core.errors import ConflictError, NotFoundError, ToolInputError
 from app.db.base import utcnow
 from app.models.schedule import ScheduledRun, ScheduledWorkflow
@@ -169,6 +169,7 @@ async def delete_schedule(schedule_id: str, session: SessionDep, user: CurrentUs
 async def run_now(
     schedule_id: str, container: ContainerDep, session: SessionDep, user: CurrentUser
 ) -> ScheduleOut:
+    await limit_by_user(container, user, "schedule-run", limit=30, window=3600)
     schedule = await owned(session, user.id, schedule_id)
     await service.start_run(container, session, schedule, user)
     return out(schedule)

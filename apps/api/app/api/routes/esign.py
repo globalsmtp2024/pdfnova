@@ -7,7 +7,14 @@ from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import select
 
-from app.api.deps import ContainerDep, CurrentUser, SessionDep, client_ip_hash, limit_by_ip
+from app.api.deps import (
+    ContainerDep,
+    CurrentUser,
+    SessionDep,
+    client_ip_hash,
+    limit_by_ip,
+    limit_by_user,
+)
 from app.core.errors import ConflictError, NotFoundError, ToolInputError
 from app.core.security import verify_signed_value
 from app.db.base import utcnow
@@ -206,6 +213,7 @@ async def create_request(
     metadata: Annotated[str, Form(max_length=MAX_METADATA_BYTES)],
 ) -> RequestDetail:
     await require_flag(session, "esign")
+    await limit_by_user(container, user, "esign-create", limit=30, window=3600)
     data = await file.read(MAX_PDF_BYTES + 1)
     if len(data) > MAX_PDF_BYTES:
         raise ToolInputError("This PDF is larger than 40 MB.")
@@ -253,6 +261,7 @@ async def get_request(request_id: str, session: SessionDep, user: CurrentUser) -
 async def send_again(
     request_id: str, container: ContainerDep, session: SessionDep, user: CurrentUser
 ) -> RequestDetail:
+    await limit_by_user(container, user, "esign-send", limit=20, window=3600)
     request = await owned(session, user.id, request_id)
     await service.send_request(container, session, request, user.display_name or user.email)
     await session.refresh(request)

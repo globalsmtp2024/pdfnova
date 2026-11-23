@@ -86,7 +86,7 @@ Phase 6
 - [x] 27 i18n completion (Urdu everywhere, RTL check, scaffold hi/ar/es/fr/de/pt/tr/id)
 
 Phase 7
-- [ ] 28 Security fixes (IDOR, rate limits, regex timeouts, formula-injection guard, headers/CSP, SSRF re-check)
+- [x] 28 Security fixes (IDOR, rate limits, regex timeouts, formula-injection guard, headers/CSP, SSRF re-check)
 - [ ] 29 Deletion sweeper and verified Delete-now
 - [ ] 30 Deployment files and docs/DEPLOYMENT_VPS.md
 - [ ] 31 Legal and info pages

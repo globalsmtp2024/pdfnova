@@ -6,7 +6,7 @@ from fastapi import APIRouter, Response
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import select
 
-from app.api.deps import ContainerDep, CurrentUser, SessionDep
+from app.api.deps import ContainerDep, CurrentUser, SessionDep, limit_by_user
 from app.core.errors import ConflictError, NotFoundError, PermissionDeniedError, ToolInputError
 from app.core.security import hash_token
 from app.db.base import utcnow
@@ -212,6 +212,7 @@ async def delete_team(
 async def invite(
     team_id: str, body: InviteCreate, container: ContainerDep, session: SessionDep, user: CurrentUser
 ) -> InviteOut:
+    await limit_by_user(container, user, "team-invite", limit=30, window=3600)
     team, member = await require_team(session, user, team_id, Permission.MEMBERS_INVITE)
     if not can_assign_role(member.role, body.role):
         raise PermissionDeniedError("Only the team owner can invite admins.")

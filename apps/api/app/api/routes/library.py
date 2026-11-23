@@ -5,7 +5,7 @@ from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 
-from app.api.deps import ContainerDep, CurrentUser, PrincipalDep, SessionDep
+from app.api.deps import ContainerDep, CurrentUser, PrincipalDep, SessionDep, limit_by_user
 from app.core.errors import ToolInputError
 from app.db.base import utcnow
 from app.fair_use import get_fair_use
@@ -183,6 +183,7 @@ async def upload_file(
     folder_id: Annotated[str | None, Form()] = None,
     team_id: Annotated[str | None, Form()] = None,
 ) -> FileOut:
+    await limit_by_user(container, user, "library-upload", limit=600, window=3600)
     scope = await scope_for(session, user, team_id or None, Permission.FILES_WRITE)
     data = await file.read(service.MAX_UPLOAD_BYTES + 1)
     if len(data) > service.MAX_UPLOAD_BYTES:

@@ -28,6 +28,7 @@ from app.tools.base import (
     ToolOptions,
 )
 from app.tools.convert.text import validate_pages
+from app.tools.formula_guard import guarded_text
 from app.tools.pages import parse_page_ranges
 from app.tools.pdfkit import open_pdf, output_pdf, pdf_name, save_pdf
 from app.tools.security.redact import RedactOptions, redact_with
@@ -402,7 +403,7 @@ class ExtractDataTool(Tool[ExtractDataOptions]):
             writer = csv.writer(buffer)
             writer.writerow(["field", "value"])
             for key, value in data.items():
-                writer.writerow([key, "" if value is None else value])
+                writer.writerow([key, "" if value is None else guarded_text(str(value))])
             target = ctx.output_path(f"{item.stem}-data.csv")
             target.write_text(buffer.getvalue(), encoding="utf-8")
             outputs.append(OutputFile(path=target, filename=target.name, mime_type="text/csv"))

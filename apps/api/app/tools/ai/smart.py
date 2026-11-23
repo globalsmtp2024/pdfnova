@@ -23,6 +23,7 @@ from app.tools.base import (
     ToolOptions,
     safe_filename,
 )
+from app.tools.formula_guard import guarded_text
 from app.tools.pdfkit import new_pdf_from_pages, open_pdf, output_pdf, pdf_name, save_pdf
 
 SPLIT_PREVIEW_CHARS = 700
@@ -354,9 +355,7 @@ class AiKeyDatesTool(Tool[KeyDatesOptions]):
             writer.writerow(["date", "label", "page"])
             for event in events:
                 label = event["label"]
-                writer.writerow(
-                    [event["date"], "'" + label if label[:1] in "=+-@" else label, event["page"] or ""]
-                )
+                writer.writerow([event["date"], guarded_text(label), event["page"] or ""])
             target = ctx.output_path(f"{item.stem}-dates.csv")
             target.write_text(buffer.getvalue(), encoding="utf-8")
             outputs.append(OutputFile(path=target, filename=target.name, mime_type="text/csv"))

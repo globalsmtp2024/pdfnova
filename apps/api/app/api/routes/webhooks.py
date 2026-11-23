@@ -4,7 +4,7 @@ from fastapi import APIRouter, Response
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 
-from app.api.deps import ContainerDep, CurrentUser, SessionDep
+from app.api.deps import ContainerDep, CurrentUser, SessionDep, limit_by_user
 from app.core.crypto import load_key, seal_text
 from app.core.errors import ConflictError, NotFoundError, ToolInputError
 from app.db.base import utcnow
@@ -162,7 +162,10 @@ async def delete_webhook(webhook_id: str, session: SessionDep, user: CurrentUser
 
 
 @router.post("/{webhook_id}/test", response_model=DeliveryOut, status_code=202)
-async def send_test(webhook_id: str, session: SessionDep, user: CurrentUser) -> DeliveryOut:
+async def send_test(
+    webhook_id: str, container: ContainerDep, session: SessionDep, user: CurrentUser
+) -> DeliveryOut:
+    await limit_by_user(container, user, "webhook-test", limit=30, window=3600)
     hook = await owned(session, user.id, webhook_id)
     delivery_id = secrets.token_hex(16)
     delivery = WebhookDelivery(
