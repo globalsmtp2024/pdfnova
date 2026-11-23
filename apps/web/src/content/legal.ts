@@ -23,7 +23,7 @@ export const LEGAL_DOCUMENTS: LegalDocument[] = [
     slug: "terms",
     title: "Terms of service",
     summary: `The rules for using ${name}. In short: use it lawfully, respect fair use, and keep your own copies of important files.`,
-    updated: "2026-11-19",
+    updated: "2026-11-23",
     sections: [
       {
         id: "agreement",
@@ -52,6 +52,7 @@ export const LEGAL_DOCUMENTS: LegalDocument[] = [
         paragraphs: [
           "Accounts are optional. You are responsible for keeping your password, recovery codes and API keys secure, and for activity under your account.",
           "You can export your data and delete your account at any time from Settings.",
+          "If you create or join a team, team owners and admins can see and manage files in the team library and the team’s shared workflows according to each member’s role.",
         ],
       },
       {
@@ -59,7 +60,8 @@ export const LEGAL_DOCUMENTS: LegalDocument[] = [
         title: "Your content",
         paragraphs: [
           "You keep all rights to the files you upload. You grant us only the limited permission needed to process them and return the results to you.",
-          "Files are deleted automatically after the retention period described in the privacy policy. Keep your own copies of anything important.",
+          "Files processed as tasks are deleted automatically after the retention period described in the privacy policy. Files you save to My files stay until you delete them, and deleted files sit in the trash for 30 days before they are erased. Keep your own copies of anything important.",
+          "Documents you send for signature are held only as long as the request exists and are erased when you delete the request or your account.",
         ],
       },
       {
@@ -71,7 +73,8 @@ export const LEGAL_DOCUMENTS: LegalDocument[] = [
         id: "api",
         title: "API keys",
         paragraphs: [
-          "API keys are personal to your account. Don’t share them publicly. We may revoke keys used to abuse the service.",
+          "API keys are personal to your account and can be limited to specific scopes. Don’t share them publicly. We may revoke keys used to abuse the service.",
+          "Webhooks you configure may only point to public addresses you control or are authorized to use.",
         ],
       },
       {
@@ -102,7 +105,7 @@ export const LEGAL_DOCUMENTS: LegalDocument[] = [
     slug: "privacy",
     title: "Privacy policy",
     summary: "What we collect, why, how long we keep it and the choices you have.",
-    updated: "2026-11-19",
+    updated: "2026-11-23",
     sections: [
       {
         id: "summary",
@@ -120,6 +123,14 @@ export const LEGAL_DOCUMENTS: LegalDocument[] = [
         paragraphs: [
           "Files are encrypted at rest and processed by automated workers in isolated environments. Inputs and outputs are deleted one hour after processing, or after 24 hours if you are signed in and choose that setting. You can delete them immediately with Delete now.",
           "We keep basic task metadata, such as the tool used, file names, file sizes, page counts and timestamps, so you can see your history and so we can operate the service. For guests, file names are erased as soon as the files are deleted, and the remaining minimal record is removed after 48 hours; it exists only to apply daily fair-use limits. For signed-in users, task history stays until you delete your account.",
+        ],
+      },
+      {
+        id: "library",
+        title: "My files, teams and signatures",
+        paragraphs: [
+          "If you choose to save results to My files, they are kept encrypted until you delete them; deleted files stay in the trash for 30 days and are then erased. Team libraries are visible to members according to their role. Signature requests keep the document, the signers’ email addresses and an audit trail until you delete the request. Deleting your account erases your library and signature data.",
+          "If you connect Google Drive, Dropbox or OneDrive, we store the access token encrypted, use it only to import the files you pick, and delete it when you disconnect.",
         ],
       },
       {
@@ -153,7 +164,7 @@ export const LEGAL_DOCUMENTS: LegalDocument[] = [
         id: "processors",
         title: "Service providers",
         paragraphs: [
-          "We use infrastructure providers for hosting, storage and email delivery. If error monitoring is enabled, technical error reports are sent to our monitoring provider without personal file contents. When AI tools become available, the text needed for an AI request will be sent to the configured AI provider, or to yours if you add your own key.",
+          "We use infrastructure providers for hosting, storage and email delivery. If error monitoring is enabled, technical error reports are sent to our monitoring provider without personal file contents. When you use an AI tool, the text needed for that request is sent to the shared AI provider, or to the provider whose key you saved. Webhook deliveries you configure are sent to the addresses you choose.",
         ],
       },
       {
@@ -185,7 +196,7 @@ export const LEGAL_DOCUMENTS: LegalDocument[] = [
     title: "Cookie policy",
     summary:
       "We use only the cookies and browser storage needed to run the service. No advertising or tracking cookies.",
-    updated: "2026-11-19",
+    updated: "2026-11-23",
     sections: [
       {
         id: "cookies",
@@ -218,6 +229,10 @@ export const LEGAL_DOCUMENTS: LegalDocument[] = [
               "Your favorite and recently used tools, stored only on your device",
             ],
             ["announcement-dismissed:*", "Remembers announcements you closed"],
+            [
+              "service worker cache",
+              "Lets the installed app open offline. It holds site assets only, never your files",
+            ],
           ],
         },
       },
@@ -234,7 +249,7 @@ export const LEGAL_DOCUMENTS: LegalDocument[] = [
     slug: "acceptable-use",
     title: "Acceptable use policy",
     summary: "Use the service for lawful purposes and don’t try to break it for others.",
-    updated: "2026-11-19",
+    updated: "2026-11-23",
     sections: [
       {
         id: "prohibited",
@@ -245,7 +260,8 @@ export const LEGAL_DOCUMENTS: LegalDocument[] = [
           "Use the service to distribute malware or phishing material",
           "Attempt to bypass fair-use limits, for example by rotating accounts or addresses",
           "Probe, scan or attack the service or other users, except through responsible disclosure",
-          "Use the URL import to reach internal or private network resources",
+          "Use the URL import or webhooks to reach internal or private network resources",
+          "Use signature requests to deceive recipients or to forge another person’s signature",
           "Resell access to the service in a way that misrepresents it as your own",
         ],
       },

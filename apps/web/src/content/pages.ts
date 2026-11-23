@@ -395,21 +395,21 @@ export const CATEGORY_FAQ: Record<ToolCategoryId, { question: string; answer: st
   ],
   optimize: [
     {
-      question: "When will optimization tools be available?",
+      question: "Are the optimization tools available?",
       answer:
-        "Compress, repair and flatten ship in the core tools release. OCR and PDF/A follow in the conversion release. Each tool is marked Coming soon until it works.",
+        "Compress, repair, flatten, OCR and PDF/A are available. PDF/A output is produced with an embedded color profile but is not yet validated by an independent checker.",
     },
     {
       question: "Will OCR support my language?",
       answer:
-        "OCR is planned with more than 50 languages, including Urdu and Arabic, through the Tesseract engine already included in our servers.",
+        "OCR runs on the Tesseract engine installed on our servers and supports many languages, including Urdu and Arabic.",
     },
   ],
   convert_to_pdf: [
     {
-      question: "When can I convert files to PDF?",
+      question: "Can I convert files to PDF?",
       answer:
-        "Conversions ship in the conversion release. Until then these tools are marked Coming soon.",
+        "Yes. Office documents, images, web pages and scans convert to PDF. A tool is marked Coming soon only if it is not working yet.",
     },
     {
       question: "Will I be able to convert many files at once?",
@@ -466,9 +466,9 @@ export const CATEGORY_FAQ: Record<ToolCategoryId, { question: string; answer: st
       answer: "JPG, PNG, WebP, TIFF, BMP, GIF and HEIC.",
     },
     {
-      question: "When do image tools arrive?",
+      question: "Are the image tools available?",
       answer:
-        "Image tools ship alongside the conversion release and are marked Coming soon until then.",
+        "Yes, they are part of the conversion suite and are listed on the tools page.",
     },
   ],
 };

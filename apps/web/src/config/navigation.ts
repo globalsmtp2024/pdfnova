@@ -48,6 +48,7 @@ export const STATIC_PAGES = [
   "/contact",
   "/about",
   "/changelog",
+  "/roadmap",
   "/status",
   "/compare",
   "/shortcuts",

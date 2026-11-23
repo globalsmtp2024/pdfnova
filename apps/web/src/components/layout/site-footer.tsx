@@ -34,6 +34,7 @@ export async function SiteFooter() {
         { href: "/about", label: t("footer.links.about") },
         { href: "/contact", label: t("footer.links.contact") },
         { href: "/changelog", label: t("footer.links.changelog") },
+        { href: "/roadmap", label: t("footer.links.roadmap") },
         ...(supportEnabled ? [{ href: "/support", label: t("footer.links.support") }] : []),
       ],
     },
