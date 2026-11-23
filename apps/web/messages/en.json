@@ -1329,5 +1329,19 @@
     "remove_form_fields": "Remove form fields",
     "sensitivity": "Blank detection sensitivity (0.9-1)",
     "keep_pages_with_text": "Keep pages that contain text"
+  },
+  "tools": {
+    "remove-annotations": {
+      "name": "Remove annotations",
+      "description": "Strip comments, highlights and stamps."
+    },
+    "remove-blank-pages": {
+      "name": "Remove blank pages",
+      "description": "Detect and delete empty pages automatically."
+    },
+    "reverse-pages": {
+      "name": "Reverse pages",
+      "description": "Flip the page order of a PDF."
+    }
   }
 }

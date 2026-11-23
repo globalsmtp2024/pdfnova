@@ -9,6 +9,7 @@ const NAMES = {
 for (const [locale, index] of [["en", 0], ["ur", 1]]) {
   const file = `messages/${locale}.json`;
   const messages = JSON.parse(readFileSync(file, "utf8"));
+  messages.tools = messages.tools ?? {};
   for (const [slug, pair] of Object.entries(NAMES)) {
     messages.tools[slug] = { name: pair[index][0], description: pair[index][1] };
   }

@@ -775,6 +775,18 @@
     "image-rotate": {
       "name": "تصویر گھمائیں",
       "description": "تصاویر کو گھمائیں اور پلٹیں۔"
+    },
+    "remove-annotations": {
+      "name": "تبصرے ہٹائیں",
+      "description": "تبصرے، ہائی لائٹس اور اسٹیمپ ہٹا دیں۔"
+    },
+    "remove-blank-pages": {
+      "name": "خالی صفحات ہٹائیں",
+      "description": "خالی صفحات خودکار طور پر ڈھونڈ کر حذف کریں۔"
+    },
+    "reverse-pages": {
+      "name": "صفحات الٹ دیں",
+      "description": "PDF کے صفحات کی ترتیب الٹ دیں۔"
     }
   },
   "password": {
