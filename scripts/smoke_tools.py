@@ -114,7 +114,7 @@ def zip_has(member: str) -> Check:
 
 def images_decode(outputs: list[tuple[str, bytes]]) -> str | None:
     for name, data in outputs:
-        if not name.lower().endswith((".png", ".jpg", ".webp")):
+        if not name.lower().endswith((".png", ".jpg", ".webp", ".tif", ".bmp", ".gif")):
             continue
         try:
             Image.open(io.BytesIO(data)).verify()
@@ -201,6 +201,11 @@ CASES: list[Case] = [
     Case("ai-smart-redact", pdf_upload(), {}),
     Case("ai-extract-data", pdf_upload(), {"fields": ["title: document title"]}, check=contains_text("Smoke")),
     Case("workflow", pdf_upload(), {"steps": ['rotate {"angle": 90}', "reverse-pages", "linearize"]}),
+    Case("image-compress", [("p.jpg", sample_image("JPEG", (900, 700)), "image/jpeg")], {"quality": 50}, check=images_decode),
+    Case("image-resize", [("p.png", sample_image("PNG", (800, 600)), "image/png")], {"mode": "percent", "percent": 40}, check=images_decode),
+    Case("image-convert", [("p.png", sample_image("PNG"), "image/png")], {"format": "webp"}, check=images_decode),
+    Case("image-crop", [("p.png", sample_image("PNG", (800, 600)), "image/png")], {"aspect": "1:1"}, check=images_decode),
+    Case("image-rotate", [("p.png", sample_image("PNG", (400, 300)), "image/png")], {"angle": 90}, check=images_decode),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

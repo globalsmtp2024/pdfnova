@@ -47,4 +47,9 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "ai-smart-redact",
   "ai-extract-data",
   "workflow",
+  "image-compress",
+  "image-resize",
+  "image-convert",
+  "image-crop",
+  "image-rotate",
 ]);
