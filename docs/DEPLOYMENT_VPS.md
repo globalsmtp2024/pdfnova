@@ -105,7 +105,7 @@ It is safe to run again to update: it keeps the existing `/etc/pdfnova/pdfnova.e
 ```bash
 sudo apt-get install -y qpdf libreoffice-writer libreoffice-calc libreoffice-impress \
   tesseract-ocr tesseract-ocr-eng tesseract-ocr-urd fonts-noto fonts-dejavu-core \
-  postgresql redis-server nginx python3.12 python3.12-venv python3-dev build-essential libpq-dev
+  postgresql redis-server nginx python3.12 python3.12-venv python3-dev build-essential
 sudo apt-get install -y chromium
 ```
 

@@ -31,15 +31,23 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y qpdf libreoffice-writer libreoffice-calc libreoffice-impress \
   tesseract-ocr tesseract-ocr-eng tesseract-ocr-urd fonts-noto fonts-dejavu-core \
-  python3.12 python3.12-venv python3-dev build-essential libpq-dev redis-server git curl ca-certificates
+  python3.12 python3.12-venv python3-dev build-essential redis-server git curl ca-certificates xz-utils
 command -v psql >/dev/null || apt-get install -y postgresql
 if ! command -v google-chrome >/dev/null && ! command -v chromium >/dev/null; then
   curl -fsSLo /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
   apt-get install -y /tmp/chrome.deb
 fi
-if ! command -v node >/dev/null || [ "$(node -p 'process.versions.node.split(".")[0]')" -lt 22 ]; then
-  fail "Node.js 22 or newer is required; install it first without replacing other projects' Node"
+NODE_VERSION="${NODE_VERSION:-22.23.2}"
+NODE_DIR=/opt/pdfnova-node
+if [ ! -x "$NODE_DIR/bin/node" ]; then
+  curl -fsSLo /tmp/node.tar.xz "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz"
+  rm -rf "$NODE_DIR" /tmp/node-extract
+  mkdir -p /tmp/node-extract
+  tar -xJf /tmp/node.tar.xz -C /tmp/node-extract
+  mv "/tmp/node-extract/node-v${NODE_VERSION}-linux-x64" "$NODE_DIR"
+  rm -rf /tmp/node-extract /tmp/node.tar.xz
 fi
+"$NODE_DIR/bin/node" --version
 systemctl enable --now redis-server
 systemctl enable --now postgresql
 
@@ -112,8 +120,8 @@ sudo -u "$SERVICE_USER" env HOME="$STATE_DIR/home" U2NET_HOME="$STATE_DIR/u2net"
 
 log "Web build"
 cd "$APP_DIR/apps/web"
-sudo -u "$SERVICE_USER" env HOME="$STATE_DIR/home" npm ci
-sudo -u "$SERVICE_USER" env HOME="$STATE_DIR/home" API_INTERNAL_URL="http://127.0.0.1:${API_PORT}" npm run build
+sudo -u "$SERVICE_USER" env HOME="$STATE_DIR/home" PATH="$NODE_DIR/bin:$PATH" npm ci
+sudo -u "$SERVICE_USER" env HOME="$STATE_DIR/home" PATH="$NODE_DIR/bin:$PATH" API_INTERNAL_URL="http://127.0.0.1:${API_PORT}" npm run build
 sudo -u "$SERVICE_USER" rm -rf .next/standalone/apps/web/.next/static .next/standalone/apps/web/public
 sudo -u "$SERVICE_USER" cp -r .next/static .next/standalone/apps/web/.next/static
 sudo -u "$SERVICE_USER" cp -r public .next/standalone/apps/web/public
@@ -122,7 +130,7 @@ log "Services"
 cp "$APP_DIR"/infra/systemd/pdfnova-api.service "$APP_DIR"/infra/systemd/pdfnova-web.service \
   "$APP_DIR"/infra/systemd/pdfnova-background.service "$APP_DIR"/infra/systemd/pdfnova-worker@.service /etc/systemd/system/
 sed -i "s/--port 8000/--port ${API_PORT}/" /etc/systemd/system/pdfnova-api.service
-sed -i "s/Environment=PORT=3000/Environment=PORT=${WEB_PORT}/; s#127.0.0.1:8000#127.0.0.1:${API_PORT}#" /etc/systemd/system/pdfnova-web.service
+sed -i "s/Environment=PORT=3000/Environment=PORT=${WEB_PORT}/; s#127.0.0.1:8000#127.0.0.1:${API_PORT}#; s#/usr/bin/node#${NODE_DIR}/bin/node#" /etc/systemd/system/pdfnova-web.service
 systemctl daemon-reload
 systemctl enable pdfnova-api pdfnova-web pdfnova-background \
   pdfnova-worker@DefaultWorker pdfnova-worker@HighPriorityWorker pdfnova-worker@OfficeWorker
