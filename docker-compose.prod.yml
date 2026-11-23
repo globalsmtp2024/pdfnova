@@ -16,6 +16,8 @@ x-prod-api-env: &prod-api-env
   CLOUD_MICROSOFT_TENANT: ${CLOUD_MICROSOFT_TENANT:-common}
   AI_SHARED_API_KEY: ${AI_SHARED_API_KEY:-}
   AI_SHARED_PROVIDER: ${AI_SHARED_PROVIDER:-anthropic}
+  AI_BASE_URL_OVERRIDE: ${AI_BASE_URL_OVERRIDE:-}
+  AI_MODEL_OVERRIDE: ${AI_MODEL_OVERRIDE:-}
 
 x-logging: &logging
   driver: json-file
