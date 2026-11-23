@@ -2,10 +2,18 @@ import json
 from datetime import datetime
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Request, Response
 from pydantic import BaseModel, Field
 
-from app.api.deps import ACCESS_COOKIE, REFRESH_COOKIE, ContainerDep, CurrentUser, SessionDep, SettingsDep
+from app.api.deps import (
+    ACCESS_COOKIE,
+    REFRESH_COOKIE,
+    ContainerDep,
+    CurrentUser,
+    SessionDep,
+    SettingsDep,
+    limit_by_ip,
+)
 from app.schemas.auth import MessageResponse, UserResponse
 from app.services.account import AI_PROVIDERS, AccountService
 
@@ -25,6 +33,16 @@ class ProfileUpdate(BaseModel):
     display_name: str | None = Field(default=None, max_length=120)
     locale: str | None = Field(default=None, max_length=16)
     retention_extended: bool | None = None
+
+
+class AiKeyTest(BaseModel):
+    provider: str | None = Field(default=None, max_length=32)
+    api_key: str | None = Field(default=None, max_length=400)
+
+
+class AiKeyTestResult(BaseModel):
+    ok: bool
+    message: str
 
 
 class AiKeyRequest(BaseModel):
@@ -90,6 +108,15 @@ async def set_ai_key(
     await service.set_ai_key(user, body.provider, body.api_key)
     await session.commit()
     return UserResponse.from_user(user)
+
+
+@router.post("/ai-key/test", response_model=AiKeyTestResult)
+async def test_ai_key(
+    body: AiKeyTest, request: Request, user: CurrentUser, service: AccountDep, container: ContainerDep
+) -> AiKeyTestResult:
+    await limit_by_ip(request, container, "ai-key-test", limit=10, window=60)
+    ok, message = await service.test_ai_key(user, body.provider, body.api_key)
+    return AiKeyTestResult(ok=ok, message=message)
 
 
 @router.delete("/ai-key", response_model=UserResponse)

@@ -365,6 +365,16 @@ function AiKeySection({ user }: { user: User }) {
     },
     onError: toastError,
   });
+  const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const test = useMutation({
+    mutationFn: () =>
+      apiJson<{ ok: boolean; message: string }>("/api/v1/me/ai-key/test", {
+        method: "POST",
+        json: key.trim() ? { provider, api_key: key } : { provider: user.ai_key?.provider },
+      }),
+    onSuccess: setTestResult,
+    onError: toastError,
+  });
   const remove = useMutation({
     mutationFn: () => apiJson<User>("/api/v1/me/ai-key", { method: "DELETE" }),
     onSuccess: (updated) => queryClient.setQueryData(SESSION_KEY, updated),
@@ -422,15 +432,38 @@ function AiKeySection({ user }: { user: User }) {
             />
           )}
         </Field>
-        <Button
-          type="submit"
-          variant="solid"
-          loading={save.isPending}
-          disabled={key.trim().length < 16}
-        >
-          {t("save")}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            loading={test.isPending}
+            disabled={!key.trim() && !user.ai_key}
+            onClick={() => {
+              setTestResult(null);
+              test.mutate();
+            }}
+            data-ai-key-test
+          >
+            {t("aiTest")}
+          </Button>
+          <Button
+            type="submit"
+            variant="solid"
+            loading={save.isPending}
+            disabled={key.trim().length < 16}
+          >
+            {t("save")}
+          </Button>
+        </div>
       </form>
+      {testResult ? (
+        <p
+          role="status"
+          className={testResult.ok ? "text-sm text-success-strong" : "text-sm text-danger-strong"}
+        >
+          {testResult.ok ? t("aiTestOk") : t("aiTestFailed", { reason: testResult.message })}
+        </p>
+      ) : null}
     </Panel>
   );
 }

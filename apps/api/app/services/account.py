@@ -7,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.container import Container
-from app.core.crypto import load_key, seal_text
+from app.core.crypto import load_key, open_text, seal_text
 from app.core.errors import AppError, AuthenticationError, NotFoundError
 from app.core.security import generate_token, hash_token, verify_password
 from app.db.base import utcnow
@@ -39,6 +39,33 @@ class AccountService:
         user.ai_provider = provider
         user.ai_api_key_encrypted = seal_text(key, cleaned)
         user.ai_key_last4 = cleaned[-4:]
+
+    async def test_ai_key(self, user: User, provider: str | None, api_key: str | None) -> tuple[bool, str]:
+        import asyncio
+        import os
+
+        from app.ai.provider import BASE_URLS, DEFAULT_MODELS, HttpProvider
+        from app.tools.base import ToolFailedError
+
+        name = provider or user.ai_provider or "anthropic"
+        if name not in AI_PROVIDERS:
+            return False, f"Unsupported AI provider '{name}'."
+        secret = api_key.strip() if api_key else None
+        if secret is None:
+            if user.ai_api_key_encrypted is None:
+                return False, "No AI key is saved yet."
+            secret = open_text(
+                load_key(self._container.settings.storage_encryption_key.get_secret_value()),
+                user.ai_api_key_encrypted,
+            )
+        base = os.environ.get("AI_BASE_URL_OVERRIDE") or BASE_URLS[name]
+        model = os.environ.get("AI_MODEL_OVERRIDE") or DEFAULT_MODELS[name]
+        probe = HttpProvider(name=name, key=secret, model=model, base_url=base.rstrip("/"))
+        try:
+            await asyncio.to_thread(probe.complete, "Reply with the single word OK.", "Say OK.", 8)
+        except ToolFailedError as exc:
+            return False, exc.message
+        return True, "The key works."
 
     def clear_ai_key(self, user: User) -> None:
         user.ai_provider = None

@@ -29,6 +29,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { FileCard } from "@/components/tools/file-card";
 import { acceptForKinds, describeKinds } from "@/components/tools/file-kinds";
+import { AiBudget } from "@/components/tools/ai-budget";
 import { FALLBACK_PANEL, TOOL_PANELS } from "@/components/tools/panels/registry";
 import { PasswordPrompt } from "@/components/tools/password-prompt";
 import { ResultPanel } from "@/components/tools/result-panel";
@@ -385,6 +386,7 @@ export function ToolWorkspace({
         <div className="flex flex-col gap-4 rounded-(--radius-card) border border-border bg-surface p-5 shadow-lifted">
           <h2 className="font-display text-lg font-semibold">{t("options")}</h2>
           {panel?.options ?? <p className="text-sm text-muted">{t("noOptions")}</p>}
+          {definition.category === "ai" ? <AiBudget /> : null}
           <div className="flex flex-col gap-2 rounded-xl bg-surface-muted/70 p-3 text-xs text-muted">
             <p className="font-medium text-foreground">
               {t("summaryLine", {

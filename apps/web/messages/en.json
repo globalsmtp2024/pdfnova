@@ -577,7 +577,10 @@
     "deleteConfirm": "Delete my account",
     "confirmEmail": "Type your email to confirm",
     "language": "Language",
-    "theme": "Theme"
+    "theme": "Theme",
+    "aiTest": "Test connection",
+    "aiTestOk": "Connected. The key works.",
+    "aiTestFailed": "The key did not work: {reason}"
   },
   "contact": {
     "metaTitle": "Contact",
@@ -1852,5 +1855,11 @@
       "completed": "All signatures collected",
       "cancelled": "Request cancelled"
     }
+  },
+  "aiBudget": {
+    "title": "Shared AI allowance today",
+    "ownKey": "Using your own AI key: no shared allowance is used.",
+    "remaining": "{count, plural, one {# AI run left today} other {# AI runs left today}}",
+    "exhausted": "The shared allowance is used up for today. Add your own key in Settings to continue."
   }
 }
