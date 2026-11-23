@@ -1,0 +1,10 @@
+services:
+  nginx:
+    ports: !override
+      - "${HTTP_PORT:-9909}:80"
+    volumes: !override
+      - ./infra/nginx/nginx.proxied.conf:/etc/nginx/nginx.conf:ro
+
+  api:
+    ports:
+      - "127.0.0.1:${API_PORT:-9910}:8000"

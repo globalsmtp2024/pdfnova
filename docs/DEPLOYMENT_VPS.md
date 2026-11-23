@@ -61,6 +61,27 @@ sudo docker compose -f docker-compose.yml -f docker-compose.prod.yml exec postgr
 
 Update later with `git pull` followed by the same `up -d --build` command.
 
+## C. Shared server with an existing nginx (Docker, custom port, subdomain)
+
+Use this when the server already runs other sites on ports 80 and 443. PDFNova lives in its own folder with its own containers, publishes only `HTTP_PORT` (default 9909) and the API on `127.0.0.1:API_PORT` (default 9910), and the host nginx proxies a subdomain to it.
+
+```bash
+sudo git clone https://github.com/globalsmtp2024/pdfnova.git /opt/pdfnova-app
+cd /opt/pdfnova-app
+cp .env.example .env
+```
+
+Set in `.env`: `PUBLIC_URL=https://SUBDOMAIN`, `HTTP_PORT=9909`, `API_PORT=9910`, strong secrets, SMTP and optional AI settings. Then:
+
+```bash
+COMPOSE="docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.shared.yml"
+sudo $COMPOSE up -d --build
+sudo sed 's/pdfnova.example.com/SUBDOMAIN/g' infra/nginx/pdfnova-subdomain.conf | sudo tee /etc/nginx/sites-available/pdfnova >/dev/null
+sudo ln -sf /etc/nginx/sites-available/pdfnova /etc/nginx/sites-enabled/pdfnova
+sudo certbot certonly --webroot -w /var/www/certbot -d SUBDOMAIN
+sudo nginx -t && sudo systemctl reload nginx
+```
+
 ## B. Native install with systemd
 
 ### B1. System packages
