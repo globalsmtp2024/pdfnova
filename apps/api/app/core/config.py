@@ -83,6 +83,7 @@ class Settings(BaseSettings):
     sentry_dsn: str | None = None
     metrics_enabled: bool = True
     webhooks_enabled: bool = True
+    scheduler_enabled: bool = True
     webhook_allow_private: bool = False
 
     max_pdf_pages: int = 5000

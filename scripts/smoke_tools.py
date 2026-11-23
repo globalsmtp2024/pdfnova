@@ -928,6 +928,56 @@ def run_cloud(client: httpx.Client) -> str:
     return "ok"
 
 
+def run_schedules(client: httpx.Client) -> str:
+    problem = sign_in_new_user(client, "schedule")
+    if problem:
+        return problem
+    source = client.post("/api/v1/library/folders", json={"name": "Inbox"}).json()["id"]
+    target = client.post("/api/v1/library/folders", json={"name": "Done"}).json()["id"]
+    uploaded = client.post(
+        "/api/v1/library/files",
+        files={"file": ("scan.pdf", sample_pdf(3), "application/pdf")},
+        data={"folder_id": source},
+    )
+    if uploaded.status_code != 201:
+        return f"upload {uploaded.status_code}"
+    body = {
+        "name": "Nightly shrink",
+        "nodes": [{"id": "small", "tool": "compress", "options": {}}],
+        "edges": [],
+        "frequency": "daily",
+        "hour_utc": 2,
+        "source_folder_id": source,
+        "destination_folder_id": target,
+    }
+    created = client.post("/api/v1/schedules", json=body)
+    if created.status_code != 201 or not created.json()["next_run_at"]:
+        return f"create {created.status_code} {created.text[:100]}"
+    schedule_id = created.json()["id"]
+    bad = client.post("/api/v1/schedules", json={**body, "nodes": [{"id": "x", "tool": "ai-summarize", "options": {}}]})
+    if bad.status_code < 400:
+        return "AI step accepted in schedule"
+    if client.post(f"/api/v1/schedules/{schedule_id}/run").status_code != 200:
+        return "run failed to start"
+    for _ in range(60):
+        time.sleep(1)
+        runs = client.get(f"/api/v1/schedules/{schedule_id}/runs").json()
+        if runs and runs[0]["status"] != "running":
+            break
+    if not runs or runs[0]["status"] != "succeeded":
+        return f"run state {runs}"
+    done = client.get("/api/v1/library/files", params={"folder_id": target}).json()
+    if len(done) != 1:
+        return f"destination has {len(done)} files"
+    client.post(f"/api/v1/schedules/{schedule_id}/run")
+    status = client.get("/api/v1/schedules").json()[0]["last_status"]
+    if status != "No new files":
+        return f"second run status {status!r}"
+    if client.delete(f"/api/v1/schedules/{schedule_id}").status_code != 204:
+        return "delete failed"
+    return "ok"
+
+
 def main() -> int:
     only = set(sys.argv[1].split(",")) if len(sys.argv) > 1 else None
     failures = 0
@@ -937,6 +987,10 @@ def main() -> int:
         if only and "workflow-templates" in only:
             outcome = run_workflow_templates(client)
             print(f"{'workflow-templates':20} {outcome}")
+            failures += outcome != "ok"
+        if only and "schedules" in only:
+            outcome = run_schedules(client)
+            print(f"{'schedules':20} {outcome}")
             failures += outcome != "ok"
         if only and "cloud" in only:
             outcome = run_cloud(client)

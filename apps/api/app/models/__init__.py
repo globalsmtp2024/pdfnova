@@ -9,6 +9,7 @@ from app.models.esign import (
     SignRequestStatus,
 )
 from app.models.library import LibraryFile, LibraryFolder
+from app.models.schedule import ScheduledRun, ScheduledWorkflow
 from app.models.task import AiUsageEvent, FileRole, FileStatus, Task, TaskFile, TaskStatus
 from app.models.team import Team, TeamInvite, TeamMember, TeamRole, TeamWorkflow
 from app.models.user import (
@@ -42,6 +43,8 @@ __all__ = [
     "SignRecipient",
     "SignRequest",
     "SignRequestStatus",
+    "ScheduledRun",
+    "ScheduledWorkflow",
     "Task",
     "TaskFile",
     "TaskStatus",

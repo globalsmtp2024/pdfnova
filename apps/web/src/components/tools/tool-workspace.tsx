@@ -41,7 +41,8 @@ import { Dropzone, partitionFiles } from "@/components/ui/dropzone";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { toast, toastError } from "@/components/ui/toaster";
-import { detectFileKind, suggestTools, type FileKind, type ToolDefinition } from "@/config/tools";
+import type { ToolDefinition } from "@/config/tools";
+import { ruleBasedSuggestions } from "@/lib/suggestions";
 import { ApiError } from "@/lib/api";
 import { Link } from "@/i18n/navigation";
 import { useSession } from "@/lib/session";
@@ -179,12 +180,17 @@ export function ToolWorkspace({
 
   const totalPages = session.files.reduce((sum, entry) => sum + (entry.pageCount ?? 0), 0);
   const totalSize = session.files.reduce((sum, entry) => sum + entry.size, 0);
-  const kinds = session.files
-    .map((entry) => (entry.file ? detectFileKind(entry.file) : "pdf"))
-    .filter((kind): kind is FileKind => kind !== null);
-  const suggestions = suggestTools(kinds, session.files.length)
-    .filter((tool) => tool.slug !== definition.slug && liveTools.has(tool.slug))
-    .slice(0, 4);
+  const suggestions = ruleBasedSuggestions(
+    session.files.map((entry) => ({
+      name: entry.name,
+      type: entry.file?.type ?? "",
+      size: entry.size,
+      pageCount: entry.pageCount,
+      encrypted: entry.encrypted && !entry.unlocked,
+    })),
+  )
+    .filter((entry) => entry.tool.slug !== definition.slug && liveTools.has(entry.tool.slug))
+    .slice(0, 5);
 
   const handleStart = async () => {
     try {
@@ -371,10 +377,12 @@ export function ToolWorkspace({
               <Sparkles className="size-4 text-primary" aria-hidden />
               {t("suggestions")}
             </span>
-            {suggestions.map((tool) => (
+            {suggestions.map(({ tool, reason }) => (
               <Link
                 key={tool.slug}
                 href={`/tools/${tool.slug}`}
+                title={t(`suggestionReason.${reason}`)}
+                data-suggestion-reason={reason}
                 className="group flex items-center gap-1.5 rounded-full border border-border bg-surface py-0.5 ps-0.5 pe-3 hover:border-primary/50"
               >
                 <ToolIcon slug={tool.slug} size="sm" />

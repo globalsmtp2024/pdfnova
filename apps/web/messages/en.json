@@ -490,7 +490,23 @@
     "presetNoBookmarks": "No bookmarks",
     "lockedFiles": "Unlock the password-protected files to continue.",
     "saveToLibrary": "Save to My files",
-    "savedToLibrary": "Saved to My files"
+    "savedToLibrary": "Saved to My files",
+    "suggestionReason": {
+      "encrypted": "This file is password-protected. Unlock it first.",
+      "several": "You added several PDFs. Combine them into one.",
+      "scanSides": "Scanned the fronts and backs separately? Interleave them.",
+      "images": "Turn these images into one PDF.",
+      "photos": "Straighten and clean up photographed pages.",
+      "largeImage": "These images are large. Shrink them.",
+      "large": "This PDF is large. Shrink it for sharing.",
+      "long": "This is a long document. Split it or pull out pages.",
+      "scan": "This looks like a scan. Make the text searchable.",
+      "form": "This looks like a form or agreement. Sign or fill it.",
+      "cv": "A CV is usually small and private. Compress and protect it.",
+      "slides": "Looks like slides. Convert to PowerPoint.",
+      "privacy": "Remove scripts and hidden data before sharing.",
+      "popular": "A common next step."
+    }
   },
   "auth": {
     "panelTitle": "Your documents, handled.",
@@ -2134,6 +2150,55 @@
       "pages": "Those pages are not valid for this document.",
       "image": "One of the images could not be used.",
       "empty": "Add the files this tool needs."
+    }
+  },
+  "schedules": {
+    "title": "Scheduled workflows",
+    "subtitle": "Run a workflow on new files in a My files folder every hour, day or week.",
+    "explain": "Each run takes the PDFs in the source folder that were not processed before, runs the workflow and saves the results in the destination folder. Times are in UTC.",
+    "signInTitle": "Sign in to schedule workflows",
+    "signInBody": "Schedules use your My files folders.",
+    "signIn": "Sign in",
+    "addTitle": "New schedule",
+    "name": "Name",
+    "workflow": "Workflow",
+    "frequency": "Repeat",
+    "hourly": "Every hour",
+    "daily": "Every day",
+    "weekly": "Every week",
+    "weekday": "Weekday",
+    "hourUtc": "Hour (UTC)",
+    "source": "Watch folder",
+    "destination": "Save results in",
+    "rootFolder": "My files (no folder)",
+    "create": "Create schedule",
+    "created": "Schedule created",
+    "nextRun": "next run {time}",
+    "paused": "paused",
+    "runNow": "Run now",
+    "started": "Run started",
+    "pause": "Pause",
+    "resume": "Resume",
+    "delete": "Delete",
+    "showRuns": "Show recent runs",
+    "hideRuns": "Hide runs",
+    "noRuns": "No runs yet.",
+    "files": "{count, plural, one {# file} other {# files}}",
+    "emptyTitle": "No schedules yet",
+    "emptyBody": "Create one to process new files automatically.",
+    "runStatus": {
+      "running": "Running",
+      "succeeded": "Done",
+      "failed": "Failed"
+    },
+    "day": {
+      "0": "Monday",
+      "1": "Tuesday",
+      "2": "Wednesday",
+      "3": "Thursday",
+      "4": "Friday",
+      "5": "Saturday",
+      "6": "Sunday"
     }
   }
 }

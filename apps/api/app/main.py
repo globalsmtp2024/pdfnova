@@ -17,6 +17,7 @@ from app.api.routes import (
     health,
     library,
     pages,
+    schedules,
     tasks,
     teams,
     tools,
@@ -30,6 +31,7 @@ from app.core.logging import configure_logging
 from app.core.metrics import metrics_middleware
 from app.core.middleware import build_http_middleware
 from app.jobs.sweeper import SweeperHandle
+from app.services.scheduler import SchedulerWorker
 from app.services.webhooks import WebhookWorker
 
 
@@ -55,9 +57,14 @@ def create_app(settings: Settings | None = None, container: Container | None = N
         )
         if webhook_worker is not None:
             webhook_worker.start()
+        scheduler_worker = SchedulerWorker(active) if owned and settings.scheduler_enabled else None
+        if scheduler_worker is not None:
+            scheduler_worker.start()
         try:
             yield
         finally:
+            if scheduler_worker is not None:
+                await scheduler_worker.stop()
             if webhook_worker is not None:
                 await webhook_worker.stop()
             if sweeper is not None:
@@ -106,6 +113,7 @@ def create_app(settings: Settings | None = None, container: Container | None = N
         cloud.router,
         teams.router,
         webhooks.router,
+        schedules.router,
     ):
         app.include_router(router)
     return app
