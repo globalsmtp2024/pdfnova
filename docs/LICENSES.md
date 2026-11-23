@@ -36,6 +36,20 @@ Versions are those verified in this repository on 2026-11-20. Re-run the license
 | fonttools | 4.68.0 | MIT |
 | uharfbuzz (bundles HarfBuzz) | 0.57.0 | Apache-2.0; HarfBuzz is MIT ("Old MIT") |
 
+## Added in the second build queue
+
+| Package | License | Use |
+|---|---|---|
+| pyHanko | MIT | Certificate signing and verification |
+| rembg | MIT | Background removal (u2netp model prefetched at image build) |
+| onnxruntime | MIT | Runs the background removal model |
+| python-pptx | MIT | PDF to PowerPoint |
+| regex | Apache-2.0 | Redaction patterns with match timeouts |
+| @xyflow/react | MIT | Workflow builder canvas |
+| fflate | MIT | In-browser zip for batch and private mode |
+| pdf-lib | MIT | In-browser private mode PDF operations |
+| Chromium, fonts-noto | BSD-3-Clause, OFL-1.1 | HTML and URL to PDF, multilingual rendering |
+
 ## Backend development and tests
 
 | Package | Version | License |
