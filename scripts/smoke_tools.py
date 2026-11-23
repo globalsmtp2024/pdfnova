@@ -221,6 +221,40 @@ def text_edit_ok(outputs: list[tuple[str, bytes]]) -> str | None:
     return None
 
 
+def form_specs() -> list[dict]:
+    return [
+        {"kind": "text", "name": "full_name", "page": 1, "x": 20, "y": 20, "width": 40, "height": 4, "tooltip": "Name"},
+        {"kind": "checkbox", "name": "agree", "page": 1, "x": 20, "y": 30, "width": 3, "height": 3},
+        {"kind": "radio", "name": "plan", "export_value": "A", "page": 1, "x": 20, "y": 40, "width": 3, "height": 3},
+        {"kind": "radio", "name": "plan", "export_value": "B", "page": 1, "x": 30, "y": 40, "width": 3, "height": 3},
+        {"kind": "dropdown", "name": "country", "page": 1, "x": 20, "y": 50, "width": 30, "height": 4, "choices": ["PK", "US"]},
+        {"kind": "signature", "name": "sig", "page": 1, "x": 20, "y": 60, "width": 30, "height": 6},
+    ]
+
+
+def flat_form_pdf() -> bytes:
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    pdf.drawString(72, 700, "Full name:")
+    pdf.line(140, 698, 400, 698)
+    pdf.drawString(72, 660, "Address:")
+    pdf.drawString(140, 660, "______________________")
+    pdf.rect(72, 600, 12, 12)
+    pdf.drawString(92, 602, "I agree")
+    pdf.showPage()
+    pdf.save()
+    return buffer.getvalue()
+
+
+def form_fields_ok(outputs: list[tuple[str, bytes]]) -> str | None:
+    with pikepdf.open(io.BytesIO(outputs[0][1])) as pdf:
+        form = pdf.Root.get("/AcroForm")
+        if form is None or not len(form.Fields):
+            return "no fields"
+        names = {str(f.get("/T")) for f in form.Fields}
+        return None if len(names) >= 3 else f"too few fields {names}"
+
+
 def pdf_upload(pages: int = 3) -> list[Upload]:
     return [("sample.pdf", sample_pdf(pages), "application/pdf")]
 
@@ -434,6 +468,8 @@ CASES: list[Case] = [
     Case("verify-signatures", [("signed.pdf", signed_pdf(), "application/pdf")], {}, check=contains_text("Document unchanged since signing: yes")),
     Case("edit-pdf", pdf_upload(2), {"operations": edit_operations()}, check=edit_ok),
     Case("edit-pdf", pdf_upload(2), {"operations": [{"type": "replace_text", "page": 1, "x": 11, "y": 8, "width": 16, "height": 3, "text": "Replaced heading", "size": 12}, {"type": "find_replace", "find": "lazy", "replace": "sleepy"}]}, check=text_edit_ok),
+    Case("create-form", pdf_upload(1), {"fields": form_specs()}, check=form_fields_ok),
+    Case("detect-form-fields", [("flat.pdf", flat_form_pdf(), "application/pdf")], {}, check=form_fields_ok),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

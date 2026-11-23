@@ -718,6 +718,8 @@ export const TOOLS: ToolDefinition[] = [
   tool("image-add-text", "Add text to image", "image", "Add a caption or title to an image.", ["image"], ["caption", "title", "text", "meme"]),
   tool("digital-sign", "Digital signature", "security", "Sign with your own certificate (.p12 or .pfx).", ["pdf"], ["certificate", "pkcs12", "pfx", "cryptographic"]),
   tool("verify-signatures", "Verify signatures", "security", "Check the digital signatures in a PDF.", ["pdf"], ["validate", "certificate", "integrity"]),
+  tool("create-form", "Create fillable form", "edit", "Add form fields to any PDF.", ["pdf"], ["acroform", "fields", "checkbox", "dropdown"]),
+  tool("detect-form-fields", "Auto-detect form fields", "edit", "Turn blanks and boxes into fillable fields.", ["pdf"], ["fillable", "blanks", "lines", "convert"]),
 ];
 
 export function findTool(slug: string): ToolDefinition | undefined {

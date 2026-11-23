@@ -71,4 +71,6 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "digital-sign",
   "verify-signatures",
   "edit-pdf",
+  "create-form",
+  "detect-form-fields",
 ]);

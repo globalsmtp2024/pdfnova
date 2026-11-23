@@ -1,6 +1,8 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const NAMES = {
+  "create-form": [["Create fillable form", "Add form fields to any PDF."], ["فِل ایبل فارم بنائیں", "کسی بھی PDF میں فارم فیلڈز شامل کریں۔"]],
+  "detect-form-fields": [["Auto-detect form fields", "Turn blanks and boxes into fillable fields."], ["فارم فیلڈز خودکار تلاش", "خالی جگہوں اور باکسز کو فِل ایبل فیلڈز میں بدلیں۔"]],
   "digital-sign": [["Digital signature", "Sign with your own certificate (.p12 or .pfx)."], ["ڈیجیٹل دستخط", "اپنے سرٹیفکیٹ (.p12 یا .pfx) سے دستخط کریں۔"]],
   "verify-signatures": [["Verify signatures", "Check the digital signatures in a PDF."], ["دستخط کی توثیق", "PDF کے ڈیجیٹل دستخط جانچیں۔"]],
   "image-remove-background": [["Remove background", "Cut out subjects cleanly."], ["پس منظر ہٹائیں", "موضوع کو صاف کاٹیں۔"]],

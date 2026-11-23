@@ -14,6 +14,7 @@ import { useMergePanel } from "@/components/tools/panels/merge";
 import { useSignPanel } from "@/components/tools/panels/sign";
 import { useDigitalSignPanel } from "@/components/tools/panels/digital-sign";
 import { useEditPdfPanel } from "@/components/tools/panels/edit-pdf";
+import { useCreateFormPanel } from "@/components/tools/panels/create-form";
 import { useSchemaPanel } from "@/components/tools/panels/schema";
 import type { LocalFile } from "@/components/tools/use-tool-session";
 
@@ -75,4 +76,5 @@ export const TOOL_PANELS: Record<string, ToolPanelHook> = {
   sign: useSignPanel,
   "digital-sign": useDigitalSignPanel,
   "edit-pdf": useEditPdfPanel,
+  "create-form": useCreateFormPanel,
 };

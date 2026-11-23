@@ -234,6 +234,10 @@ const FIELDS = {
   "format_both": ["JSON and text", "JSON اور متن"],
   "pkcs12": ["Certificate file (.p12 / .pfx)", "سرٹیفکیٹ فائل (.p12 / .pfx)"],
   "pkcs12_password": ["Certificate password", "سرٹیفکیٹ پاس ورڈ"],
+  "detect_lines": ["Detect lines and underscores", "لکیریں اور انڈر اسکور تلاش کریں"],
+  "detect_boxes": ["Detect empty boxes", "خالی باکس تلاش کریں"],
+  "detect_checkboxes": ["Detect check boxes", "چیک باکس تلاش کریں"],
+  "max_fields": ["Maximum fields", "زیادہ سے زیادہ فیلڈز"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

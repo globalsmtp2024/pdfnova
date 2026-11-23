@@ -12,7 +12,7 @@ export type PageView = {
   scale: number;
 };
 
-type Loaded = { numPages: number; getPage: (index: number) => Promise<unknown>; destroy: () => void };
+export type PdfDocumentHandle = { numPages: number; getPage: (index: number) => Promise<unknown>; destroy: () => void };
 
 type PdfViewport = { width: number; height: number };
 type PdfPage = {
@@ -27,7 +27,7 @@ type PdfPage = {
 const MAX_DISPLAY_WIDTH = 880;
 
 export function usePdfDocument(file: LocalFile | undefined) {
-  const [document, setDocument] = useState<Loaded | null>(null);
+  const [document, setDocument] = useState<PdfDocumentHandle | null>(null);
   const [failed, setFailed] = useState(false);
   const source = file?.file ?? null;
   const password = file?.password ?? "";
@@ -42,7 +42,7 @@ export function usePdfDocument(file: LocalFile | undefined) {
         pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
         const data = new Uint8Array(await source.arrayBuffer());
         task = pdfjs.getDocument({ data, password: password || undefined });
-        const loaded = (await task.promise) as unknown as Loaded;
+        const loaded = (await task.promise) as unknown as PdfDocumentHandle;
         if (cancelled) {
           loaded.destroy();
           return;
@@ -69,7 +69,7 @@ export function PdfPageCanvas({
   children,
   onView,
 }: {
-  document: Loaded | null;
+  document: PdfDocumentHandle | null;
   pageIndex: number;
   children?: (view: PageView) => ReactNode;
   onView?: (view: PageView) => void;

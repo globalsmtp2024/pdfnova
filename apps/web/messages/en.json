@@ -1483,7 +1483,11 @@
     "format_text": "Text",
     "format_both": "JSON and text",
     "pkcs12": "Certificate file (.p12 / .pfx)",
-    "pkcs12_password": "Certificate password"
+    "pkcs12_password": "Certificate password",
+    "detect_lines": "Detect lines and underscores",
+    "detect_boxes": "Detect empty boxes",
+    "detect_checkboxes": "Detect check boxes",
+    "max_fields": "Maximum fields"
   },
   "tools": {
     "remove-annotations": {
@@ -1557,6 +1561,14 @@
     "verify-signatures": {
       "name": "Verify signatures",
       "description": "Check the digital signatures in a PDF."
+    },
+    "create-form": {
+      "name": "Create fillable form",
+      "description": "Add form fields to any PDF."
+    },
+    "detect-form-fields": {
+      "name": "Auto-detect form fields",
+      "description": "Turn blanks and boxes into fillable fields."
     }
   },
   "tool_sign": {
@@ -1646,5 +1658,48 @@
     "replaceNote": "Replaces matching text on every page.",
     "addReplacement": "Add replacement",
     "replacementItem": "Replace “{find}” with “{replace}”"
+  },
+  "field_placer": {
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "pageOf": "Page {page} of {count}"
+  },
+  "tool_create_form": {
+    "kinds": "Field types",
+    "select": "Select and move",
+    "loadFailed": "This page could not be shown.",
+    "groupName": "Group name",
+    "fieldName": "Field name",
+    "exportValue": "Value when chosen",
+    "choices": "Choices (one per line)",
+    "defaultValue": "Default value",
+    "tooltip": "Help text",
+    "required": "Required",
+    "readOnly": "Read only",
+    "delete": "Delete field",
+    "summary": "{count, plural, one {# field ready} other {# fields ready}}",
+    "problems": {
+      "none": "Place at least one field on the page.",
+      "invalidName": "Field names start with a letter and use only letters, digits, dots, dashes and underscores.",
+      "duplicate": "Two fields share the same name. Rename one of them.",
+      "noChoices": "Every drop-down needs at least one choice."
+    },
+    "kind": {
+      "text": "Text box",
+      "multiline": "Multi-line text",
+      "checkbox": "Check box",
+      "radio": "Radio button",
+      "dropdown": "Drop-down",
+      "signature": "Signature field"
+    },
+    "hint": {
+      "text": "Click or drag on the page to add a text box.",
+      "multiline": "Drag to add a multi-line text area.",
+      "checkbox": "Click to add a check box.",
+      "radio": "Click to add a radio button. Buttons with the same group name belong together.",
+      "dropdown": "Drag to add a drop-down list.",
+      "signature": "Drag to add a signature field.",
+      "select": "Click a field to edit it, drag to move it."
+    }
   }
 }
