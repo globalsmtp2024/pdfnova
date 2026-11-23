@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.container import Container
 from app.core.config import Settings
-from app.core.errors import AuthenticationError, RateLimitedError
+from app.core.errors import AuthenticationError, PermissionDeniedError, RateLimitedError
 from app.core.security import decode_jwt, encode_jwt, hash_token
 from app.db.base import new_id, utcnow
 from app.models.user import ApiKey, User
@@ -115,7 +115,15 @@ async def get_current_user(request: Request, session: SessionDep) -> User:
     return user
 
 
+async def get_admin_user(request: Request, session: SessionDep) -> User:
+    user = await get_current_user(request, session)
+    if not user.is_admin:
+        raise PermissionDeniedError("This area is only for administrators.")
+    return user
+
+
 CurrentUser = Annotated[User, Depends(get_current_user)]
+AdminUser = Annotated[User, Depends(get_admin_user)]
 OptionalUser = Annotated[User | None, Depends(get_optional_user)]
 
 

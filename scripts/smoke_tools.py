@@ -978,6 +978,67 @@ def run_schedules(client: httpx.Client) -> str:
     return "ok"
 
 
+def run_admin(client: httpx.Client) -> str:
+    import sqlite3
+    from pathlib import Path
+
+    problem = sign_in_new_user(client, "admin")
+    if problem:
+        return problem
+    me = client.get("/api/v1/auth/me").json()
+    if client.get("/api/v1/admin/health").status_code != 403:
+        return "non-admin reached admin"
+    database = Path(__file__).resolve().parent.parent / "apps/api/var/pdfnova.db"
+    connection = sqlite3.connect(database)
+    connection.execute("update users set is_admin = 1 where id = ?", (me["id"],))
+    connection.commit()
+    connection.close()
+    health = client.get("/api/v1/admin/health")
+    if health.status_code != 200 or not health.json()["checks"]["database"]["ok"] or not health.json()["checks"]["storage"]["ok"]:
+        return f"health {health.status_code} {health.text[:120]}"
+    jobs = client.get("/api/v1/admin/jobs").json()
+    if "tools" not in jobs or "days" not in jobs:
+        return "job metrics shape"
+    if client.get("/api/v1/admin/failures").status_code != 200:
+        return "failures"
+    users = client.get("/api/v1/admin/users", params={"q": me["email"]}).json()
+    if [u["email"] for u in users] != [me["email"]]:
+        return "user search"
+    if client.patch(f"/api/v1/admin/users/{me['id']}", json={"is_admin": False}).status_code != 409:
+        return "self-demotion allowed"
+    client.put("/api/v1/admin/flags/signups", json={"enabled": False})
+    with httpx.Client(base_url=BASE, timeout=30) as other:
+        other.get("/api/v1/auth/csrf")
+        other.headers["x-csrf-token"] = other.cookies.get("pn_csrf") or ""
+        blocked = other.post("/api/v1/auth/register", json={"email": f"blocked-{int(time.time())}@example.com", "password": PASSWORD})
+        if blocked.status_code < 400:
+            return "signups flag ignored"
+        if other.get("/api/v1/flags").json()["signups"] is not False:
+            return "public flags wrong"
+    client.put("/api/v1/admin/flags/signups", json={"enabled": True})
+    before = {row["key"]: row["value"] for row in client.get("/api/v1/admin/fair-use").json()}
+    changed = client.put("/api/v1/admin/fair-use", json={"hourly_tasks": 77})
+    if changed.status_code != 200 or {r["key"]: r["value"] for r in changed.json()}["hourly_tasks"] != 77:
+        return f"fair-use edit {changed.status_code} {changed.text[:100]}"
+    client.put("/api/v1/admin/fair-use", json={"hourly_tasks": before["hourly_tasks"]})
+    note = client.put("/api/v1/admin/announcement", json={"enabled": True, "message_en": "Maintenance tonight", "message_ur": "آج رات دیکھ بھال", "href": ""})
+    if note.status_code != 200:
+        return f"announcement {note.status_code}"
+    public = httpx.get(f"{BASE}/api/v1/announcement").json()
+    if not public["enabled"] or public["message"]["en"] != "Maintenance tonight":
+        return "public announcement"
+    client.put("/api/v1/admin/announcement", json={"enabled": False})
+    report = httpx.post(f"{BASE}/api/v1/reports", json={"kind": "link", "target": "x", "reason": "This shared link hosts something harmful."})
+    if report.status_code != 202:
+        return f"report {report.status_code}"
+    queue = client.get("/api/v1/admin/abuse").json()
+    if not queue:
+        return "abuse queue empty"
+    if client.post(f"/api/v1/admin/abuse/{queue[0]['id']}/resolve", json={"status": "dismissed", "note": "checked"}).status_code != 200:
+        return "resolve failed"
+    return "ok"
+
+
 def main() -> int:
     only = set(sys.argv[1].split(",")) if len(sys.argv) > 1 else None
     failures = 0
@@ -987,6 +1048,10 @@ def main() -> int:
         if only and "workflow-templates" in only:
             outcome = run_workflow_templates(client)
             print(f"{'workflow-templates':20} {outcome}")
+            failures += outcome != "ok"
+        if only and "admin" in only:
+            outcome = run_admin(client)
+            print(f"{'admin':20} {outcome}")
             failures += outcome != "ok"
         if only and "schedules" in only:
             outcome = run_schedules(client)

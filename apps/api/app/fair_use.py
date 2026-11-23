@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Any
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -26,6 +27,44 @@ class FairUse(BaseSettings):
     api_priority: int = 0
 
 
+EDITABLE_KEYS: tuple[str, ...] = (
+    "max_file_bytes",
+    "max_task_bytes",
+    "max_files_per_task",
+    "concurrent_jobs",
+    "hourly_tasks",
+    "daily_tasks",
+    "ai_daily_requests",
+    "requests_per_minute",
+    "retention_seconds",
+    "extended_retention_seconds",
+    "library_bytes",
+    "library_trash_days",
+)
+_overrides: dict[str, int] = {}
+
+
 @lru_cache
-def get_fair_use() -> FairUse:
-    return FairUse()
+def _build(items: tuple[tuple[str, int], ...]) -> FairUse:
+    values: dict[str, Any] = dict(items)
+    return FairUse(**values)
+
+
+def get_overrides() -> dict[str, int]:
+    return dict(_overrides)
+
+
+def set_overrides(values: dict[str, int]) -> None:
+    _overrides.clear()
+    _overrides.update({key: value for key, value in values.items() if key in EDITABLE_KEYS and value > 0})
+
+
+class _FairUseProvider:
+    def __call__(self) -> FairUse:
+        return _build(tuple(sorted(_overrides.items())))
+
+    def cache_clear(self) -> None:
+        _build.cache_clear()
+
+
+get_fair_use = _FairUseProvider()

@@ -24,7 +24,7 @@ PREFIX_SCOPES: tuple[tuple[str, str], ...] = (
     ("/api/v1/teams", "teams"),
     ("/api/v1/webhooks", "webhooks"),
 )
-ACCOUNT_PREFIXES = ("/api/v1/me", "/api/v1/auth")
+ACCOUNT_PREFIXES = ("/api/v1/me", "/api/v1/auth", "/api/v1/admin")
 
 
 def required_scope(method: str, path: str) -> str | None:

@@ -10,6 +10,7 @@ from app.core.errors import ConflictError, NotFoundError, ToolInputError
 from app.db.base import utcnow
 from app.models.webhook import Webhook, WebhookDelivery
 from app.services import webhooks as service
+from app.services.flags import require_flag
 
 router = APIRouter(prefix="/api/v1/webhooks", tags=["webhooks"])
 
@@ -115,6 +116,7 @@ async def list_webhooks(session: SessionDep, user: CurrentUser) -> list[WebhookO
 async def create_webhook(
     body: WebhookCreate, container: ContainerDep, session: SessionDep, user: CurrentUser
 ) -> WebhookCreated:
+    await require_flag(session, "webhooks")
     existing = list(await session.scalars(select(Webhook).where(Webhook.user_id == user.id)))
     if len(existing) >= MAX_WEBHOOKS:
         raise ConflictError(f"You can have up to {MAX_WEBHOOKS} webhooks.")

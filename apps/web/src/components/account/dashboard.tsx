@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, CalendarClock, Check, Copy, FileClock, FolderHeart, KeyRound, Layers, LogIn, PenLine, ShieldCheck, Users, Webhook, Workflow } from "lucide-react";
+import { Activity, CalendarClock, Check, Copy, FileClock, FolderHeart, KeyRound, Layers, LogIn, PenLine, ShieldAlert, ShieldCheck, Users, Webhook, Workflow } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState, type FormEvent, type ReactNode } from "react";
 
@@ -349,6 +349,13 @@ export function Dashboard() {
             {t("esign.newRequest")}
           </Link>
         </Panel>
+        {session.data?.is_admin ? (
+          <Panel title={t("admin.title")} icon={ShieldAlert}>
+            <Link href="/admin" className="text-sm font-medium text-primary underline">
+              {t("admin.title")}
+            </Link>
+          </Panel>
+        ) : null}
         <Panel title={t("schedules.title")} icon={CalendarClock}>
           <p className="text-sm text-muted">{t("schedules.subtitle")}</p>
           <Link href="/dashboard/schedules" className="text-sm font-medium text-primary underline">

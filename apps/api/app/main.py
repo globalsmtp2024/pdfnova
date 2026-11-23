@@ -8,6 +8,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 
 from app.api.routes import (
     account,
+    admin,
     auth,
     cloud,
     contact,
@@ -32,6 +33,7 @@ from app.core.metrics import metrics_middleware
 from app.core.middleware import build_http_middleware
 from app.jobs.sweeper import SweeperHandle
 from app.services.scheduler import SchedulerWorker
+from app.services.site_sync import SiteSyncWorker, load_fair_use
 from app.services.webhooks import WebhookWorker
 
 
@@ -57,12 +59,18 @@ def create_app(settings: Settings | None = None, container: Container | None = N
         )
         if webhook_worker is not None:
             webhook_worker.start()
+        await load_fair_use(active.database)
+        site_sync = SiteSyncWorker(active.database) if owned else None
+        if site_sync is not None:
+            site_sync.start()
         scheduler_worker = SchedulerWorker(active) if owned and settings.scheduler_enabled else None
         if scheduler_worker is not None:
             scheduler_worker.start()
         try:
             yield
         finally:
+            if site_sync is not None:
+                await site_sync.stop()
             if scheduler_worker is not None:
                 await scheduler_worker.stop()
             if webhook_worker is not None:
@@ -111,6 +119,8 @@ def create_app(settings: Settings | None = None, container: Container | None = N
         esign.router,
         library.router,
         cloud.router,
+        admin.router,
+        admin.public,
         teams.router,
         webhooks.router,
         schedules.router,

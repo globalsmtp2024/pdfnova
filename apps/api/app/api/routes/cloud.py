@@ -20,6 +20,7 @@ from app.fair_use import get_fair_use
 from app.models.cloud import CloudConnection
 from app.models.user import User
 from app.services import library as library_service
+from app.services.flags import require_flag
 from app.services.permissions import Permission
 
 router = APIRouter(prefix="/api/v1/cloud", tags=["cloud"])
@@ -136,7 +137,10 @@ async def list_providers(
 
 
 @router.get("/{name}/connect")
-async def connect(name: str, container: ContainerDep, user: CurrentUser) -> dict[str, str]:
+async def connect(
+    name: str, container: ContainerDep, session: SessionDep, user: CurrentUser
+) -> dict[str, str]:
+    await require_flag(session, "cloud")
     provider = provider_or_404(container, name)
     return {"url": provider.authorize_url(make_state(name, user.id), redirect_uri(container, name))}
 

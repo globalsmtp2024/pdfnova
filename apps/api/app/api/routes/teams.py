@@ -13,6 +13,7 @@ from app.db.base import utcnow
 from app.models.team import Team, TeamInvite, TeamMember, TeamRole, TeamWorkflow
 from app.models.user import User
 from app.services.email import action_email
+from app.services.flags import require_flag
 from app.services.permissions import (
     Permission,
     can_assign_role,
@@ -127,6 +128,7 @@ async def detail(session: SessionDep, team: Team, member: TeamMember) -> TeamDet
 
 @router.post("", response_model=TeamSummary, status_code=201)
 async def create_team(body: TeamCreate, session: SessionDep, user: CurrentUser) -> TeamSummary:
+    await require_flag(session, "teams")
     count = len(list(await session.scalars(select(TeamMember).where(TeamMember.user_id == user.id))))
     if count >= MAX_TEAMS_PER_USER:
         raise ConflictError("You are already in the maximum number of teams.")

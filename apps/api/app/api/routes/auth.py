@@ -35,6 +35,7 @@ from app.schemas.auth import (
     UserResponse,
 )
 from app.services.auth import AuthService, SessionTokens
+from app.services.flags import require_flag
 from app.services.oauth import build_authorization, exchange_code, resolve_oauth_user
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
@@ -100,6 +101,7 @@ async def register(
     session: SessionDep,
     settings: SettingsDep,
 ) -> LoginResponse:
+    await require_flag(session, "signups")
     user = await service.register(body.email, body.password, body.display_name)
     return await _complete_login(service, session, user, request, response, settings)
 

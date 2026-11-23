@@ -26,6 +26,7 @@ from app.schemas.tasks import (
     TaskResponse,
     UploadResponse,
 )
+from app.services.flags import require_flag
 from app.services.tasks import TaskService
 
 router = APIRouter(prefix="/api/v1", tags=["tasks"], dependencies=[Depends(enforce_rate_limit)])
@@ -99,9 +100,15 @@ class UrlImportRequest(BaseModel):
 
 @router.post("/tasks/{task_id}/imports", response_model=UploadResponse, status_code=201)
 async def import_from_url(
-    task_id: str, body: UrlImportRequest, request: Request, service: TaskServiceDep, container: ContainerDep
+    task_id: str,
+    body: UrlImportRequest,
+    request: Request,
+    service: TaskServiceDep,
+    container: ContainerDep,
+    session: SessionDep,
 ) -> UploadResponse:
     await limit_by_ip(request, container, "url-import", limit=30, window=3600)
+    await require_flag(session, "url_import")
     task = await service.get_owned(task_id)
     imported = await container.url_fetcher(body.url, get_fair_use().max_file_bytes)
     record = await service.create_upload(task, imported.filename, len(imported.data))

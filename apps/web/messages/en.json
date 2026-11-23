@@ -2200,5 +2200,68 @@
       "5": "Saturday",
       "6": "Sunday"
     }
+  },
+  "admin": {
+    "title": "Admin",
+    "careful": "Changes here affect everyone using the site.",
+    "noAccessTitle": "Administrators only",
+    "noAccessBody": "Your account does not have admin access.",
+    "loadFailed": "Could not load this section.",
+    "users": "Users",
+    "tasks24h": "Tasks (24h)",
+    "failed24h": "Failed (24h)",
+    "running": "Running now",
+    "health": "Health",
+    "database": "Database",
+    "storage": "Storage",
+    "disk": "Disk space",
+    "queue": "Queue ({backend})",
+    "ok": "OK",
+    "down": "Down",
+    "diskFree": "{free} free",
+    "uptime": "Up {hours} h",
+    "jobsPerDay": "Jobs per day",
+    "filterTool": "Filter by tool",
+    "filterCode": "Filter by error code",
+    "failuresPrivacy": "File names and contents are never shown here.",
+    "noFailures": "No failures match.",
+    "searchUsers": "Search by email or name",
+    "tasks30d": "{count} tasks in 30 days",
+    "active": "Active",
+    "admin": "Admin",
+    "extendedRetention": "Longer retention",
+    "on": "On",
+    "off": "Off",
+    "fairUseNote": "Changes apply within 30 seconds on every server process.",
+    "save": "Save",
+    "saved": "Saved",
+    "markActioned": "Mark as handled",
+    "dismiss": "Dismiss",
+    "noReports": "No reports here.",
+    "showBar": "Show the announcement bar",
+    "messageEn": "Message (English)",
+    "messageUr": "Message (Urdu)",
+    "href": "Link (optional)",
+    "tab": {
+      "overview": "Overview",
+      "failures": "Failures",
+      "users": "Users",
+      "flags": "Feature flags",
+      "fairUse": "Fair use",
+      "abuse": "Abuse queue",
+      "announcement": "Announcement"
+    },
+    "col": {
+      "tool": "Tool",
+      "total": "Total",
+      "failed": "Failed",
+      "avg": "Average",
+      "p95": "Slowest 5%"
+    },
+    "abuseStatus": {
+      "open": "Open",
+      "actioned": "Handled",
+      "dismissed": "Dismissed"
+    }
   }
 }

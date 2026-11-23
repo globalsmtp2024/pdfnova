@@ -14,6 +14,7 @@ const EXTRA_PAGES = [
   "/dashboard/files",
   "/dashboard/teams",
   "/dashboard/webhooks",
+  "/admin",
   "/dashboard/schedules",
   "/dashboard/signatures",
   "/dashboard/signatures/new",

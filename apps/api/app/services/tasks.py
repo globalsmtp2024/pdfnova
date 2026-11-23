@@ -22,6 +22,7 @@ from app.files.render import purge_render_cache
 from app.files.sniff import FileKind, UnsafeFileError, sniff_file
 from app.models.task import FileRole, FileStatus, Task, TaskFile, TaskStatus
 from app.schemas.tasks import TaskFileResponse, TaskResponse, UploadResponse
+from app.services.flags import require_flag
 from app.services.principal import Principal
 from app.services.quota import (
     ensure_ai_quota,
@@ -340,6 +341,7 @@ class TaskService:
         parsed = tool.parse_options(options)
         tool.validate_inputs(self.input_infos(inputs, frozenset(supplied)), parsed)
         if tool.uses_ai:
+            await require_flag(self._session, "ai_tools")
             job_secrets.update(self._ai_secrets())
         await ensure_task_rate(self._session, self._principal)
         await ensure_concurrency(self._session, self._principal)

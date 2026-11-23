@@ -82,7 +82,7 @@ Phase 6
 - [x] 23 PWA (manifest, service worker, offline page, share-target)
 - [x] 24 Private mode (client-side pdf-lib tools)
 - [x] 25 Smart suggestions after upload and scheduled workflows
-- [ ] 26 Admin panel
+- [x] 26 Admin panel
 - [ ] 27 i18n completion (Urdu everywhere, RTL check, scaffold hi/ar/es/fr/de/pt/tr/id)
 
 Phase 7

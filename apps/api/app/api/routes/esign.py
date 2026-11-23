@@ -13,6 +13,7 @@ from app.core.security import verify_signed_value
 from app.db.base import utcnow
 from app.models.esign import RecipientStatus, SignRequest, SignRequestStatus
 from app.services import esign as service
+from app.services.flags import require_flag
 
 router = APIRouter(prefix="/api/v1/esign", tags=["esign"])
 
@@ -204,6 +205,7 @@ async def create_request(
     file: Annotated[UploadFile, File()],
     metadata: Annotated[str, Form(max_length=MAX_METADATA_BYTES)],
 ) -> RequestDetail:
+    await require_flag(session, "esign")
     data = await file.read(MAX_PDF_BYTES + 1)
     if len(data) > MAX_PDF_BYTES:
         raise ToolInputError("This PDF is larger than 40 MB.")
