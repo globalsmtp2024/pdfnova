@@ -89,6 +89,17 @@ The first nginx file only answers the certificate challenge, because the full fi
 
 ## B. Native install with systemd
 
+### Scripted native install on a shared server
+
+`infra/scripts/install-native.sh` performs sections B1 to B6 with custom ports and keeps existing sites untouched: it does not upgrade packages, does not replace Node.js, only creates its own database role, database and Redis index, and restores the previous nginx file if `nginx -t` fails. Get a certificate for the domain first, then:
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/globalsmtp2024/pdfnova/development/infra/scripts/install-native.sh
+DOMAIN=test.example.com API_PORT=9910 WEB_PORT=9909 bash install-native.sh
+```
+
+It is safe to run again to update: it keeps the existing `/etc/pdfnova/pdfnova.env` and its secrets.
+
 ### B1. System packages
 
 ```bash
