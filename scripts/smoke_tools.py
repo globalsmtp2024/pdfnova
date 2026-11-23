@@ -195,6 +195,11 @@ CASES: list[Case] = [
     Case("url-to-pdf", [("page.html", HTML_SAMPLE.encode("utf-8"), "text/html")]),
     Case("word-to-pdf", [("doc.docx", docx_sample(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document")]),
     Case("ocr", [("scan.png", sample_image("PNG", (800, 300)), "image/png")]),
+    Case("ai-summarize", pdf_upload(), {}, check=contains_text("Stub answer")),
+    Case("ai-chat", pdf_upload(), {"questions": ["What is on page 1?"]}, check=contains_text("(p. 1)")),
+    Case("ai-translate", pdf_upload(), {"target_language": "Urdu"}),
+    Case("ai-smart-redact", pdf_upload(), {}),
+    Case("ai-extract-data", pdf_upload(), {"fields": ["title: document title"]}, check=contains_text("Smoke")),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

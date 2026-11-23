@@ -30,10 +30,10 @@ Handoff file. Tick a box only when the tool is implemented and its smoke case pa
 - [x] 26 Word/PowerPoint/Excel to PDF (soffice)
 - [x] 27 HTML to PDF and URL to PDF (Chromium, SSRF-safe)
 - [x] 28 OCR PDF (Tesseract, English + Urdu)
-- [ ] 29 AI Summarizer (provider abstraction, Anthropic default, BYOK, simple fair-use budget)
-- [ ] 30 Chat with PDF (page citations)
-- [ ] 31 Translate PDF (text-block overlay)
-- [ ] 32 Smart Redact and Extract structured data
+- [x] 29 AI Summarizer (provider abstraction, Anthropic default, BYOK, simple fair-use budget)
+- [x] 30 Chat with PDF (page citations)
+- [x] 31 Translate PDF (text-block overlay)
+- [x] 32 Smart Redact and Extract structured data
 - [ ] 33 API keys + public API docs page
 - [ ] 34 Share links
 - [ ] 35 Simple linear workflow runner

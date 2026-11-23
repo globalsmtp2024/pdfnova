@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.container import Container
 from app.core.errors import ConflictError, NotFoundError, ToolInputError, UnsupportedFileError
+from app.core.crypto import load_key, open_text
 from app.core.secrets import seal_secrets
 from app.core.security import sign_value
 from app.db.base import new_id, utcnow
@@ -338,6 +339,8 @@ class TaskService:
             )
         parsed = tool.parse_options(options)
         tool.validate_inputs(self.input_infos(inputs, frozenset(supplied)), parsed)
+        if tool.uses_ai:
+            job_secrets.update(self._ai_secrets())
         await ensure_task_rate(self._session, self._principal)
         await ensure_concurrency(self._session, self._principal)
         if tool.uses_ai:
@@ -361,6 +364,22 @@ class TaskService:
         await self._session.commit()
         await self._container.queue.enqueue(task.id, task.priority)
         return task
+
+    def _ai_secrets(self) -> dict[str, str]:
+        user = self._principal.user
+        if user is not None and user.ai_api_key_encrypted is not None:
+            key = load_key(self._settings.storage_encryption_key.get_secret_value())
+            return {
+                "ai_provider": user.ai_provider or "anthropic",
+                "ai_key": open_text(key, user.ai_api_key_encrypted),
+            }
+        shared = self._settings.ai_shared_api_key
+        if shared is None:
+            raise ToolInputError(
+                "AI features are not configured on this server.",
+                hint="Add your own AI key in Settings to use them.",
+            )
+        return {"ai_provider": self._settings.ai_shared_provider, "ai_key": shared.get_secret_value()}
 
     async def cancel(self, task: Task) -> Task:
         if task.state is TaskStatus.CREATED:

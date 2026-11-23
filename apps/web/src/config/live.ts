@@ -41,4 +41,9 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "pdf-to-excel",
   "html-to-pdf",
   "url-to-pdf",
+  "ai-summarize",
+  "ai-chat",
+  "ai-translate",
+  "ai-smart-redact",
+  "ai-extract-data",
 ]);

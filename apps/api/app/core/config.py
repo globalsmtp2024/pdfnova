@@ -46,6 +46,8 @@ class Settings(BaseSettings):
     upload_chunk_size: int = 8 * 1024 * 1024
     signed_url_ttl_seconds: int = 900
     job_timeout_seconds: int = 300
+    ai_shared_provider: str = "anthropic"
+    ai_shared_api_key: SecretStr | None = None
     job_memory_limit_mb: int = 2048
     sweeper_interval_seconds: int = 60
 

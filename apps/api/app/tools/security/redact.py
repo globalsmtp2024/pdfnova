@@ -1,6 +1,7 @@
 import re
 import zlib
 from collections.abc import Sequence
+from typing import Any
 
 import pikepdf
 import pypdfium2 as pdfium
@@ -129,6 +130,59 @@ def raster_page(pdf: pikepdf.Pdf, index: int, image: Image.Image, geometry: Page
             del page.obj[key]
 
 
+def redact_with(ctx: JobContext[Any], options: RedactOptions) -> list[OutputFile]:
+    item: InputFile = ctx.inputs[0]
+    patterns = compile_patterns(options.patterns, options.ignore_case)
+    document = pdfium.PdfDocument(str(item.path))
+    try:
+        with open_pdf(item) as pdf:
+            count = len(pdf.pages)
+            manual: dict[int, list[Box]] = {}
+            for line in options.boxes:
+                index, box = parse_box(line, count)
+                manual.setdefault(index, []).append(box)
+            redacted = 0
+            for index in range(count):
+                ctx.ensure_not_cancelled()
+                ctx.report(index / count, f"Checking page {index + 1}")
+                geometry = page_geometry(pdf.pages[index])
+                boxes = manual.get(index, []) + pattern_boxes(document, index, geometry, patterns)
+                if not boxes:
+                    continue
+                scale = options.dpi / 72
+                pixels = geometry.visual_width * geometry.visual_height * scale * scale
+                if pixels > MAX_REDACT_PIXELS:
+                    scale *= (MAX_REDACT_PIXELS / pixels) ** 0.5
+                page = document[index]
+                image = page.render(scale=scale).to_pil().convert("RGB")
+                page.close()
+                draw = ImageDraw.Draw(image)
+                for left, bottom, right, top in boxes:
+                    draw.rectangle(
+                        (
+                            left * scale,
+                            image.height - top * scale,
+                            right * scale,
+                            image.height - bottom * scale,
+                        ),
+                        fill=(0, 0, 0),
+                    )
+                raster_page(pdf, index, image, geometry)
+                redacted += 1
+            if redacted == 0:
+                raise ToolInputError("Nothing matched, so no pages were changed.")
+            if options.strip_metadata:
+                for key in list(pdf.docinfo.keys()):
+                    del pdf.docinfo[key]
+                if "/Metadata" in pdf.Root:
+                    del pdf.Root["/Metadata"]
+            target = ctx.output_path(pdf_name(f"{item.stem}-redacted", "redacted"))
+            save_pdf(pdf, target)
+    finally:
+        document.close()
+    return [output_pdf(target)]
+
+
 class RedactTool(Tool[RedactOptions]):
     slug = "redact"
     name = "Redact PDF"
@@ -150,54 +204,4 @@ class RedactTool(Tool[RedactOptions]):
                     parse_box(line, info.page_count)
 
     def run(self, ctx: JobContext[RedactOptions]) -> list[OutputFile]:
-        options = ctx.options
-        item: InputFile = ctx.inputs[0]
-        patterns = compile_patterns(options.patterns, options.ignore_case)
-        document = pdfium.PdfDocument(str(item.path))
-        try:
-            with open_pdf(item) as pdf:
-                count = len(pdf.pages)
-                manual: dict[int, list[Box]] = {}
-                for line in options.boxes:
-                    index, box = parse_box(line, count)
-                    manual.setdefault(index, []).append(box)
-                redacted = 0
-                for index in range(count):
-                    ctx.ensure_not_cancelled()
-                    ctx.report(index / count, f"Checking page {index + 1}")
-                    geometry = page_geometry(pdf.pages[index])
-                    boxes = manual.get(index, []) + pattern_boxes(document, index, geometry, patterns)
-                    if not boxes:
-                        continue
-                    scale = options.dpi / 72
-                    pixels = geometry.visual_width * geometry.visual_height * scale * scale
-                    if pixels > MAX_REDACT_PIXELS:
-                        scale *= (MAX_REDACT_PIXELS / pixels) ** 0.5
-                    page = document[index]
-                    image = page.render(scale=scale).to_pil().convert("RGB")
-                    page.close()
-                    draw = ImageDraw.Draw(image)
-                    for left, bottom, right, top in boxes:
-                        draw.rectangle(
-                            (
-                                left * scale,
-                                image.height - top * scale,
-                                right * scale,
-                                image.height - bottom * scale,
-                            ),
-                            fill=(0, 0, 0),
-                        )
-                    raster_page(pdf, index, image, geometry)
-                    redacted += 1
-                if redacted == 0:
-                    raise ToolInputError("Nothing matched, so no pages were changed.")
-                if options.strip_metadata:
-                    for key in list(pdf.docinfo.keys()):
-                        del pdf.docinfo[key]
-                    if "/Metadata" in pdf.Root:
-                        del pdf.Root["/Metadata"]
-                target = ctx.output_path(pdf_name(f"{item.stem}-redacted", "redacted"))
-                save_pdf(pdf, target)
-        finally:
-            document.close()
-        return [output_pdf(target)]
+        return redact_with(ctx, ctx.options)
