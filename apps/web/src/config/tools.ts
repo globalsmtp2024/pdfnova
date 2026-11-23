@@ -573,14 +573,6 @@ export const TOOLS: ToolDefinition[] = [
     ["signature"],
   ),
   tool(
-    "digital-signature",
-    "Digital signature",
-    "security",
-    "Certificate-based signatures with validation.",
-    ["pdf"],
-    ["certificate"],
-  ),
-  tool(
     "redact",
     "Redact PDF",
     "security",
@@ -596,14 +588,6 @@ export const TOOLS: ToolDefinition[] = [
     ["pdf"],
     ["diff"],
     2,
-  ),
-  tool(
-    "verify-signature",
-    "Verify signature",
-    "security",
-    "Check who signed and whether it changed.",
-    ["pdf"],
-    ["validate"],
   ),
   tool(
     "ai-summarize",

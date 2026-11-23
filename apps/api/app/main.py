@@ -6,7 +6,18 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
-from app.api.routes import account, auth, contact, fair_use, files, health, pages, tasks, tools
+from app.api.routes import (
+    account,
+    auth,
+    contact,
+    esign,
+    fair_use,
+    files,
+    health,
+    pages,
+    tasks,
+    tools,
+)
 from app.container import Container, build_container
 from app.core.brand import get_brand
 from app.core.config import Settings, get_settings
@@ -78,6 +89,7 @@ def create_app(settings: Settings | None = None, container: Container | None = N
         tasks.router,
         files.router,
         pages.router,
+        esign.router,
     ):
         app.include_router(router)
     return app

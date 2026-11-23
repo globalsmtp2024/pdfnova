@@ -8,6 +8,8 @@ export const NOT_FOUND_PATH = "/page-not-found";
 
 const EXTRA_PAGES = [
   "/dashboard",
+  "/dashboard/signatures",
+  "/dashboard/signatures/new",
   "/settings",
   "/onboarding",
   "/offline",
@@ -30,11 +32,17 @@ const DYNAMIC: Record<string, ReadonlySet<string>> = {
   legal: new Set(LEGAL_DOCUMENTS.map((document) => document.slug)),
 };
 
+const DYNAMIC_PATTERNS: readonly RegExp[] = [
+  /^\/dashboard\/signatures\/[A-Za-z0-9]{1,64}$/,
+  /^\/sign\/[A-Za-z0-9_-]{20,100}$/,
+];
+
 const KNOWN = new Set<string>([...STATIC_PAGES, ...EXTRA_PAGES]);
 
 export function isKnownPath(path: string): boolean {
   const normalized = path.length > 1 ? path.replace(/\/+$/, "") : path;
   if (KNOWN.has(normalized)) return true;
+  if (DYNAMIC_PATTERNS.some((pattern) => pattern.test(normalized))) return true;
   const segments = normalized.split("/").filter(Boolean);
   if (segments.length !== 2) return false;
   const values = DYNAMIC[segments[0]];

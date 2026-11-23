@@ -535,12 +535,77 @@ def run_share(client: httpx.Client) -> str:
     return pdfs_open([("shared.pdf", fetched.content)]) or "ok"
 
 
+def run_esign(client: httpx.Client) -> str:
+    import base64
+    import json
+    import re
+    from pathlib import Path
+
+    email = f"esign-{int(time.time())}@example.com"
+    registered = client.post("/api/v1/auth/register", json={"email": email, "password": PASSWORD, "display_name": "Owner"})
+    if registered.status_code not in {200, 201}:
+        return f"register {registered.status_code} {registered.text[:80]}"
+    logged = client.post("/api/v1/auth/login", json={"email": email, "password": PASSWORD})
+    if logged.status_code != 200:
+        return f"login {logged.status_code} {logged.text[:80]}"
+    client.headers["x-csrf-token"] = client.cookies.get("pn_csrf") or client.headers.get("x-csrf-token", "")
+    metadata = {
+        "title": "Smoke agreement",
+        "recipients": [{"name": "Sam Signer", "email": "sam@example.com"}],
+        "fields": [
+            {"recipient": 0, "kind": "signature", "page": 1, "x": 10, "y": 70, "width": 30, "height": 8},
+            {"recipient": 0, "kind": "date", "page": 1, "x": 50, "y": 70, "width": 20, "height": 4},
+        ],
+    }
+    created = client.post(
+        "/api/v1/esign/requests",
+        files={"file": ("a.pdf", sample_pdf(1), "application/pdf")},
+        data={"metadata": json.dumps(metadata)},
+    )
+    if created.status_code != 201:
+        return f"create {created.status_code} {created.text[:120]}"
+    request_id = created.json()["id"]
+    time.sleep(0.5)
+    log_text = Path("/tmp/claude-0/api.log").read_text(errors="ignore")
+    tokens = re.findall(r"/sign/([A-Za-z0-9_-]{30,})", log_text)
+    if not tokens:
+        return "no signing link emailed"
+    token = tokens[-1]
+    with httpx.Client(base_url=BASE, timeout=60) as signer:
+        view = signer.get(f"/api/v1/esign/sign/{token}")
+        if view.status_code != 200:
+            return f"view {view.status_code}"
+        document = signer.get(f"/api/v1/esign/sign/{token}/document")
+        if document.status_code != 200 or not document.content.startswith(b"%PDF"):
+            return "signer document failed"
+        fields = view.json()["fields"]
+        mark = base64.b64encode(sample_image("PNG", (200, 60))).decode()
+        values = {f["id"]: (mark if f["kind"] == "signature" else "") for f in fields}
+        done = signer.post(f"/api/v1/esign/sign/{token}/submit", json={"values": values, "consent": True})
+        if done.status_code != 200 or not done.json().get("completed"):
+            return f"submit {done.status_code} {done.text[:120]}"
+        again = signer.post(f"/api/v1/esign/sign/{token}/submit", json={"values": values, "consent": True})
+        if again.status_code == 200:
+            return "token was reusable"
+    detail = client.get(f"/api/v1/esign/requests/{request_id}").json()
+    if detail["status"] != "completed" or not any(e["event"] == "completed" for e in detail["events"]):
+        return f"not completed: {detail['status']}"
+    final = client.get(f"/api/v1/esign/requests/{request_id}/document")
+    if final.status_code != 200:
+        return f"download {final.status_code}"
+    return pdfs_open([("signed.pdf", final.content)]) or "ok"
+
+
 def main() -> int:
     only = set(sys.argv[1].split(",")) if len(sys.argv) > 1 else None
     failures = 0
     with httpx.Client(base_url=BASE, timeout=120) as client:
         client.get("/api/v1/auth/csrf")
         client.headers["x-csrf-token"] = client.cookies.get("pn_csrf") or ""
+        if only and "esign" in only:
+            outcome = run_esign(client)
+            print(f"{'esign':20} {outcome}")
+            failures += outcome != "ok"
         if only and "share" in only:
             outcome = run_share(client)
             print(f"{'share':20} {outcome}")
