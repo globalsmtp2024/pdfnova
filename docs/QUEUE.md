@@ -68,8 +68,8 @@ Phase 4
 - [x] 13 Redact pattern library (email, phone, Luhn card, CNIC, IBAN, SSN) + mandatory verification report
 
 Phase 5
-- [ ] 14 Smart Split and AI rename
-- [ ] 15 Auto-categorize and key-dates extractor with .ics export
+- [x] 14 Smart Split and AI rename
+- [x] 15 Auto-categorize and key-dates extractor with .ics export
 - [ ] 16 AI safety layer (injection delimiters, fair-use budget display, BYOK test connection)
 
 Phase 6

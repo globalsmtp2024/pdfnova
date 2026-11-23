@@ -303,6 +303,18 @@ def form_fields_ok(outputs: list[tuple[str, bytes]]) -> str | None:
         return None if len(names) >= 3 else f"too few fields {names}"
 
 
+def zip_or_parts(outputs: list[tuple[str, bytes]]) -> str | None:
+    pdfs = [name for name, _ in outputs if name.endswith(".pdf")]
+    return None if len(pdfs) == 2 else f"expected 2 parts got {pdfs}"
+
+
+def name_is(expected: str) -> Check:
+    def check(outputs: list[tuple[str, bytes]]) -> str | None:
+        return None if outputs[0][0] == expected else f"name {outputs[0][0]!r}"
+
+    return check
+
+
 def pdf_upload(pages: int = 3) -> list[Upload]:
     return [("sample.pdf", sample_pdf(pages), "application/pdf")]
 
@@ -519,6 +531,10 @@ CASES: list[Case] = [
     Case("create-form", pdf_upload(1), {"fields": form_specs()}, check=form_fields_ok),
     Case("detect-form-fields", [("flat.pdf", flat_form_pdf(), "application/pdf")], {}, check=form_fields_ok),
     Case("redact", [("pii.pdf", pii_pdf(), "application/pdf")], {"presets": ["email", "phone", "card", "cnic", "iban", "ssn"]}, check=pii_redacted_ok),
+    Case("ai-smart-split", pdf_upload(3), {}, check=zip_or_parts),
+    Case("ai-rename", pdf_upload(1), {}, check=name_is("Smoke test document.pdf")),
+    Case("ai-categorize", pdf_upload(1), {}, check=contains_text('"category": "report"')),
+    Case("ai-key-dates", pdf_upload(1), {}, check=contains_text("BEGIN:VEVENT")),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

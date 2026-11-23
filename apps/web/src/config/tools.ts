@@ -704,6 +704,7 @@ export const TOOLS: ToolDefinition[] = [
   tool("verify-signatures", "Verify signatures", "security", "Check the digital signatures in a PDF.", ["pdf"], ["validate", "certificate", "integrity"]),
   tool("create-form", "Create fillable form", "edit", "Add form fields to any PDF.", ["pdf"], ["acroform", "fields", "checkbox", "dropdown"]),
   tool("detect-form-fields", "Auto-detect form fields", "edit", "Turn blanks and boxes into fillable fields.", ["pdf"], ["fillable", "blanks", "lines", "convert"]),
+  tool("ai-key-dates", "Key dates extractor", "ai", "Find deadlines and export them as a calendar file.", ["pdf"], ["calendar", "ics", "deadline", "renewal"]),
 ];
 
 export function findTool(slug: string): ToolDefinition | undefined {

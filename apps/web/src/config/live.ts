@@ -73,4 +73,8 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "edit-pdf",
   "create-form",
   "detect-form-fields",
+  "ai-smart-split",
+  "ai-rename",
+  "ai-categorize",
+  "ai-key-dates",
 ]);

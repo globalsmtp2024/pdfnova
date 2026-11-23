@@ -249,6 +249,15 @@ const FIELDS = {
   "presets_cnic": ["CNIC numbers", "شناختی کارڈ نمبر"],
   "presets_iban": ["IBAN (checked)", "IBAN (جانچ شدہ)"],
   "presets_ssn": ["US SSN", "امریکی SSN"],
+  "hint": ["What does the file contain? (optional)", "فائل میں کیا ہے؟ (اختیاری)"],
+  "max_parts": ["Most parts", "زیادہ سے زیادہ حصے"],
+  "style_descriptive": ["Descriptive", "وضاحتی"],
+  "style_dated": ["Starts with the date", "تاریخ سے شروع"],
+  "style_short": ["Short", "مختصر"],
+  "categories": ["Categories (one per line, optional)", "زمرے (ہر سطر میں ایک، اختیاری)"],
+  "include_past": ["Include past dates", "گزری ہوئی تاریخیں شامل کریں"],
+  "output_all": ["Calendar, JSON and CSV", "کیلنڈر، JSON اور CSV"],
+  "output_ics": ["Calendar (.ics)", "کیلنڈر (.ics)"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

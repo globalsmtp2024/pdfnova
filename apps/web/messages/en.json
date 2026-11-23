@@ -1498,7 +1498,16 @@
     "presets_card": "Card numbers (checked)",
     "presets_cnic": "CNIC numbers",
     "presets_iban": "IBAN (checked)",
-    "presets_ssn": "US SSN"
+    "presets_ssn": "US SSN",
+    "hint": "What does the file contain? (optional)",
+    "max_parts": "Most parts",
+    "style_descriptive": "Descriptive",
+    "style_dated": "Starts with the date",
+    "style_short": "Short",
+    "categories": "Categories (one per line, optional)",
+    "include_past": "Include past dates",
+    "output_all": "Calendar, JSON and CSV",
+    "output_ics": "Calendar (.ics)"
   },
   "tools": {
     "remove-annotations": {
@@ -1580,6 +1589,22 @@
     "detect-form-fields": {
       "name": "Auto-detect form fields",
       "description": "Turn blanks and boxes into fillable fields."
+    },
+    "ai-smart-split": {
+      "name": "Smart split",
+      "description": "AI finds where documents begin and end."
+    },
+    "ai-rename": {
+      "name": "AI rename",
+      "description": "Name your PDF from its content."
+    },
+    "ai-categorize": {
+      "name": "Auto-categorize",
+      "description": "Label a PDF with a category and tags."
+    },
+    "ai-key-dates": {
+      "name": "Key dates extractor",
+      "description": "Find deadlines and export them as a calendar file."
     }
   },
   "tool_sign": {

@@ -1,6 +1,10 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const NAMES = {
+  "ai-smart-split": [["Smart split", "AI finds where documents begin and end."], ["اسمارٹ اسپلٹ", "AI تلاش کرتا ہے کہ دستاویزیں کہاں شروع اور ختم ہوتی ہیں۔"]],
+  "ai-rename": [["AI rename", "Name your PDF from its content."], ["AI ری نیم", "مواد کی بنیاد پر PDF کا نام رکھیں۔"]],
+  "ai-categorize": [["Auto-categorize", "Label a PDF with a category and tags."], ["خودکار زمرہ بندی", "PDF کو زمرہ اور ٹیگز دیں۔"]],
+  "ai-key-dates": [["Key dates extractor", "Find deadlines and export them as a calendar file."], ["اہم تاریخیں نکالیں", "آخری تاریخیں تلاش کر کے کیلنڈر فائل میں برآمد کریں۔"]],
   "create-form": [["Create fillable form", "Add form fields to any PDF."], ["فِل ایبل فارم بنائیں", "کسی بھی PDF میں فارم فیلڈز شامل کریں۔"]],
   "detect-form-fields": [["Auto-detect form fields", "Turn blanks and boxes into fillable fields."], ["فارم فیلڈز خودکار تلاش", "خالی جگہوں اور باکسز کو فِل ایبل فیلڈز میں بدلیں۔"]],
   "digital-sign": [["Digital signature", "Sign with your own certificate (.p12 or .pfx)."], ["ڈیجیٹل دستخط", "اپنے سرٹیفکیٹ (.p12 یا .pfx) سے دستخط کریں۔"]],

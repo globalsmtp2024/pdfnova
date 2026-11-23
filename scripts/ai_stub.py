@@ -8,6 +8,14 @@ def answer(prompt: str) -> str:
         match = re.search(r"\n(\[.*\])\s*$", prompt, re.S)
         lines = json.loads(match.group(1)) if match else []
         return json.dumps([f"ترجمہ {line}" for line in lines], ensure_ascii=False)
+    if "Decide where each separate document" in prompt:
+        return '[{"title": "First part", "start": 1, "end": 1}, {"title": "Second part", "start": 2, "end": 3}]'
+    if "Suggest a file name" in prompt:
+        return '{"filename": "Smoke test document"}'
+    if "Choose exactly one category" in prompt:
+        return '{"category": "report", "confidence": 0.8, "tags": ["smoke", "test"]}'
+    if "List every important date" in prompt:
+        return '[{"date": "2026-12-31", "label": "Contract renewal", "page": 1}]'
     if "List every exact string" in prompt:
         return '["fox"]'
     if "flat JSON object" in prompt:

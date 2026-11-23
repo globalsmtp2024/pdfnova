@@ -729,8 +729,8 @@
       "description": "سوال پوچھیں اور صفحہ حوالوں کے ساتھ جواب پائیں۔"
     },
     "ai-smart-split": {
-      "name": "سمارٹ تقسیم",
-      "description": "موضوع، باب یا انوائس کے لحاظ سے خودکار تقسیم۔"
+      "name": "اسمارٹ اسپلٹ",
+      "description": "AI تلاش کرتا ہے کہ دستاویزیں کہاں شروع اور ختم ہوتی ہیں۔"
     },
     "ai-smart-redact": {
       "name": "سمارٹ پوشیدگی",
@@ -741,12 +741,12 @@
       "description": "انوائس، رسیدیں اور سی وی سے JSON، CSV یا Excel۔"
     },
     "ai-rename": {
-      "name": "AI نام تجویز",
-      "description": "واضح اور یکساں فائل نام تجویز پائیں۔"
+      "name": "AI ری نیم",
+      "description": "مواد کی بنیاد پر PDF کا نام رکھیں۔"
     },
     "ai-categorize": {
       "name": "خودکار زمرہ بندی",
-      "description": "دستاویزات کو خود بخود زمروں میں ترتیب دیں۔"
+      "description": "PDF کو زمرہ اور ٹیگز دیں۔"
     },
     "image-compress": {
       "name": "تصویر کمپریس",
@@ -827,6 +827,10 @@
     "detect-form-fields": {
       "name": "فارم فیلڈز خودکار تلاش",
       "description": "خالی جگہوں اور باکسز کو فِل ایبل فیلڈز میں بدلیں۔"
+    },
+    "ai-key-dates": {
+      "name": "اہم تاریخیں نکالیں",
+      "description": "آخری تاریخیں تلاش کر کے کیلنڈر فائل میں برآمد کریں۔"
     }
   },
   "password": {
@@ -1634,7 +1638,16 @@
     "presets_card": "کارڈ نمبر (جانچ شدہ)",
     "presets_cnic": "شناختی کارڈ نمبر",
     "presets_iban": "IBAN (جانچ شدہ)",
-    "presets_ssn": "امریکی SSN"
+    "presets_ssn": "امریکی SSN",
+    "hint": "فائل میں کیا ہے؟ (اختیاری)",
+    "max_parts": "زیادہ سے زیادہ حصے",
+    "style_descriptive": "وضاحتی",
+    "style_dated": "تاریخ سے شروع",
+    "style_short": "مختصر",
+    "categories": "زمرے (ہر سطر میں ایک، اختیاری)",
+    "include_past": "گزری ہوئی تاریخیں شامل کریں",
+    "output_all": "کیلنڈر، JSON اور CSV",
+    "output_ics": "کیلنڈر (.ics)"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",
