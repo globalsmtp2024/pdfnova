@@ -23,6 +23,7 @@ import { useRouter } from "@/i18n/navigation";
 import type { Task } from "@/lib/types";
 import { toolText } from "@/lib/tool-text";
 import { formatBytes, formatDuration } from "@/lib/utils";
+import { shareFile } from "@/lib/tasks";
 import { usePendingFiles } from "@/stores/pending-files";
 
 function useCountdown(target: string): number {
@@ -94,9 +95,10 @@ export function ResultPanel({
   };
 
   const copyLink = async () => {
-    if (!primary?.download_url) return;
+    if (!primary) return;
     try {
-      await navigator.clipboard.writeText(primary.download_url);
+      const shared = await shareFile(primary.id, 24);
+      await navigator.clipboard.writeText(shared.url);
       toast.success(t("linkCopied"));
     } catch (error) {
       toastError(error);

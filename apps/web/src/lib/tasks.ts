@@ -90,3 +90,10 @@ export function chainOutput(taskId: string, outputFileId: string): Promise<Uploa
     json: { output_file_id: outputFileId },
   });
 }
+
+export function shareFile(
+  fileId: string,
+  hours: number,
+): Promise<{ url: string; expires_at: string }> {
+  return apiJson(`/api/v1/files/${fileId}/share`, { method: "POST", json: { hours } });
+}

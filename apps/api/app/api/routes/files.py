@@ -1,10 +1,14 @@
 import time
 from collections.abc import Iterator
+from datetime import datetime
+from urllib.parse import urlencode
 
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, Field
 
 from app.api.deps import ContainerDep, SessionDep
+from app.api.routes.tasks import TaskServiceDep
 from app.core.errors import NotFoundError, PermissionDeniedError
 from app.core.security import constant_time_equals
 from app.models.task import FileRole, FileStatus, Task, TaskFile
@@ -52,4 +56,31 @@ async def download_file(
             "Content-Length": str(record.size_bytes),
             "Cache-Control": "private, no-store",
         },
+    )
+
+
+class ShareRequest(BaseModel):
+    hours: int = Field(default=1, ge=1, le=168)
+
+
+class ShareResponse(BaseModel):
+    url: str
+    expires_at: datetime
+
+
+@router.post("/{file_id}/share", response_model=ShareResponse)
+async def share_file(
+    file_id: str, body: ShareRequest, service: TaskServiceDep, container: ContainerDep
+) -> ShareResponse:
+    task, record = await service.get_owned_file(file_id)
+    if record.role != FileRole.OUTPUT.value or record.status != FileStatus.READY.value:
+        raise NotFoundError("This result file does not exist.")
+    if task.files_deleted_at is not None:
+        raise NotFoundError("This file has been deleted.")
+    expires = min(int(time.time()) + body.hours * 3600, int(task.expires_at.timestamp()))
+    query = urlencode({"expires": expires, "signature": download_signature(record.id, expires)})
+    base = container.settings.public_api_url.rstrip("/")
+    return ShareResponse(
+        url=f"{base}/api/v1/files/{record.id}/download?{query}",
+        expires_at=datetime.fromtimestamp(expires, tz=task.expires_at.tzinfo),
     )

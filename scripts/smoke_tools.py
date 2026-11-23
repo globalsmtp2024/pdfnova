@@ -243,12 +243,38 @@ def run_case(client: httpx.Client, case: Case) -> str:
     return problem or "ok"
 
 
+def run_share(client: httpx.Client) -> str:
+    task = client.post("/api/v1/tasks", json={"tool": "rotate"}).json()
+    name, data, mime = pdf_upload()[0]
+    client.post(f"/api/v1/tasks/{task['id']}/files", files=[("file", (name, data, mime))])
+    client.post(f"/api/v1/tasks/{task['id']}/start", json={"options": {"angle": 90}})
+    for _ in range(120):
+        result = client.get(f"/api/v1/tasks/{task['id']}").json()
+        if result["status"] in {"succeeded", "failed"}:
+            break
+        time.sleep(0.5)
+    if result["status"] != "succeeded":
+        return "job failed"
+    shared = client.post(f"/api/v1/files/{result['outputs'][0]['id']}/share", json={"hours": 2})
+    if shared.status_code != 200:
+        return f"share failed {shared.status_code}"
+    with httpx.Client(timeout=60) as stranger:
+        fetched = stranger.get(shared.json()["url"])
+    if fetched.status_code != 200:
+        return f"download failed {fetched.status_code}"
+    return pdfs_open([("shared.pdf", fetched.content)]) or "ok"
+
+
 def main() -> int:
     only = set(sys.argv[1].split(",")) if len(sys.argv) > 1 else None
     failures = 0
     with httpx.Client(base_url=BASE, timeout=120) as client:
         client.get("/api/v1/auth/csrf")
         client.headers["x-csrf-token"] = client.cookies.get("pn_csrf") or ""
+        if only and "share" in only:
+            outcome = run_share(client)
+            print(f"{'share':20} {outcome}")
+            failures += outcome != "ok"
         for case in CASES:
             if only and case.slug not in only:
                 continue
