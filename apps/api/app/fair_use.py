@@ -20,6 +20,8 @@ class FairUse(BaseSettings):
     requests_per_minute: int = Field(default=600, gt=0)
     retention_seconds: int = Field(default=1 * HOUR, gt=0)
     extended_retention_seconds: int = Field(default=24 * HOUR, gt=0)
+    library_bytes: int = Field(default=1024 * MB, gt=0)
+    library_trash_days: int = Field(default=30, gt=0)
     interactive_priority: int = 5
     api_priority: int = 0
 

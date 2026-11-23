@@ -7,6 +7,7 @@ from app.models.esign import (
     SignRequest,
     SignRequestStatus,
 )
+from app.models.library import LibraryFile, LibraryFolder
 from app.models.task import AiUsageEvent, FileRole, FileStatus, Task, TaskFile, TaskStatus
 from app.models.user import (
     ApiKey,
@@ -31,6 +32,8 @@ __all__ = [
     "ContactMessage",
     "FileRole",
     "FileStatus",
+    "LibraryFile",
+    "LibraryFolder",
     "OAuthAccount",
     "OneTimeToken",
     "RecoveryCode",

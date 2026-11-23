@@ -14,6 +14,7 @@ from app.api.routes import (
     fair_use,
     files,
     health,
+    library,
     pages,
     tasks,
     tools,
@@ -90,6 +91,7 @@ def create_app(settings: Settings | None = None, container: Container | None = N
         files.router,
         pages.router,
         esign.router,
+        library.router,
     ):
         app.include_router(router)
     return app

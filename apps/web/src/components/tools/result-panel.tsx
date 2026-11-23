@@ -5,6 +5,7 @@ import {
   CircleCheck,
   Download,
   FileArchive,
+  FolderHeart,
   Link2,
   RotateCcw,
   ShieldCheck,
@@ -24,6 +25,8 @@ import type { Task } from "@/lib/types";
 import { toolText } from "@/lib/tool-text";
 import { formatBytes, formatDuration } from "@/lib/utils";
 import { shareFile } from "@/lib/tasks";
+import { useLibraryMutations } from "@/lib/library";
+import { useSession } from "@/lib/session";
 import { usePendingFiles } from "@/stores/pending-files";
 
 function useCountdown(target: string): number {
@@ -105,6 +108,20 @@ export function ResultPanel({
     }
   };
 
+  const session = useSession();
+  const signedIn = Boolean(session.data);
+  const library = useLibraryMutations();
+  const saveToLibrary = async () => {
+    try {
+      for (const output of files) {
+        await library.saveFromTask.mutateAsync({ task_id: task.id, output_file_id: output.id });
+      }
+      toast.success(t("savedToLibrary"));
+    } catch (error) {
+      toastError(error);
+    }
+  };
+
   const chain = (slug: string) => {
     const output = files[0];
     if (!output) return;
@@ -162,6 +179,17 @@ export function ResultPanel({
             <Link2 aria-hidden />
             {t("copyLink")}
           </Button>
+          {signedIn ? (
+            <Button
+              variant="outline"
+              loading={library.saveFromTask.isPending}
+              onClick={() => void saveToLibrary()}
+              data-save-library
+            >
+              <FolderHeart aria-hidden />
+              {t("saveToLibrary")}
+            </Button>
+          ) : null}
           {!archive && primary.page_count !== null ? (
             <p className="text-sm text-muted">{t("pagesShort", { count: primary.page_count })}</p>
           ) : null}

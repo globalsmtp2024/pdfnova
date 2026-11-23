@@ -488,7 +488,9 @@
     "presetAll": "Everything, in order",
     "presetFirstPages": "First page of each file",
     "presetNoBookmarks": "No bookmarks",
-    "lockedFiles": "Unlock the password-protected files to continue."
+    "lockedFiles": "Unlock the password-protected files to continue.",
+    "saveToLibrary": "Save to My files",
+    "savedToLibrary": "Saved to My files"
   },
   "auth": {
     "panelTitle": "Your documents, handled.",
@@ -1936,5 +1938,37 @@
       "done": "Done",
       "failed": "Failed"
     }
+  },
+  "library": {
+    "title": "My files",
+    "subtitle": "Keep results you want to reuse. Files stay until you delete them.",
+    "signInTitle": "Sign in to use My files",
+    "signInBody": "Saved files, folders and tags live in your account.",
+    "signIn": "Sign in",
+    "folders": "Folders",
+    "allFiles": "All files",
+    "trash": "Trash",
+    "newFolder": "New folder",
+    "createFolder": "Create folder",
+    "deleteFolder": "Delete folder",
+    "storage": "Storage",
+    "trashNote": "Deleted files stay in the trash for {days} days.",
+    "search": "Search by name",
+    "emptyTrash": "Empty trash",
+    "upload": "Upload",
+    "emptyTitle": "Nothing here yet",
+    "emptyBody": "Save a result from any tool, or upload a file.",
+    "trashEmpty": "The trash is empty",
+    "download": "Download",
+    "edit": "Edit name, tags and folder",
+    "rename": "File name",
+    "tags": "Tags",
+    "tagsPlaceholder": "Tags, separated by commas",
+    "moveTo": "Move to folder",
+    "rootFolder": "No folder",
+    "save": "Save",
+    "moveToTrash": "Move to trash",
+    "restore": "Restore",
+    "deleteForever": "Delete forever"
   }
 }

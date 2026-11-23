@@ -675,6 +675,75 @@ def run_workflow_templates(client: httpx.Client) -> str:
     return "ok"
 
 
+def sign_in_new_user(client: httpx.Client, prefix: str) -> str | None:
+    email = f"{prefix}-{int(time.time())}@example.com"
+    registered = client.post("/api/v1/auth/register", json={"email": email, "password": PASSWORD, "display_name": "Smoke"})
+    if registered.status_code not in {200, 201}:
+        return f"register {registered.status_code}"
+    logged = client.post("/api/v1/auth/login", json={"email": email, "password": PASSWORD})
+    if logged.status_code != 200:
+        return f"login {logged.status_code}"
+    return None
+
+
+def run_library(client: httpx.Client) -> str:
+    problem = sign_in_new_user(client, "library")
+    if problem:
+        return problem
+    folder = client.post("/api/v1/library/folders", json={"name": "Invoices"})
+    if folder.status_code != 201:
+        return f"folder {folder.status_code}"
+    folder_id = folder.json()["id"]
+    uploaded = client.post(
+        "/api/v1/library/files",
+        files={"file": ("report.pdf", sample_pdf(2), "application/pdf")},
+        data={"folder_id": folder_id},
+    )
+    if uploaded.status_code != 201:
+        return f"upload {uploaded.status_code} {uploaded.text[:100]}"
+    file_id = uploaded.json()["id"]
+    patched = client.patch(f"/api/v1/library/files/{file_id}", json={"name": "Quarterly report.pdf", "tags": ["Finance", "q1"]})
+    if patched.status_code != 200 or patched.json()["tags"] != ["finance", "q1"]:
+        return f"patch {patched.status_code} {patched.text[:100]}"
+    found = client.get("/api/v1/library/files", params={"q": "quarterly"}).json()
+    if [f["id"] for f in found] != [file_id]:
+        return "search failed"
+    if client.get("/api/v1/library/files", params={"tag": "finance"}).json()[0]["id"] != file_id:
+        return "tag filter failed"
+    task = client.post("/api/v1/tasks", json={"tool": "rotate"}).json()
+    name, data, mime = pdf_upload()[0]
+    client.post(f"/api/v1/tasks/{task['id']}/files", files=[("file", (name, data, mime))])
+    client.post(f"/api/v1/tasks/{task['id']}/start", json={"options": {"angle": 90}})
+    for _ in range(120):
+        result = client.get(f"/api/v1/tasks/{task['id']}").json()
+        if result["status"] in {"succeeded", "failed"}:
+            break
+        time.sleep(0.5)
+    saved = client.post("/api/v1/library/files/from-task", json={"task_id": task["id"], "output_file_id": result["outputs"][0]["id"]})
+    if saved.status_code != 201:
+        return f"from-task {saved.status_code} {saved.text[:100]}"
+    download = client.get(f"/api/v1/library/files/{file_id}/download")
+    if download.status_code != 200 or not download.content.startswith(b"%PDF"):
+        return "download failed"
+    trashed = client.delete(f"/api/v1/library/files/{file_id}")
+    if trashed.status_code != 200 or not trashed.json()["deleted_at"]:
+        return "trash failed"
+    if client.get("/api/v1/library/files", params={"trash": "true"}).json()[0]["id"] != file_id:
+        return "trash list failed"
+    if client.post(f"/api/v1/library/files/{file_id}/restore").status_code != 200:
+        return "restore failed"
+    quota = client.get("/api/v1/library/quota").json()
+    if quota["file_count"] != 2 or quota["used_bytes"] <= 0:
+        return f"quota {quota}"
+    if client.delete(f"/api/v1/library/files/{file_id}/permanent").status_code != 204:
+        return "permanent delete failed"
+    with httpx.Client(base_url=BASE, timeout=30) as stranger:
+        stranger.get("/api/v1/auth/csrf")
+        if stranger.get(f"/api/v1/library/files/{file_id}/download").status_code not in {401, 404}:
+            return "unauthenticated access allowed"
+    return "ok"
+
+
 def main() -> int:
     only = set(sys.argv[1].split(",")) if len(sys.argv) > 1 else None
     failures = 0
@@ -684,6 +753,10 @@ def main() -> int:
         if only and "workflow-templates" in only:
             outcome = run_workflow_templates(client)
             print(f"{'workflow-templates':20} {outcome}")
+            failures += outcome != "ok"
+        if only and "library" in only:
+            outcome = run_library(client)
+            print(f"{'library':20} {outcome}")
             failures += outcome != "ok"
         if only and "esign" in only:
             outcome = run_esign(client)
