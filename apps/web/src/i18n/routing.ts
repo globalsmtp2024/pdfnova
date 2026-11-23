@@ -10,6 +10,17 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   ur: "اردو",
 };
 
+export const SCAFFOLD_LOCALES = {
+  hi: { label: "हिन्दी", rtl: false },
+  ar: { label: "العربية", rtl: true },
+  es: { label: "Español", rtl: false },
+  fr: { label: "Français", rtl: false },
+  de: { label: "Deutsch", rtl: false },
+  pt: { label: "Português", rtl: false },
+  tr: { label: "Türkçe", rtl: false },
+  id: { label: "Bahasa Indonesia", rtl: false },
+} as const;
+
 export const routing = defineRouting({
   locales: LOCALES,
   defaultLocale: "en",

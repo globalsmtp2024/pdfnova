@@ -18,7 +18,8 @@
     "format:check": "prettier --check .",
     "pretest": "npm run sync-brand",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "i18n:check": "node scripts/check-i18n.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

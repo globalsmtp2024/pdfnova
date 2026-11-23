@@ -83,7 +83,7 @@ Phase 6
 - [x] 24 Private mode (client-side pdf-lib tools)
 - [x] 25 Smart suggestions after upload and scheduled workflows
 - [x] 26 Admin panel
-- [ ] 27 i18n completion (Urdu everywhere, RTL check, scaffold hi/ar/es/fr/de/pt/tr/id)
+- [x] 27 i18n completion (Urdu everywhere, RTL check, scaffold hi/ar/es/fr/de/pt/tr/id)
 
 Phase 7
 - [ ] 28 Security fixes (IDOR, rate limits, regex timeouts, formula-injection guard, headers/CSP, SSRF re-check)

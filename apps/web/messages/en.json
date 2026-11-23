@@ -539,7 +539,7 @@
     "neverUsed": "Never used",
     "apiUsage": "API activity (14 days)",
     "workflows": "Saved workflows",
-    "workflowsEmpty": "The workflow builder arrives in a later release. Your saved workflows will appear here.",
+    "workflowsEmpty": "Build a workflow in the builder and save it here, or schedule one to run on new files.",
     "activity": "Activity",
     "statuses": {
       "created": "Waiting for files",
@@ -694,11 +694,11 @@
     "metaTitle": "Workflows",
     "eyebrow": "Workflows",
     "title": "Repeatable document pipelines",
-    "subtitle": "Ready-made recipes that chain tools together. The visual builder and one-click runs arrive in a later release.",
+    "subtitle": "Ready-made workflows that chain tools together. Open one in the visual builder, adjust it and run it on your PDFs.",
     "notYet": "Available in a later release",
     "notYetBody": "Workflows need the tools they chain. As each tool ships, its workflows become runnable here.",
     "builderTitle": "Workflow builder",
-    "builderBody": "Drag tools onto a canvas, connect them and save the pipeline. This is the planned builder, shown as a preview.",
+    "builderBody": "Drag tools onto a canvas, connect them and branch into several outputs. Open the builder to try it.",
     "steps": "{count} steps",
     "useWorkflow": "Use this workflow"
   },
