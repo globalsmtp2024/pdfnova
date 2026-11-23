@@ -9,7 +9,8 @@ export type EditorTool =
   | "highlight"
   | "draw"
   | "note"
-  | "link";
+  | "link"
+  | "edit_text";
 
 type Base = { id: string; page: number };
 
@@ -85,7 +86,32 @@ export type LinkOp = Base & {
   url: string;
 };
 
-export type EditOp = TextOp | ImageOp | ShapeOp | LineOp | HighlightOp | DrawOp | NoteOp | LinkOp;
+export type ReplaceTextOp = Base & {
+  type: "replace_text";
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  text: string;
+  font: string;
+  size: number;
+  color: string;
+  bold: boolean;
+  background: string;
+};
+export type FindReplaceOp = Base & {
+  type: "find_replace";
+  find: string;
+  replace: string;
+  match_case: boolean;
+  pages: string;
+  font: string;
+  color: string;
+  bold: boolean;
+  background: string;
+};
+
+export type EditOp = ReplaceTextOp | FindReplaceOp | TextOp | ImageOp | ShapeOp | LineOp | HighlightOp | DrawOp | NoteOp | LinkOp;
 
 export type History = { past: EditOp[][]; present: EditOp[]; future: EditOp[][] };
 
@@ -135,6 +161,8 @@ export function moveOp(op: EditOp, dx: number, dy: number): EditOp {
         ...op,
         points: op.points.map(([x, y]) => [clamp(x + dx, 0, 100), clamp(y + dy, 0, 100)]),
       };
+    case "find_replace":
+      return op;
     default:
       return { ...op, x: clamp(op.x + dx, 0, 100), y: clamp(op.y + dy, 0, 100) };
   }
@@ -149,6 +177,7 @@ export function toPayload(ops: EditOp[]): Record<string, unknown>[] {
     const copy: Record<string, unknown> = { ...op };
     delete copy.id;
     delete copy.preview;
+    if (op.type === "find_replace") delete copy.page;
     return copy;
   });
 }

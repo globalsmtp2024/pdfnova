@@ -1,5 +1,7 @@
+import io
 import math
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Annotated, Literal
 
 import pikepdf
@@ -20,6 +22,8 @@ from app.tools.base import (
     ToolCategory,
     ToolOptions,
 )
+from app.tools.edit.editor_text import Replacement, find_matches, remove_text_objects
+from app.tools.pages import parse_page_ranges
 from app.tools.pdfkit import open_pdf, output_pdf, pdf_name, save_pdf
 
 MAX_OPERATIONS = 2000
@@ -133,8 +137,50 @@ class LinkOp(Operation):
         return value
 
 
+class ReplaceTextOp(Operation):
+    type: Literal["replace_text"]
+    x: Percent
+    y: Percent
+    width: float = Field(ge=0.2, le=100)
+    height: float = Field(ge=0.2, le=100)
+    text: str = Field(max_length=5000)
+    font: FontKey = "noto-sans"
+    size: float = Field(default=12.0, ge=4, le=300)
+    color: str = "#000000"
+    bold: bool = False
+    background: str = "#FFFFFF"
+
+
+class FindReplaceOp(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    type: Literal["find_replace"]
+    find: str = Field(min_length=1, max_length=200)
+    replace: str = Field(max_length=500)
+    match_case: bool = False
+    pages: str = Field(default="all", max_length=500)
+    font: FontKey = "noto-sans"
+    color: str = "#000000"
+    bold: bool = False
+    background: str = "#FFFFFF"
+
+    @field_validator("color", "background")
+    @classmethod
+    def _hex(cls, value: str) -> str:
+        parse_hex_color(value)
+        return value
+
+
 AnyOperation = Annotated[
-    TextOp | ImageOp | ShapeOp | LineOp | HighlightOp | DrawOp | NoteOp | LinkOp,
+    TextOp
+    | ImageOp
+    | ShapeOp
+    | LineOp
+    | HighlightOp
+    | DrawOp
+    | NoteOp
+    | LinkOp
+    | ReplaceTextOp
+    | FindReplaceOp,
     Field(discriminator="type"),
 ]
 
@@ -348,9 +394,104 @@ def apply_link(pdf: pikepdf.Pdf, page: pikepdf.Page, geometry: PageGeometry, op:
     )
 
 
+def collect_replacements(
+    path: Path, geometries: list[PageGeometry], operations: Sequence[AnyOperation]
+) -> list[Replacement]:
+    replacements: list[Replacement] = []
+    for operation in operations:
+        if isinstance(operation, ReplaceTextOp):
+            geometry = geometries[operation.page - 1]
+            left, top = to_visual(geometry, operation.x, operation.y)
+            right, bottom = to_visual(geometry, operation.x + operation.width, operation.y + operation.height)
+            replacements.append(
+                Replacement(
+                    operation.page - 1,
+                    left,
+                    bottom,
+                    right,
+                    top,
+                    operation.text,
+                    operation.font,
+                    operation.size,
+                    operation.color,
+                    operation.bold,
+                    operation.background,
+                )
+            )
+        elif isinstance(operation, FindReplaceOp):
+            indices = (
+                list(range(len(geometries)))
+                if operation.pages.strip().lower() == "all"
+                else parse_page_ranges(operation.pages, len(geometries))
+            )
+            replacements.extend(
+                find_matches(
+                    path,
+                    geometries,
+                    indices,
+                    operation.find,
+                    operation.replace,
+                    operation.match_case,
+                    (operation.font, operation.color, operation.bold, operation.background),
+                )
+            )
+    if len(replacements) > MAX_OPERATIONS:
+        raise ToolInputError("That would change too many places at once.")
+    return replacements
+
+
+def apply_replacements(
+    pdf: pikepdf.Pdf, geometries: list[PageGeometry], replacements: list[Replacement]
+) -> None:
+    overlay = OverlayDocument(pdf, prefix="Rp")
+    for replacement in replacements:
+        page = pdf.pages[replacement.page_index]
+        geometry = geometries[replacement.page_index]
+        pad = 1.0
+        width = replacement.right - replacement.left + 2 * pad
+        height = replacement.top - replacement.bottom + 2 * pad
+        cover = overlay.vector_stamp(
+            f"{rgb(replacement.background)} rg\n0 0 {number(width)} {number(height)} re f", width, height, 1.0
+        )
+        place_stamp(
+            overlay,
+            page,
+            geometry,
+            width,
+            height,
+            cover,
+            (replacement.left - pad, replacement.top + pad),
+            0.0,
+        )
+        if not replacement.text:
+            continue
+        style = TextStyle(
+            font=replacement.font,
+            size=replacement.size,
+            color=parse_hex_color(replacement.color),
+            bold=replacement.bold,
+            align="left",
+        )
+        stamp = overlay.text_stamp(replacement.text, style)
+        middle = (replacement.top + replacement.bottom) / 2
+        place_stamp(
+            overlay,
+            page,
+            geometry,
+            stamp.width,
+            stamp.height,
+            stamp,
+            (replacement.left, middle + stamp.height / 2),
+            0.0,
+        )
+    overlay.finalize()
+
+
 def apply_operations(pdf: pikepdf.Pdf, operations: Sequence[AnyOperation]) -> None:
     overlay = OverlayDocument(pdf, prefix="Ed")
     for operation in operations:
+        if isinstance(operation, FindReplaceOp):
+            continue
         if operation.page > len(pdf.pages):
             raise ToolInputError(f"Page {operation.page} does not exist in this document.")
         page = pdf.pages[operation.page - 1]
@@ -384,6 +525,8 @@ def apply_operations(pdf: pikepdf.Pdf, operations: Sequence[AnyOperation]) -> No
                 operation.stroke_width,
                 operation.opacity,
             )
+        elif isinstance(operation, ReplaceTextOp):
+            continue
         elif isinstance(operation, NoteOp):
             apply_note(pdf, page, geometry, operation)
         else:
@@ -409,15 +552,28 @@ class EditPdfTool(Tool[EditPdfOptions]):
             if info.page_count is None:
                 continue
             for operation in options.operations:
-                if operation.page > info.page_count:
+                if not isinstance(operation, FindReplaceOp) and operation.page > info.page_count:
                     raise ToolInputError(f"Page {operation.page} does not exist in this document.")
 
     def run(self, ctx: JobContext[EditPdfOptions]) -> list[OutputFile]:
         item = ctx.inputs[0]
+        operations = ctx.options.operations
         ctx.report(0.2, "Applying edits")
-        with open_pdf(item) as pdf:
-            apply_operations(pdf, ctx.options.operations)
-            target = ctx.output_path(pdf_name(f"{item.stem}-edited", "edited"))
-            ctx.report(0.9, "Saving")
-            save_pdf(pdf, target)
+        with open_pdf(item) as source:
+            geometries = [page_geometry(page) for page in source.pages]
+            replacements = collect_replacements(item.path, geometries, operations)
+            working = source
+            if replacements:
+                cleaned = remove_text_objects(item.path, geometries, replacements)
+                working = pikepdf.open(io.BytesIO(cleaned))
+            try:
+                if replacements:
+                    apply_replacements(working, geometries, replacements)
+                apply_operations(working, operations)
+                target = ctx.output_path(pdf_name(f"{item.stem}-edited", "edited"))
+                ctx.report(0.9, "Saving")
+                save_pdf(working, target)
+            finally:
+                if working is not source:
+                    working.close()
         return [output_pdf(target)]

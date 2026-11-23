@@ -1621,7 +1621,8 @@
       "highlight": "Highlight",
       "draw": "Draw",
       "note": "Sticky note",
-      "link": "Link"
+      "link": "Link",
+      "edit_text": "Edit existing text"
     },
     "hint": {
       "select": "Click an item to select it, drag to move it, press Delete to remove it.",
@@ -1634,7 +1635,16 @@
       "highlight": "Drag over text to highlight it.",
       "draw": "Press and draw freehand.",
       "note": "Click to drop a sticky note.",
-      "link": "Drag a box, then set the web address."
-    }
+      "link": "Drag a box, then set the web address.",
+      "edit_text": "Drag a box over existing text, then change it. Text fully inside the box is removed; anything else is covered."
+    },
+    "findTitle": "Find and replace",
+    "find": "Find",
+    "replaceWith": "Replace with",
+    "matchCase": "Match case",
+    "matches": "{count, plural, one {# match} other {# matches}} in this document",
+    "replaceNote": "Replaces matching text on every page.",
+    "addReplacement": "Add replacement",
+    "replacementItem": "Replace “{find}” with “{replace}”"
   }
 }

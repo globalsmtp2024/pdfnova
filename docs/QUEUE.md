@@ -61,7 +61,7 @@ Phase 3 leftovers
 Phase 4
 - [x] 7 Digital signature (pyHanko, PKCS#12 in memory only, visible/invisible) and Verify signatures
 - [x] 8 Full PDF editor v1 (pdf.js canvas, text, image, shapes, highlight, draw, notes, links, undo/redo, backend operation list)
-- [ ] 9 Editor: edit existing text (redact-and-replace) and find/replace
+- [x] 9 Editor: edit existing text (redact-and-replace) and find/replace
 - [ ] 10 Create PDF forms (add fields) and auto-detect form fields
 - [ ] 11 E-sign requests (fields, SMTP email links, single-use tokens, decline, audit trail, certificate, dashboard)
 - [ ] 12 Compare PDF visual overlay diff + downloadable report

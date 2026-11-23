@@ -209,6 +209,18 @@ def edit_ok(outputs: list[tuple[str, bytes]]) -> str | None:
         return None if {"/Text", "/Link"} <= subtypes else f"annotations missing {subtypes}"
 
 
+def text_edit_ok(outputs: list[tuple[str, bytes]]) -> str | None:
+    import pypdfium2 as pdfium
+
+    document = pdfium.PdfDocument(outputs[0][1])
+    text = document[0].get_textpage().get_text_range()
+    if "Replaced heading" not in text or "sleepy" not in text:
+        return f"replacement missing: {text!r}"
+    if "Smoke page 1" in text or "lazy" in text:
+        return f"old text still present: {text!r}"
+    return None
+
+
 def pdf_upload(pages: int = 3) -> list[Upload]:
     return [("sample.pdf", sample_pdf(pages), "application/pdf")]
 
@@ -421,6 +433,7 @@ CASES: list[Case] = [
     Case("digital-sign", pdf_upload(1), {"visible": True, "reason": "Smoke"}, secrets=p12_secrets(), check=signed_ok),
     Case("verify-signatures", [("signed.pdf", signed_pdf(), "application/pdf")], {}, check=contains_text("Document unchanged since signing: yes")),
     Case("edit-pdf", pdf_upload(2), {"operations": edit_operations()}, check=edit_ok),
+    Case("edit-pdf", pdf_upload(2), {"operations": [{"type": "replace_text", "page": 1, "x": 11, "y": 8, "width": 16, "height": 3, "text": "Replaced heading", "size": 12}, {"type": "find_replace", "find": "lazy", "replace": "sleepy"}]}, check=text_edit_ok),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

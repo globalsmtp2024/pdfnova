@@ -14,6 +14,7 @@ import {
   Redo2,
   Square,
   StickyNote,
+  TextCursorInput,
   Trash2,
   Type,
   Undo2,
@@ -22,6 +23,7 @@ import {
 import { useTranslations } from "next-intl";
 import {
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -49,11 +51,13 @@ import {
   type EditorTool,
   type History,
 } from "@/lib/editor-ops";
+import { countMatches, textInRegion } from "@/lib/pdf-text";
 import { cn } from "@/lib/utils";
 
 const TOOLS: { id: EditorTool; icon: LucideIcon }[] = [
   { id: "select", icon: MousePointer2 },
   { id: "text", icon: Type },
+  { id: "edit_text", icon: TextCursorInput },
   { id: "image", icon: ImagePlus },
   { id: "rectangle", icon: Square },
   { id: "ellipse", icon: Circle },
@@ -140,6 +144,24 @@ function buildOp(
         opacity: 1,
         rotation: 0,
       };
+    case "edit_text":
+      return dragged
+        ? {
+            id,
+            page,
+            type: "replace_text",
+            x,
+            y,
+            width,
+            height,
+            text: "",
+            font: "noto-sans",
+            size: settings.fontSize,
+            color: "#000000",
+            bold: false,
+            background: "#FFFFFF",
+          }
+        : null;
     case "note":
       return { id, page, type: "note", x: x0, y: y0, text: settings.text || "Note", color: "#FFEB3B" };
     case "image": {
@@ -240,6 +262,30 @@ function OpView({
     style: { pointerEvents: interactive ? ("auto" as const) : ("none" as const) },
   };
   switch (op.type) {
+    case "find_replace":
+      return null;
+    case "replace_text":
+      return (
+        <div
+          {...events}
+          dir="auto"
+          className={cn("absolute cursor-move overflow-hidden whitespace-pre font-sans", ring)}
+          style={{
+            ...events.style,
+            left: px(op.x, "x"),
+            top: px(op.y, "y"),
+            width: px(op.width, "x"),
+            minHeight: px(op.height, "y"),
+            background: op.background,
+            color: op.color,
+            fontSize: op.size * view.scale,
+            lineHeight: 1.25,
+            fontWeight: op.bold ? 700 : 400,
+          }}
+        >
+          {op.text}
+        </div>
+      );
     case "text":
       return (
         <div
@@ -416,6 +462,10 @@ export function useEditPdfPanel(files: LocalFile[]): ToolPanelView {
   const [moving, setMoving] = useState<Moving | null>(null);
   const [draft, setDraft] = useState<EditOp | null>(null);
   const [view, setView] = useState<PageView | null>(null);
+  const [find, setFind] = useState("");
+  const [replaceWith, setReplaceWith] = useState("");
+  const [matchCase, setMatchCase] = useState(false);
+  const [matchTotal, setMatchTotal] = useState<number | null>(null);
   const overlay = useRef<HTMLDivElement>(null);
 
   const fileKey = file?.key;
@@ -496,6 +546,21 @@ export function useEditPdfPanel(files: LocalFile[]): ToolPanelView {
     const created = buildOp(tool, creation, page, settings, image, view);
     setCreation(null);
     if (!created) return;
+    if (created.type === "replace_text" && document) {
+      void textInRegion(document, pageIndex, view.scale, view.width, view.height, created).then(
+        (found) => {
+          const filled: EditOp = {
+            ...created,
+            text: found?.text ?? "",
+            size: found ? Math.max(found.size, 4) : created.size,
+          };
+          apply([...ops, filled]);
+          setSelectedId(filled.id);
+          setTool("select");
+        },
+      );
+      return;
+    }
     apply([...ops, created]);
     if (tool === "text" || tool === "note" || tool === "link") {
       setSelectedId(created.id);
@@ -562,6 +627,20 @@ export function useEditPdfPanel(files: LocalFile[]): ToolPanelView {
     if (!creation || !view || tool === "select") return null;
     return buildOp(tool, creation, page, settings, image, view);
   }, [creation, tool, page, settings, image, view]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!document || !find) return;
+    const timer = window.setTimeout(() => {
+      void countMatches(document, document.numPages, find, matchCase).then((total) => {
+        if (!cancelled) setMatchTotal(total);
+      });
+    }, 250);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [document, find, matchCase]);
 
   const badLink = ops.some((op) => op.type === "link" && !SAFE_LINK.test(op.url));
   const problem = !ops.length ? t("problems.none") : badLink ? t("problems.badLink") : null;
@@ -799,10 +878,82 @@ export function useEditPdfPanel(files: LocalFile[]): ToolPanelView {
         </label>
       </div>
 
+      <fieldset className="flex flex-col gap-2 rounded-xl border border-border p-3" data-find-replace>
+        <legend className="px-1 text-sm font-medium">{t("findTitle")}</legend>
+        <Input
+          value={find}
+          onChange={(event) => setFind(event.target.value)}
+          placeholder={t("find")}
+          aria-label={t("find")}
+          dir="auto"
+        />
+        <Input
+          value={replaceWith}
+          onChange={(event) => setReplaceWith(event.target.value)}
+          placeholder={t("replaceWith")}
+          aria-label={t("replaceWith")}
+          dir="auto"
+        />
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={matchCase}
+            onChange={(event) => setMatchCase(event.target.checked)}
+          />
+          {t("matchCase")}
+        </label>
+        <p className="text-xs text-muted" aria-live="polite">
+          {find ? t("matches", { count: matchTotal ?? 0 }) : t("replaceNote")}
+        </p>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          disabled={!find}
+          data-find-apply
+          onClick={() => {
+            apply([
+              ...ops,
+              {
+                id: newId(),
+                page: 0,
+                type: "find_replace",
+                find,
+                replace: replaceWith,
+                match_case: matchCase,
+                pages: "all",
+                font: "noto-sans",
+                color: "#000000",
+                bold: false,
+                background: "#FFFFFF",
+              },
+            ]);
+            setFind("");
+            setReplaceWith("");
+          }}
+        >
+          {t("addReplacement")}
+        </Button>
+        {ops.filter((op) => op.type === "find_replace").map((op) =>
+          op.type === "find_replace" ? (
+            <div key={op.id} className="flex items-center justify-between gap-2 text-xs">
+              <span dir="auto">{t("replacementItem", { find: op.find, replace: op.replace })}</span>
+              <button
+                type="button"
+                className="text-danger-strong underline"
+                onClick={() => apply(ops.filter((entry) => entry.id !== op.id))}
+              >
+                {t("delete")}
+              </button>
+            </div>
+          ) : null,
+        )}
+      </fieldset>
+
       {selected ? (
         <fieldset className="flex flex-col gap-2 rounded-xl border border-border p-3" data-edit-selected>
           <legend className="px-1 text-sm font-medium">{t("selected")}</legend>
-          {selected.type === "text" || selected.type === "note" ? (
+          {selected.type === "text" || selected.type === "note" || selected.type === "replace_text" ? (
             <textarea
               value={selected.text}
               onChange={(event) => updateSelected({ text: event.target.value })}
@@ -813,7 +964,7 @@ export function useEditPdfPanel(files: LocalFile[]): ToolPanelView {
               data-edit-selected-text
             />
           ) : null}
-          {selected.type === "text" ? (
+          {selected.type === "text" || selected.type === "replace_text" ? (
             <div className="grid grid-cols-2 gap-2">
               <Input
                 type="number"
