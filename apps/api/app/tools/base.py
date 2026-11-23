@@ -165,6 +165,7 @@ class Tool(ABC, Generic[OptionsT]):
     accepted_secrets: ClassVar[frozenset[str]] = frozenset()
     required_secrets: ClassVar[frozenset[str]] = frozenset()
     seconds_per_mb: ClassVar[float] = 0.05
+    limit_address_space: ClassVar[bool] = True
     seconds_per_page: ClassVar[float] = 0.01
 
     def parse_options(self, raw: dict[str, Any] | None) -> OptionsT:

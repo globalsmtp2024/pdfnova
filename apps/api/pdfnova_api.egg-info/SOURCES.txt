@@ -84,6 +84,7 @@ app/tools/convert/external.py
 app/tools/convert/images.py
 app/tools/convert/ocr.py
 app/tools/convert/office_out.py
+app/tools/convert/pdfa.py
 app/tools/convert/scan.py
 app/tools/convert/text.py
 app/tools/edit/__init__.py

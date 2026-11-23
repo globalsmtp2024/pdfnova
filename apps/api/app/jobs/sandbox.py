@@ -47,7 +47,7 @@ ProgressCallback = Callable[[float, str], None]
 CancelPoll = Callable[[], bool]
 
 
-def _apply_resource_limits(limits: SandboxLimits) -> None:
+def _apply_address_space_limit(limits: SandboxLimits) -> None:
     if sys.platform.startswith("win"):
         return
     import resource
@@ -55,6 +55,13 @@ def _apply_resource_limits(limits: SandboxLimits) -> None:
     memory = limits.memory_mb * 1024 * 1024
     with contextlib.suppress(ValueError, OSError):
         resource.setrlimit(resource.RLIMIT_AS, (memory, memory))
+
+
+def _apply_resource_limits(limits: SandboxLimits) -> None:
+    if sys.platform.startswith("win"):
+        return
+    import resource
+
     cpu = limits.timeout_seconds + 5
     with contextlib.suppress(ValueError, OSError):
         resource.setrlimit(resource.RLIMIT_CPU, (cpu, cpu))
@@ -74,6 +81,8 @@ def _child_main(request: SandboxRequest, connection: Connection, cancel_event: E
         from app.tools.registry import get_registry
 
         tool = get_registry().get(request.tool_slug)
+        if tool.limit_address_space:
+            _apply_address_space_limit(request.limits)
         options = tool.parse_options(request.options)
         last_sent = 0.0
 

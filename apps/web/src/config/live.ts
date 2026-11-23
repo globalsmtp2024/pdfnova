@@ -54,4 +54,8 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "image-rotate",
   "scan-to-pdf",
   "pdf-to-pdfa",
+  "word-to-pdf",
+  "powerpoint-to-pdf",
+  "excel-to-pdf",
+  "ocr",
 ]);

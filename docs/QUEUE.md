@@ -45,5 +45,5 @@ Not in the queue and staying "Coming soon": full editor, e-sign requests, digita
 
 ## Notes
 
-- 26 and 28 are implemented but Coming soon locally: see docs/FAILED.md (no soffice, no tesseract on this machine).
+- 26 and 28 are Live: verified on Linux with LibreOffice and Tesseract installed.
 - 27 HTML to PDF and URL to PDF run in headless Chrome with all network access blocked; URL to PDF takes a page fetched through Import from a link.

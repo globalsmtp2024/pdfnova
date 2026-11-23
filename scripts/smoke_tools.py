@@ -137,6 +137,28 @@ def docx_sample() -> bytes:
     return buffer.getvalue()
 
 
+def xlsx_sample() -> bytes:
+    from openpyxl import Workbook
+
+    buffer = io.BytesIO()
+    book = Workbook()
+    book.active.append(["Name", "Total"])
+    book.active.append(["Smoke", 42])
+    book.save(buffer)
+    return buffer.getvalue()
+
+
+def pptx_sample() -> bytes:
+    from pptx import Presentation
+
+    buffer = io.BytesIO()
+    deck = Presentation()
+    slide = deck.slides.add_slide(deck.slide_layouts[5])
+    slide.shapes.title.text = "Office smoke"
+    deck.save(buffer)
+    return buffer.getvalue()
+
+
 def zip_has(member: str) -> Check:
     import zipfile
 
@@ -232,6 +254,8 @@ CASES: list[Case] = [
     Case("html-to-pdf", [("page.html", HTML_SAMPLE.encode("utf-8"), "text/html")]),
     Case("url-to-pdf", [("page.html", HTML_SAMPLE.encode("utf-8"), "text/html")]),
     Case("word-to-pdf", [("doc.docx", docx_sample(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document")]),
+    Case("excel-to-pdf", [("book.xlsx", xlsx_sample(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]),
+    Case("powerpoint-to-pdf", [("deck.pptx", pptx_sample(), "application/vnd.openxmlformats-officedocument.presentationml.presentation")]),
     Case("ocr", [("scan.png", sample_image("PNG", (800, 300)), "image/png")]),
     Case("ai-summarize", pdf_upload(), {}, check=contains_text("Stub answer")),
     Case("ai-chat", pdf_upload(), {"questions": ["What is on page 1?"]}, check=contains_text("(p. 1)")),

@@ -164,7 +164,9 @@ def render_html(source: Path, target: Path, options: HtmlToPdfOptions, workdir: 
     binary = find_binary("CHROMIUM_BINARY", CHROME_NAMES, WINDOWS_CHROME)
     if binary is None:
         raise missing("HTML conversion", "")
-    profile = Path(tempfile.mkdtemp(prefix="chrome-profile-", dir=workdir))
+    short_root = Path("/tmp") if Path("/tmp").is_dir() else None
+    profile = Path(tempfile.mkdtemp(prefix="pnc-", dir=short_root))
+    environment = {**os.environ, "TMPDIR": str(profile)}
     command = [
         binary,
         "--headless=new",
@@ -180,7 +182,9 @@ def render_html(source: Path, target: Path, options: HtmlToPdfOptions, workdir: 
         source.as_uri(),
     ]
     try:
-        subprocess.run(command, capture_output=True, timeout=CHROME_TIMEOUT_SECONDS, check=True)
+        subprocess.run(
+            command, capture_output=True, timeout=CHROME_TIMEOUT_SECONDS, check=True, env=environment
+        )
     except subprocess.TimeoutExpired as exc:
         raise ToolFailedError("The page took too long to render.", code="convert_timeout") from exc
     except subprocess.CalledProcessError as exc:
@@ -209,6 +213,7 @@ def inject_print_rules(source: Path, workdir: Path, options: HtmlToPdfOptions) -
 
 class HtmlToPdfTool(Tool[HtmlToPdfOptions]):
     slug = "html-to-pdf"
+    limit_address_space = False
     name = "HTML to PDF"
     category = ToolCategory.CONVERT_TO_PDF
     summary = "Render an HTML file to PDF in a sandboxed browser, without loading outside resources."
@@ -230,6 +235,7 @@ class HtmlToPdfTool(Tool[HtmlToPdfOptions]):
 
 class UrlToPdfTool(Tool[HtmlToPdfOptions]):
     slug = "url-to-pdf"
+    limit_address_space = False
     name = "URL to PDF"
     category = ToolCategory.CONVERT_TO_PDF
     summary = "Import a web page by its address and save it as PDF. Images and styles hosted elsewhere are not loaded."
