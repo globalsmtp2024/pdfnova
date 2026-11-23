@@ -48,6 +48,29 @@ def scan_photo() -> bytes:
     return buffer.getvalue()
 
 
+def embedded_font_pdf() -> bytes:
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+
+    pdfmetrics.registerFont(TTFont("DejaVuSans", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4, initialFontName="DejaVuSans", initialFontSize=14)
+    pdf.drawString(72, 760, "Archive smoke page")
+    pdf.showPage()
+    pdf.save()
+    return buffer.getvalue()
+
+
+def pdfa_marked(outputs: list[tuple[str, bytes]]) -> str | None:
+    with pikepdf.open(io.BytesIO(outputs[0][1])) as pdf:
+        intents = pdf.Root.get("/OutputIntents")
+        if not intents or "/DestOutputProfile" not in intents[0]:
+            return "missing output intent"
+        if pdf.open_metadata().get("pdfaid:part") != "2":
+            return "missing pdfaid part"
+    return None
+
+
 def pdf_upload(pages: int = 3) -> list[Upload]:
     return [("sample.pdf", sample_pdf(pages), "application/pdf")]
 
@@ -222,6 +245,7 @@ CASES: list[Case] = [
     Case("image-crop", [("p.png", sample_image("PNG", (800, 600)), "image/png")], {"aspect": "1:1"}, check=images_decode),
     Case("image-rotate", [("p.png", sample_image("PNG", (400, 300)), "image/png")], {"angle": 90}, check=images_decode),
     Case("scan-to-pdf", [("a.jpg", scan_photo(), "image/jpeg"), ("b.jpg", scan_photo(), "image/jpeg")], {"filter": "black_white"}),
+    Case("pdf-to-pdfa", [("embedded.pdf", embedded_font_pdf(), "application/pdf")], {"level": "2b"}, check=pdfa_marked),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

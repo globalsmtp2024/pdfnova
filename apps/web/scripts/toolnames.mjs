@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const NAMES = {
+  "pdf-to-pdfa": [["PDF to PDF/A", "Archive-ready PDF/A-1b, 2b and 3b."], ["PDF سے PDF/A", "آرکائیو کے لیے تیار PDF/A-1b، 2b اور 3b۔"]],
   "scan-to-pdf": [["Scan to PDF", "Turn photos of pages into a clean, straightened scan PDF."], ["اسکین سے PDF", "صفحات کی تصاویر کو صاف اور سیدھے اسکین PDF میں بدلیں۔"]],
   "remove-annotations": [["Remove annotations", "Strip comments, highlights and stamps."], ["تبصرے ہٹائیں", "تبصرے، ہائی لائٹس اور اسٹیمپ ہٹا دیں۔"]],
   "remove-blank-pages": [["Remove blank pages", "Detect and delete empty pages automatically."], ["خالی صفحات ہٹائیں", "خالی صفحات خودکار طور پر ڈھونڈ کر حذف کریں۔"]],

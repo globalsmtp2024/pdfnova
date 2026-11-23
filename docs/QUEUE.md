@@ -39,7 +39,7 @@ Handoff file. Tick a box only when the tool is implemented and its smoke case pa
 - [x] 35 Simple linear workflow runner
 - [x] 36 Image tools (compress, resize, convert, crop)
 - [x] 37 Scan to PDF
-- [ ] 38 PDF to PDF/A
+- [x] 38 PDF to PDF/A
 
 Not in the queue and staying "Coming soon": full editor, e-sign requests, digital signatures, teams, admin panel, PWA, cloud integrations.
 

@@ -602,7 +602,7 @@
     },
     "pdf-to-pdfa": {
       "name": "PDF سے PDF/A",
-      "description": "محفوظ شدہ ریکارڈ کے لیے PDF/A-1b، 2b اور 3b۔"
+      "description": "آرکائیو کے لیے تیار PDF/A-1b، 2b اور 3b۔"
     },
     "pdf-to-markdown": {
       "name": "PDF سے Markdown",
@@ -1518,7 +1518,12 @@
     "filter_grayscale": "گرے اسکیل",
     "filter_black_white": "سیاہ و سفید",
     "auto_crop": "صفحے کے مطابق خودکار کراپ",
-    "straighten": "ترچھے صفحات سیدھے کریں"
+    "straighten": "ترچھے صفحات سیدھے کریں",
+    "level": "مطابقت کی سطح",
+    "level_1b": "PDF/A-1b",
+    "level_2b": "PDF/A-2b (تجویز کردہ)",
+    "level_3b": "PDF/A-3b",
+    "allow_unembedded_fonts": "کچھ فونٹس ایمبیڈ نہ ہوں تب بھی تبدیل کریں (توثیق نہ ہو سکتی ہے)"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",

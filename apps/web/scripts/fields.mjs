@@ -166,6 +166,11 @@ const FIELDS = {
   filter_black_white: ["Black and white", "سیاہ و سفید"],
   auto_crop: ["Auto-crop to the page", "صفحے کے مطابق خودکار کراپ"],
   straighten: ["Straighten tilted pages", "ترچھے صفحات سیدھے کریں"],
+  level: ["Conformance level", "مطابقت کی سطح"],
+  level_1b: ["PDF/A-1b", "PDF/A-1b"],
+  level_2b: ["PDF/A-2b (recommended)", "PDF/A-2b (تجویز کردہ)"],
+  level_3b: ["PDF/A-3b", "PDF/A-3b"],
+  allow_unembedded_fonts: ["Convert even if some fonts are not embedded (may not validate)", "کچھ فونٹس ایمبیڈ نہ ہوں تب بھی تبدیل کریں (توثیق نہ ہو سکتی ہے)"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

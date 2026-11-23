@@ -1418,7 +1418,12 @@
     "filter_grayscale": "Grayscale",
     "filter_black_white": "Black and white",
     "auto_crop": "Auto-crop to the page",
-    "straighten": "Straighten tilted pages"
+    "straighten": "Straighten tilted pages",
+    "level": "Conformance level",
+    "level_1b": "PDF/A-1b",
+    "level_2b": "PDF/A-2b (recommended)",
+    "level_3b": "PDF/A-3b",
+    "allow_unembedded_fonts": "Convert even if some fonts are not embedded (may not validate)"
   },
   "tools": {
     "remove-annotations": {
@@ -1440,6 +1445,10 @@
     "scan-to-pdf": {
       "name": "Scan to PDF",
       "description": "Turn photos of pages into a clean, straightened scan PDF."
+    },
+    "pdf-to-pdfa": {
+      "name": "PDF to PDF/A",
+      "description": "Archive-ready PDF/A-1b, 2b and 3b."
     }
   },
   "tool_sign": {
