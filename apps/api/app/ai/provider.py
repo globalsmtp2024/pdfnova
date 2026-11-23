@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -11,7 +12,7 @@ REQUEST_TIMEOUT_SECONDS = 120.0
 DEFAULT_MODELS = {
     "anthropic": "claude-sonnet-5-5",
     "openai": "gpt-4.1-mini",
-    "google": "gemini-3.8-flash",
+    "google": "gemini-3.5-flash-lite",
     "mistral": "mistral-small-latest",
 }
 BASE_URLS = {
@@ -21,6 +22,8 @@ BASE_URLS = {
     "mistral": "https://api.mistral.ai",
 }
 MAX_OUTPUT_TOKENS = 4096
+RETRY_STATUSES = frozenset({500, 502, 503, 504})
+RETRY_DELAYS_SECONDS = (2.0, 5.0)
 
 
 class Provider(Protocol):
@@ -38,6 +41,11 @@ class HttpProvider:
         try:
             with httpx.Client(timeout=REQUEST_TIMEOUT_SECONDS) as client:
                 response = self._request(client, system, prompt, max_tokens)
+                for delay in RETRY_DELAYS_SECONDS:
+                    if response.status_code not in RETRY_STATUSES:
+                        break
+                    time.sleep(delay)
+                    response = self._request(client, system, prompt, max_tokens)
         except httpx.TimeoutException as exc:
             raise ToolFailedError("The AI provider took too long to answer.", code="ai_timeout") from exc
         except httpx.HTTPError as exc:
