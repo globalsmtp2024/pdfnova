@@ -76,11 +76,16 @@ Set in `.env`: `PUBLIC_URL=https://SUBDOMAIN`, `HTTP_PORT=9909`, `API_PORT=9910`
 ```bash
 COMPOSE="docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.shared.yml"
 sudo $COMPOSE up -d --build
-sudo sed 's/pdfnova.example.com/SUBDOMAIN/g' infra/nginx/pdfnova-subdomain.conf | sudo tee /etc/nginx/sites-available/pdfnova >/dev/null
+sudo mkdir -p /var/www/certbot
+printf 'server {\n  listen 80;\n  server_name SUBDOMAIN;\n  location /.well-known/acme-challenge/ { root /var/www/certbot; }\n}\n' | sudo tee /etc/nginx/sites-available/pdfnova >/dev/null
 sudo ln -sf /etc/nginx/sites-available/pdfnova /etc/nginx/sites-enabled/pdfnova
+sudo nginx -t && sudo systemctl reload nginx
 sudo certbot certonly --webroot -w /var/www/certbot -d SUBDOMAIN
+sudo sed 's/pdfnova.example.com/SUBDOMAIN/g' infra/nginx/pdfnova-subdomain.conf | sudo tee /etc/nginx/sites-available/pdfnova >/dev/null
 sudo nginx -t && sudo systemctl reload nginx
 ```
+
+The first nginx file only answers the certificate challenge, because the full file needs the certificate to exist.
 
 ## B. Native install with systemd
 
