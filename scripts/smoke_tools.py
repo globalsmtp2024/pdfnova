@@ -97,6 +97,11 @@ def images_decode(outputs: list[tuple[str, bytes]]) -> str | None:
     return None
 
 
+TEXT_SAMPLE = "\n".join(["Hello world", "سلام دنیا", ""])
+MARKDOWN_SAMPLE = "\n".join(
+    ["# Title", "", "Some *text* here.", "", "- one", "- two", "", "```", "code", "```", ""]
+)
+
 CASES: list[Case] = [
     Case("compress", pdf_upload(), {"level": "recommended"}),
     Case("repair", [("sample.pdf", damaged(sample_pdf()), "application/pdf")]),
@@ -115,6 +120,10 @@ CASES: list[Case] = [
         [("a.png", sample_image("PNG"), "image/png"), ("b.jpg", sample_image("JPEG"), "image/jpeg")],
     ),
     Case("pdf-to-image", pdf_upload(), {"format": "png", "dpi": 72}, check=images_decode),
+    Case("pdf-to-text", pdf_upload(), {}, check=contains_text("Smoke page 2")),
+    Case("pdf-to-markdown", pdf_upload(), {}, check=contains_text("Smoke page")),
+    Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
+    Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]
 
 

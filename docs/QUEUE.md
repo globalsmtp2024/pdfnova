@@ -4,10 +4,10 @@ Handoff file. Tick a box only when the tool is implemented and its smoke case pa
 
 - [x] 1 Image to PDF (JPG, PNG, WebP, TIFF)
 - [x] 2 PDF to JPG/PNG
-- [ ] 3 PDF to Text
-- [ ] 4 PDF to Markdown
-- [ ] 5 Text to PDF
-- [ ] 6 Markdown to PDF
+- [x] 3 PDF to Text
+- [x] 4 PDF to Markdown
+- [x] 5 Text to PDF
+- [x] 6 Markdown to PDF
 - [ ] 7 Headers and footers
 - [ ] 8 Bates numbering
 - [ ] 9 Background

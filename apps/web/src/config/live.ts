@@ -16,4 +16,8 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "edit-metadata",
   "image-to-pdf",
   "pdf-to-image",
+  "pdf-to-text",
+  "pdf-to-markdown",
+  "text-to-pdf",
+  "markdown-to-pdf",
 ]);

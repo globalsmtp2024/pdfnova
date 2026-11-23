@@ -20,6 +20,13 @@ const FIELDS = {
   format_jpg: ["JPG", "JPG"],
   format_webp: ["WebP", "WebP"],
   dpi: ["Resolution (DPI)", "ریزولوشن (DPI)"],
+  font: ["Font", "فونٹ"],
+  font_noto-sans: ["Sans-serif", "سادہ فونٹ"],
+  font_noto-serif: ["Serif", "سیریف فونٹ"],
+  font_noto-sans-mono: ["Monospace", "یکساں چوڑائی"],
+  size: ["Font size", "فونٹ کا سائز"],
+  page_markers: ["Add page markers", "صفحات کے نشان شامل کریں"],
+  page_separators: ["Separate pages with a line", "صفحات کے درمیان لکیر"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 
