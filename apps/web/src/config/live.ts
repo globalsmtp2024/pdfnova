@@ -46,4 +46,5 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "ai-translate",
   "ai-smart-redact",
   "ai-extract-data",
+  "workflow",
 ]);

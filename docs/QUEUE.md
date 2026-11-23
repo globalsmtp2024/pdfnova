@@ -36,7 +36,7 @@ Handoff file. Tick a box only when the tool is implemented and its smoke case pa
 - [x] 32 Smart Redact and Extract structured data
 - [x] 33 API keys + public API docs page
 - [x] 34 Share links
-- [ ] 35 Simple linear workflow runner
+- [x] 35 Simple linear workflow runner
 - [ ] 36 Image tools (compress, resize, convert, crop)
 - [ ] 37 Scan to PDF
 - [ ] 38 PDF to PDF/A

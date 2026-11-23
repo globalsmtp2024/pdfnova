@@ -244,6 +244,14 @@ export const TOOLS: ToolDefinition[] = [
     ["blank", "empty", "scanner"],
   ),
   tool(
+    "workflow",
+    "Workflow runner",
+    "organize",
+    "Chain several PDF tools into one run.",
+    ["pdf"],
+    ["automation", "pipeline", "batch", "chain"],
+  ),
+  tool(
     "reverse-pages",
     "Reverse pages",
     "organize",

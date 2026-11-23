@@ -1386,7 +1386,9 @@
     "output": "Output",
     "output_json": "JSON",
     "output_csv": "CSV",
-    "output_both": "JSON and CSV"
+    "output_both": "JSON and CSV",
+    "steps": "Steps (one per line: tool-name {JSON options})",
+    "steps_hint": "Example: rotate {\"angle\": 90} then reverse-pages then compress"
   },
   "tools": {
     "remove-annotations": {
@@ -1400,6 +1402,10 @@
     "reverse-pages": {
       "name": "Reverse pages",
       "description": "Flip the page order of a PDF."
+    },
+    "workflow": {
+      "name": "Workflow runner",
+      "description": "Chain several PDF tools into one run."
     }
   },
   "tool_sign": {

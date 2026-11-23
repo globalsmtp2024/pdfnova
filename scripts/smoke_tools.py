@@ -200,6 +200,7 @@ CASES: list[Case] = [
     Case("ai-translate", pdf_upload(), {"target_language": "Urdu"}),
     Case("ai-smart-redact", pdf_upload(), {}),
     Case("ai-extract-data", pdf_upload(), {"fields": ["title: document title"]}, check=contains_text("Smoke")),
+    Case("workflow", pdf_upload(), {"steps": ['rotate {"angle": 90}', "reverse-pages", "linearize"]}),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

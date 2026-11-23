@@ -134,6 +134,8 @@ const FIELDS = {
   output_json: ["JSON", "JSON"],
   output_csv: ["CSV", "CSV"],
   output_both: ["JSON and CSV", "JSON اور CSV"],
+  steps: ["Steps (one per line: tool-name {JSON options})", "مراحل (ہر سطر میں: ٹول-نام {JSON اختیارات})"],
+  steps_hint: ["Example: rotate {\"angle\": 90} then reverse-pages then compress", "مثال: rotate {\"angle\": 90} پھر reverse-pages پھر compress"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

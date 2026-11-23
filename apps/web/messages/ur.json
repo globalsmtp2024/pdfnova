@@ -787,6 +787,10 @@
     "reverse-pages": {
       "name": "صفحات الٹ دیں",
       "description": "PDF کے صفحات کی ترتیب الٹ دیں۔"
+    },
+    "workflow": {
+      "name": "ورک فلو رنر",
+      "description": "کئی PDF ٹولز کو ایک ہی کام میں ترتیب سے چلائیں۔"
     }
   },
   "password": {
@@ -1482,7 +1486,9 @@
     "output": "آؤٹ پٹ",
     "output_json": "JSON",
     "output_csv": "CSV",
-    "output_both": "JSON اور CSV"
+    "output_both": "JSON اور CSV",
+    "steps": "مراحل (ہر سطر میں: ٹول-نام {JSON اختیارات})",
+    "steps_hint": "مثال: rotate {\"angle\": 90} پھر reverse-pages پھر compress"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",
