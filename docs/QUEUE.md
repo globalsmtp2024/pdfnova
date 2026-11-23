@@ -25,8 +25,8 @@ Handoff file. Tick a box only when the tool is implemented and its smoke case pa
 - [x] 21 Fill PDF forms
 - [x] 22 Redact PDF (manual boxes + regex, true removal)
 - [x] 23 Compare PDF (text diff)
-- [ ] 24 PDF to Word (own converter, pdfplumber + python-docx)
-- [ ] 25 PDF to Excel (pdfplumber tables)
+- [x] 24 PDF to Word (own converter, pdfplumber + python-docx)
+- [x] 25 PDF to Excel (pdfplumber tables)
 - [ ] 26 Word/PowerPoint/Excel to PDF (soffice)
 - [ ] 27 HTML to PDF and URL to PDF (Chromium, SSRF-safe)
 - [ ] 28 OCR PDF (Tesseract, English + Urdu)

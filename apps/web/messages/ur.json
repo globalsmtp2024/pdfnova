@@ -1444,7 +1444,13 @@
     "ignore_whitespace": "فاصلوں کا فرق نظر انداز کریں",
     "granularity": "موازنہ بلحاظ",
     "granularity_words": "الفاظ",
-    "granularity_lines": "سطریں"
+    "granularity_lines": "سطریں",
+    "include_tables": "جدول دوبارہ بنائیں",
+    "keep_page_breaks": "صفحے کے وقفے برقرار رکھیں",
+    "layout": "ترتیب",
+    "layout_sheet_per_table": "ہر جدول کے لیے الگ شیٹ",
+    "layout_sheet_per_page": "ہر صفحے کے لیے الگ شیٹ",
+    "fallback_to_text": "جدول نہ ملنے پر متن کی سطریں استعمال کریں"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",

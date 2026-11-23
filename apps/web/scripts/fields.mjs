@@ -96,6 +96,12 @@ const FIELDS = {
   granularity: ["Compare by", "موازنہ بلحاظ"],
   granularity_words: ["Words", "الفاظ"],
   granularity_lines: ["Lines", "سطریں"],
+  include_tables: ["Rebuild tables", "جدول دوبارہ بنائیں"],
+  keep_page_breaks: ["Keep page breaks", "صفحے کے وقفے برقرار رکھیں"],
+  layout: ["Layout", "ترتیب"],
+  layout_sheet_per_table: ["One sheet per table", "ہر جدول کے لیے الگ شیٹ"],
+  layout_sheet_per_page: ["One sheet per page", "ہر صفحے کے لیے الگ شیٹ"],
+  fallback_to_text: ["Use text lines when no table is found", "جدول نہ ملنے پر متن کی سطریں استعمال کریں"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

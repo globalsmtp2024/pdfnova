@@ -86,6 +86,19 @@ def contains_text(needle: str) -> Check:
     return check
 
 
+def zip_has(member: str) -> Check:
+    import zipfile
+
+    def check(outputs: list[tuple[str, bytes]]) -> str | None:
+        try:
+            with zipfile.ZipFile(io.BytesIO(outputs[0][1])) as archive:
+                return None if member in archive.namelist() else f"missing {member}"
+        except zipfile.BadZipFile:
+            return "not a zip container"
+
+    return check
+
+
 def images_decode(outputs: list[tuple[str, bytes]]) -> str | None:
     for name, data in outputs:
         if not name.lower().endswith((".png", ".jpg", ".webp")):
@@ -163,6 +176,8 @@ CASES: list[Case] = [
     Case("fill-forms", [("form.pdf", form_pdf(), "application/pdf")], {"values": ["full_name = Ali Khan", "agree = yes"]}),
     Case("redact", pdf_upload(), {"patterns": ["fox"], "boxes": ["1 | 72 | 750 | 100 | 20"]}, check=redacted_ok),
     Case("compare", pdf_upload(2) + [("other.pdf", sample_pdf(3), "application/pdf")], check=contains_text("Page 1")),
+    Case("pdf-to-word", pdf_upload(), {}, check=zip_has("word/document.xml")),
+    Case("pdf-to-excel", pdf_upload(), {}, check=zip_has("xl/workbook.xml")),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

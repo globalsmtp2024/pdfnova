@@ -37,4 +37,6 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "fill-forms",
   "redact",
   "compare",
+  "pdf-to-word",
+  "pdf-to-excel",
 ]);
