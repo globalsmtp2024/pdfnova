@@ -102,6 +102,26 @@ MARKDOWN_SAMPLE = "\n".join(
     ["# Title", "", "Some *text* here.", "", "- one", "- two", "", "```", "code", "```", ""]
 )
 
+def form_pdf() -> bytes:
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    pdf.drawString(72, 780, "Form")
+    pdf.acroForm.textfield(name="full_name", x=72, y=700, width=300, height=24)
+    pdf.acroForm.checkbox(name="agree", x=72, y=650, size=18)
+    pdf.showPage()
+    pdf.save()
+    return buffer.getvalue()
+
+
+def redacted_ok(outputs: list[tuple[str, bytes]]) -> str | None:
+    problem = pdfs_open(outputs)
+    if problem:
+        return problem
+    with pikepdf.open(io.BytesIO(outputs[0][1])) as pdf:
+        blob = b"".join(bytes(page.Contents.read_bytes()) if not isinstance(page.Contents, pikepdf.Array) else b"" for page in pdf.pages[:1])
+    return "text still present" if b"fox" in blob or b"Tj" in blob else None
+
+
 CASES: list[Case] = [
     Case("compress", pdf_upload(), {"level": "recommended"}),
     Case("repair", [("sample.pdf", damaged(sample_pdf()), "application/pdf")]),
@@ -139,6 +159,10 @@ CASES: list[Case] = [
         [("sample.pdf", sample_pdf(), "application/pdf"), ("note.txt", b"attached text", "text/plain")],
     ),
     Case("hyperlinks", pdf_upload(), {"add_links": ["1 | 72 | 700 | 200 | 20 | https://example.com"]}),
+    Case("sign", pdf_upload(), {"mode": "text", "text": "A. Tester", "pages": "last"}),
+    Case("fill-forms", [("form.pdf", form_pdf(), "application/pdf")], {"values": ["full_name = Ali Khan", "agree = yes"]}),
+    Case("redact", pdf_upload(), {"patterns": ["fox"], "boxes": ["1 | 72 | 750 | 100 | 20"]}, check=redacted_ok),
+    Case("compare", pdf_upload(2) + [("other.pdf", sample_pdf(3), "application/pdf")], check=contains_text("Page 1")),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

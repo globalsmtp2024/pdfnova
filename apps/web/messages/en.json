@@ -1337,7 +1337,18 @@
     "extract_all": "Also extract the attached files",
     "remove_external": "Remove web links",
     "add_links": "Add links (page | x | y | width | height | URL)",
-    "replace_urls": "Rewrite URLs (old => new, one per line)"
+    "replace_urls": "Rewrite URLs (old => new, one per line)",
+    "values": "Field values (name = value)",
+    "flatten": "Flatten after filling",
+    "boxes": "Boxes to black out (page | x | y | width | height)",
+    "boxes_hint": "Points, measured from the bottom-left of the page as you see it.",
+    "patterns": "Text patterns to redact (regex, one per line)",
+    "ignore_case": "Ignore upper and lower case",
+    "strip_metadata": "Also remove document metadata",
+    "ignore_whitespace": "Ignore spacing differences",
+    "granularity": "Compare by",
+    "granularity_words": "Words",
+    "granularity_lines": "Lines"
   },
   "tools": {
     "remove-annotations": {
@@ -1352,5 +1363,22 @@
       "name": "Reverse pages",
       "description": "Flip the page order of a PDF."
     }
+  },
+  "tool_sign": {
+    "modeLabel": "Signature type",
+    "mode_text": "Type",
+    "mode_draw": "Draw",
+    "mode_upload": "Upload",
+    "typeLabel": "Your name",
+    "drawLabel": "Draw your signature here",
+    "clear": "Clear",
+    "tooLarge": "That image is larger than 3 MB.",
+    "needText": "Type your name to sign with.",
+    "needImage": "Draw or upload a signature first.",
+    "pagesLabel": "Pages to sign (for example last, 1, 1-3)",
+    "x": "Horizontal %",
+    "y": "Vertical %",
+    "width": "Width %",
+    "summary": "{count, plural, one {Signing # file} other {Signing # files}}"
   }
 }

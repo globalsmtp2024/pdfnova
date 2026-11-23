@@ -21,10 +21,10 @@ Handoff file. Tick a box only when the tool is implemented and its smoke case pa
 - [x] 17 Bookmarks editor
 - [x] 18 Attachments manager
 - [x] 19 Hyperlinks manager
-- [ ] 20 Sign PDF (draw/type/upload, place anywhere)
-- [ ] 21 Fill PDF forms
-- [ ] 22 Redact PDF (manual boxes + regex, true removal)
-- [ ] 23 Compare PDF (text diff)
+- [x] 20 Sign PDF (draw/type/upload, place anywhere)
+- [x] 21 Fill PDF forms
+- [x] 22 Redact PDF (manual boxes + regex, true removal)
+- [x] 23 Compare PDF (text diff)
 - [ ] 24 PDF to Word (own converter, pdfplumber + python-docx)
 - [ ] 25 PDF to Excel (pdfplumber tables)
 - [ ] 26 Word/PowerPoint/Excel to PDF (soffice)

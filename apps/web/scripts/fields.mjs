@@ -85,6 +85,17 @@ const FIELDS = {
   remove_external: ["Remove web links", "ویب لنکس ہٹائیں"],
   add_links: ["Add links (page | x | y | width | height | URL)", "لنکس شامل کریں (صفحہ | x | y | چوڑائی | اونچائی | URL)"],
   replace_urls: ["Rewrite URLs (old => new, one per line)", "URL بدلیں (پرانا => نیا، ہر سطر میں ایک)"],
+  values: ["Field values (name = value)", "فیلڈ کی قدریں (نام = قدر)"],
+  flatten: ["Flatten after filling", "بھرنے کے بعد فلیٹن کریں"],
+  boxes: ["Boxes to black out (page | x | y | width | height)", "سیاہ کرنے والے خانے (صفحہ | x | y | چوڑائی | اونچائی)"],
+  boxes_hint: ["Points, measured from the bottom-left of the page as you see it.", "پوائنٹس میں، صفحے کے نظر آنے والے نیچے بائیں کونے سے ناپے ہوئے۔"],
+  patterns: ["Text patterns to redact (regex, one per line)", "متن کے نمونے (ریجیکس، ہر سطر میں ایک)"],
+  ignore_case: ["Ignore upper and lower case", "بڑے اور چھوٹے حروف کو نظر انداز کریں"],
+  strip_metadata: ["Also remove document metadata", "دستاویز کا میٹا ڈیٹا بھی ہٹائیں"],
+  ignore_whitespace: ["Ignore spacing differences", "فاصلوں کا فرق نظر انداز کریں"],
+  granularity: ["Compare by", "موازنہ بلحاظ"],
+  granularity_words: ["Words", "الفاظ"],
+  granularity_lines: ["Lines", "سطریں"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

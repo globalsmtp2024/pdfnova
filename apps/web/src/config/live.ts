@@ -33,4 +33,8 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "bookmarks",
   "attachments",
   "hyperlinks",
+  "sign",
+  "fill-forms",
+  "redact",
+  "compare",
 ]);
