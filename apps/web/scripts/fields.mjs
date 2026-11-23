@@ -238,6 +238,10 @@ const FIELDS = {
   "detect_boxes": ["Detect empty boxes", "خالی باکس تلاش کریں"],
   "detect_checkboxes": ["Detect check boxes", "چیک باکس تلاش کریں"],
   "max_fields": ["Maximum fields", "زیادہ سے زیادہ فیلڈز"],
+  "mode_both": ["Appearance and text", "ظاہری شکل اور متن"],
+  "mode_text": ["Text only", "صرف متن"],
+  "mode_visual": ["Appearance only", "صرف ظاہری شکل"],
+  "visual_dpi": ["Comparison detail (DPI)", "موازنے کی تفصیل (DPI)"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

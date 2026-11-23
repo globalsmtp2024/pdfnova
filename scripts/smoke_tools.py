@@ -112,6 +112,16 @@ def no_images(outputs: list[tuple[str, bytes]]) -> str | None:
         return None if "Caption" in pdf.pages[0].Contents.read_bytes().decode("latin-1") else "text lost"
 
 
+def compare_ok(outputs: list[tuple[str, bytes]]) -> str | None:
+    names = [name for name, _ in outputs]
+    if "comparison-overlay.pdf" not in names:
+        return f"overlay missing {names}"
+    report = next(data for name, data in outputs if name == "comparison.html").decode("utf-8")
+    if "of the page differs" not in report or "data:image/jpeg" not in report:
+        return "visual report missing"
+    return pdfs_open([o for o in outputs if o[0].endswith(".pdf")])
+
+
 def page_count(expected: int) -> Check:
     def check(outputs: list[tuple[str, bytes]]) -> str | None:
         with pikepdf.open(io.BytesIO(outputs[0][1])) as pdf:
@@ -432,7 +442,7 @@ CASES: list[Case] = [
     Case("sign", pdf_upload(), {"mode": "text", "text": "A. Tester", "pages": "last"}),
     Case("fill-forms", [("form.pdf", form_pdf(), "application/pdf")], {"values": ["full_name = Ali Khan", "agree = yes"]}),
     Case("redact", pdf_upload(), {"patterns": ["fox"], "boxes": ["1 | 72 | 750 | 100 | 20"]}, check=redacted_ok),
-    Case("compare", pdf_upload(2) + [("other.pdf", sample_pdf(3), "application/pdf")], check=contains_text("Page 1")),
+    Case("compare", pdf_upload(2) + [("other.pdf", sample_pdf(3), "application/pdf")], check=compare_ok),
     Case("pdf-to-word", pdf_upload(), {}, check=zip_has("word/document.xml")),
     Case("pdf-to-excel", pdf_upload(), {}, check=zip_has("xl/workbook.xml")),
     Case("html-to-pdf", [("page.html", HTML_SAMPLE.encode("utf-8"), "text/html")]),

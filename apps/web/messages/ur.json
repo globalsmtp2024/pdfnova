@@ -1623,7 +1623,11 @@
     "detect_lines": "لکیریں اور انڈر اسکور تلاش کریں",
     "detect_boxes": "خالی باکس تلاش کریں",
     "detect_checkboxes": "چیک باکس تلاش کریں",
-    "max_fields": "زیادہ سے زیادہ فیلڈز"
+    "max_fields": "زیادہ سے زیادہ فیلڈز",
+    "mode_both": "ظاہری شکل اور متن",
+    "mode_text": "صرف متن",
+    "mode_visual": "صرف ظاہری شکل",
+    "visual_dpi": "موازنے کی تفصیل (DPI)"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",

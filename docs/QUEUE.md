@@ -64,7 +64,7 @@ Phase 4
 - [x] 9 Editor: edit existing text (redact-and-replace) and find/replace
 - [x] 10 Create PDF forms (add fields) and auto-detect form fields
 - [x] 11 E-sign requests (fields, SMTP email links, single-use tokens, decline, audit trail, certificate, dashboard)
-- [ ] 12 Compare PDF visual overlay diff + downloadable report
+- [x] 12 Compare PDF visual overlay diff + downloadable report
 - [ ] 13 Redact pattern library (email, phone, Luhn card, CNIC, IBAN, SSN) + mandatory verification report
 
 Phase 5

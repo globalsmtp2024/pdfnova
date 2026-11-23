@@ -1487,7 +1487,11 @@
     "detect_lines": "Detect lines and underscores",
     "detect_boxes": "Detect empty boxes",
     "detect_checkboxes": "Detect check boxes",
-    "max_fields": "Maximum fields"
+    "max_fields": "Maximum fields",
+    "mode_both": "Appearance and text",
+    "mode_text": "Text only",
+    "mode_visual": "Appearance only",
+    "visual_dpi": "Comparison detail (DPI)"
   },
   "tools": {
     "remove-annotations": {
