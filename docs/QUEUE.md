@@ -74,7 +74,7 @@ Phase 5
 
 Phase 6
 - [x] 17 Workflow visual builder (React Flow) + templates gallery with 6 templates
-- [ ] 18 Batch runner UI with per-file status and retry-failed
+- [x] 18 Batch runner UI with per-file status and retry-failed
 - [ ] 19 My files workspace (save outputs, folders, rename, tags, search, trash, quota meter)
 - [ ] 20 Teams (invite, roles, shared folders/workflows, central permission module)
 - [ ] 21 API keys with scopes, webhooks, OpenAPI docs page, SDK skeletons, CLI

@@ -238,6 +238,7 @@ class Tool(ABC, Generic[OptionsT]):
             },
             "options_schema": cls.options_schema.model_json_schema(),
             "uses_ai": cls.uses_ai,
+            "batch_ok": not cls.required_secrets and cls.input_spec.min_files == 1 and cls.slug != "workflow",
             "workflow_step": (
                 cls.slug != "workflow"
                 and not cls.uses_ai

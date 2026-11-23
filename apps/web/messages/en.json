@@ -1910,5 +1910,31 @@
     "galleryTitle": "Ready-made workflows",
     "galleryBody": "Open one in the builder, adjust it and run it on your PDFs.",
     "useTemplate": "Open in builder"
+  },
+  "batch": {
+    "title": "Batch runner",
+    "subtitle": "Run one tool over many files, see each file's status and retry only the ones that failed.",
+    "dropTitle": "Drop files to process",
+    "dropHint": "Up to {size} each. Each file is processed on its own.",
+    "summary": "{done} done, {failed} failed, {total} in total",
+    "settings": "Batch settings",
+    "tool": "Tool",
+    "optionsJson": "Options (JSON)",
+    "badJson": "The options are not valid JSON.",
+    "start": "{count, plural, one {Process # file} other {Process # files}}",
+    "stop": "Stop after current files",
+    "retryFailed": "{count, plural, one {Retry # failed file} other {Retry # failed files}}",
+    "retry": "Retry this file",
+    "remove": "Remove",
+    "downloadAll": "Download all as ZIP",
+    "clear": "Clear list",
+    "privacy": "Files are deleted from the server automatically after the retention period.",
+    "status": {
+      "queued": "Waiting",
+      "uploading": "Uploading",
+      "processing": "Processing",
+      "done": "Done",
+      "failed": "Failed"
+    }
   }
 }

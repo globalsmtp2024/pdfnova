@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Check, Copy, FileClock, KeyRound, LogIn, PenLine, Workflow } from "lucide-react";
+import { Activity, Check, Copy, FileClock, KeyRound, Layers, LogIn, PenLine, Workflow } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState, type FormEvent, type ReactNode } from "react";
 
@@ -323,6 +323,12 @@ export function Dashboard() {
           <p className="text-sm text-muted">{t("esign.subtitle")}</p>
           <Link href="/dashboard/signatures" className="text-sm font-medium text-primary underline">
             {t("esign.newRequest")}
+          </Link>
+        </Panel>
+        <Panel title={t("batch.title")} icon={Layers}>
+          <p className="text-sm text-muted">{t("batch.subtitle")}</p>
+          <Link href="/batch" className="text-sm font-medium text-primary underline">
+            {t("batch.dropTitle")}
           </Link>
         </Panel>
         <Panel title={t("dashboard.workflows")} icon={Workflow} className="lg:col-span-2">
