@@ -58,7 +58,7 @@ def _pdf_page_count(path: Path) -> int | None:
     try:
         with pikepdf.open(path) as pdf:
             return len(pdf.pages)
-    except pikepdf.PdfError:
+    except (pikepdf.PdfError, pikepdf.PasswordError):
         return None
 
 
@@ -107,7 +107,10 @@ class JobEngine:
             await session.commit()
             tool_slug = task.tool_slug
             options = dict(task.options)
-            passwords: dict[str, str] = open_secrets(self._settings, task.secrets_sealed).get("passwords", {})
+            opened = open_secrets(self._settings, task.secrets_sealed)
+            passwords: dict[str, str] = opened.get("passwords", {})
+            job_secrets: dict[str, str] = dict(opened.get("job", {}))
+            del opened
             inputs_meta = [
                 (
                     f.id,
@@ -134,7 +137,7 @@ class JobEngine:
         started = asyncio.get_running_loop().time()
         try:
             inputs = await self._download_inputs(workdir, inputs_meta)
-            result = await self._run_tool(task_id, tool_slug, workdir, inputs, options)
+            result = await self._run_tool(task_id, tool_slug, workdir, inputs, options, job_secrets)
             if isinstance(result, SandboxSuccess):
                 await self._store_outputs(task_id, workdir, result.outputs)
                 JOBS_FINISHED.labels(tool_slug, "succeeded").inc()
@@ -145,6 +148,7 @@ class JobEngine:
             await self._requeue_or_fail(task_id)
             raise
         finally:
+            job_secrets.clear()
             JOB_DURATION.labels(tool_slug).observe(asyncio.get_running_loop().time() - started)
             shutil.rmtree(workdir, ignore_errors=True)
         return EngineOutcome.COMPLETED
@@ -196,6 +200,7 @@ class JobEngine:
         workdir: Path,
         inputs: list[InputFile],
         options: dict[str, Any],
+        job_secrets: dict[str, str] | None = None,
     ) -> SandboxSuccess | SandboxError:
         limits = SandboxLimits(
             timeout_seconds=self._settings.job_timeout_seconds,
@@ -203,7 +208,12 @@ class JobEngine:
             max_output_bytes=max(get_fair_use().max_task_bytes * 4, 512 * 1024 * 1024),
         )
         request = SandboxRequest(
-            tool_slug=tool_slug, workdir=workdir, inputs=inputs, options=options, limits=limits
+            tool_slug=tool_slug,
+            workdir=workdir,
+            inputs=inputs,
+            options=options,
+            limits=limits,
+            secrets=dict(job_secrets or {}),
         )
         state = _LiveState()
         lock = threading.Lock()
@@ -235,6 +245,7 @@ class JobEngine:
                     task.progress = round(min(fraction, 0.99), 4)
                     task.progress_label = label
                     await session.commit()
+        request.secrets.clear()
         return runner.result()
 
     async def _store_outputs(self, task_id: str, workdir: Path, outputs: list[OutputFile]) -> None:

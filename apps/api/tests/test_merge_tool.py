@@ -9,7 +9,7 @@ from app.jobs.sandbox import SandboxError, SandboxLimits, SandboxRequest, Sandbo
 from app.tools.base import InputFile, InputFileInfo, JobCancelledError, JobContext
 from app.tools.organize.merge import MergeOptions, MergeTool
 from app.tools.registry import get_registry
-from tests.pdf_factory import make_pdf, page_texts
+from tests.pdf_factory import make_encrypted_pdf, make_form_pdf, make_pdf, page_texts
 from tests.qpdf_check import assert_qpdf_ok
 
 
@@ -119,11 +119,18 @@ def test_merge_validation(inputs: list[InputFile]) -> None:
         tool.validate_inputs(
             [*infos[:1], InputFileInfo("x.png", 10, FileKind.IMAGE, None)], tool.parse_options({})
         )
-    with pytest.raises(ToolInputError, match="password-protected"):
-        tool.validate_inputs(
-            [*infos[:1], InputFileInfo("x.pdf", 10, FileKind.PDF, None, encrypted=True)],
-            tool.parse_options({}),
-        )
+    tool.validate_inputs(
+        [*infos[:1], InputFileInfo("x.pdf", 10, FileKind.PDF, None, encrypted=True)],
+        tool.parse_options({}),
+    )
+    with pytest.raises(ToolInputError, match="not uploaded"):
+        tool.validate_inputs(infos, tool.parse_options({"pages": [{"file": 2, "page": 1}]}))
+    with pytest.raises(ToolInputError, match="doesn't exist"):
+        tool.validate_inputs(infos, tool.parse_options({"pages": [{"file": 1, "page": 5}]}))
+    with pytest.raises(ToolInputError, match="Invalid options"):
+        tool.parse_options({"pages": []})
+    with pytest.raises(ToolInputError, match="Invalid options"):
+        tool.parse_options({"form_fields": "flatten"})
     with pytest.raises(ToolInputError, match="Invalid options"):
         tool.parse_options({"files": [{"rotate": 45}]})
     with pytest.raises(ToolInputError, match="Invalid options"):
@@ -177,3 +184,179 @@ def test_sandbox_enforces_timeout_and_cancel(tmp_path: Path, inputs: list[InputF
     assert isinstance(timed_out, SandboxError) and timed_out.code == "timeout"
     cancelled = run_in_sandbox(_sandbox_request(tmp_path, inputs, {}), lambda *_: None, lambda: True)
     assert isinstance(cancelled, SandboxError) and cancelled.code == "cancelled"
+
+
+def _first_lines(path: Path) -> list[str]:
+    return [text.split("\n")[0].strip() for text in page_texts(path)]
+
+
+def _rotations(path: Path) -> list[int]:
+    with pikepdf.open(path) as pdf:
+        return [int(page.obj.get("/Rotate", 0)) for page in pdf.pages]
+
+
+def test_merge_page_mode_orders_across_files_with_rotation(tmp_path: Path, inputs: list[InputFile]) -> None:
+    pages = [
+        {"file": 1, "page": 2, "rotate": 90},
+        {"file": 0, "page": 1},
+        {"file": 1, "page": 4},
+        {"file": 0, "page": 3, "rotate": 180},
+        {"source": "blank"},
+    ]
+    output = MergeTool().run(_context(tmp_path, inputs, pages=pages))[0]
+    assert_qpdf_ok(output.path)
+    assert _first_lines(output.path)[:4] == ["Beta page 2", "Alpha page 1", "Beta page 4", "Alpha page 3"]
+    assert _rotations(output.path) == [90, 0, 0, 180, 0]
+    assert _outline_titles(output.path) == [
+        ("beta", []),
+        ("alpha", ["Alpha section 1", "Alpha section 3"]),
+    ]
+    with pikepdf.open(output.path) as pdf, pdf.open_outline() as outline:
+        page_ids = [page.obj.objgen for page in pdf.pages]
+        assert [page_ids.index(item.destination[0].objgen) for item in outline.root] == [0, 1]
+
+
+def test_merge_page_mode_ignores_per_file_ranges(tmp_path: Path, inputs: list[InputFile]) -> None:
+    ctx = _context(
+        tmp_path,
+        inputs,
+        files=[{"pages": "1", "bookmark_title": "A"}, {"pages": "1"}],
+        pages=[{"file": 0, "page": 2}, {"file": 1, "page": 3}],
+    )
+    output = MergeTool().run(ctx)[0]
+    assert_qpdf_ok(output.path)
+    assert _first_lines(output.path) == ["Alpha page 2", "Beta page 3"]
+    assert _outline_titles(output.path) == [("A", ["Alpha section 2"]), ("beta", [])]
+
+
+def test_merge_bookmark_modes(tmp_path: Path, inputs: list[InputFile]) -> None:
+    per_file_only = MergeTool().run(
+        _context(tmp_path / "a", inputs, add_bookmarks=True, keep_existing_bookmarks=False)
+    )[0]
+    assert_qpdf_ok(per_file_only.path)
+    assert _outline_titles(per_file_only.path) == [("alpha", []), ("beta", [])]
+    none = MergeTool().run(
+        _context(tmp_path / "b", inputs, add_bookmarks=False, keep_existing_bookmarks=False)
+    )[0]
+    assert_qpdf_ok(none.path)
+    with pikepdf.open(none.path) as pdf, pdf.open_outline() as outline:
+        assert len(outline.root) == 0
+
+
+def _form_inputs(fixtures_dir: Path) -> list[InputFile]:
+    first = make_form_pdf(fixtures_dir / "form-a.pdf")
+    second = make_form_pdf(fixtures_dir / "form-b.pdf")
+    return [_input(first, "form-a.pdf", 1), _input(second, "form-b.pdf", 1)]
+
+
+def _widget_count(path: Path) -> int:
+    with pikepdf.open(path) as pdf:
+        return sum(
+            1
+            for page in pdf.pages
+            for annotation in page.obj.get("/Annots", pikepdf.Array())
+            if annotation.get("/Subtype") == pikepdf.Name.Widget
+        )
+
+
+def test_merge_preserves_form_fields_and_renames_collisions(tmp_path: Path, fixtures_dir: Path) -> None:
+    from pypdf import PdfReader
+
+    output = MergeTool().run(_context(tmp_path, _form_inputs(fixtures_dir), form_fields="preserve"))[0]
+    assert_qpdf_ok(output.path)
+    fields = PdfReader(str(output.path)).get_fields() or {}
+    assert {"full_name", "agree", "2_full_name", "2_agree"} <= set(fields)
+    assert fields["full_name"].get("/V") == "Ayesha Khan"
+    assert fields["2_full_name"].get("/V") == "Ayesha Khan"
+    assert _widget_count(output.path) == 4
+    with pikepdf.open(output.path) as pdf:
+        widget_ids = {
+            annotation.objgen
+            for page in pdf.pages
+            for annotation in page.obj.get("/Annots", pikepdf.Array())
+            if annotation.get("/Subtype") == pikepdf.Name.Widget
+        }
+        field_ids = {field.objgen for field in pdf.Root.AcroForm.Fields}
+        assert widget_ids == field_ids
+
+
+def test_merge_form_fields_skip_unselected_pages(tmp_path: Path, fixtures_dir: Path) -> None:
+    from pypdf import PdfReader
+
+    forms = _form_inputs(fixtures_dir)
+    plain = make_pdf(fixtures_dir / "plain.pdf", 2, "Plain")
+    output = MergeTool().run(
+        _context(tmp_path, [forms[0], _input(plain, "plain.pdf", 2)], pages=[{"file": 1, "page": 1}])
+    )[0]
+    assert_qpdf_ok(output.path)
+    assert not PdfReader(str(output.path)).get_fields()
+
+
+def test_merge_discards_form_fields(tmp_path: Path, fixtures_dir: Path) -> None:
+    from pypdf import PdfReader
+
+    output = MergeTool().run(_context(tmp_path, _form_inputs(fixtures_dir), form_fields="discard"))[0]
+    assert_qpdf_ok(output.path)
+    assert not PdfReader(str(output.path)).get_fields()
+    assert _widget_count(output.path) == 0
+    with pikepdf.open(output.path) as pdf:
+        assert "/AcroForm" not in pdf.Root
+    assert "Application form" in page_texts(output.path)[0]
+
+
+def test_merge_encrypted_and_plain_inputs(tmp_path: Path, fixtures_dir: Path) -> None:
+    locked = make_encrypted_pdf(fixtures_dir / "locked.pdf", password="pw-merge")
+    plain = make_pdf(fixtures_dir / "open.pdf", 1, "Open")
+    locked_input = InputFile(
+        locked,
+        "locked.pdf",
+        FileKind.PDF,
+        "application/pdf",
+        locked.stat().st_size,
+        2,
+        encrypted=True,
+        password="pw-merge",
+    )
+    tool = MergeTool()
+    infos = [
+        InputFileInfo("locked.pdf", 10, FileKind.PDF, 2, encrypted=True),
+        InputFileInfo("open.pdf", 10, FileKind.PDF, 1),
+    ]
+    tool.validate_inputs(infos, tool.parse_options({}))
+    output = tool.run(_context(tmp_path, [locked_input, _input(plain, "open.pdf", 1)]))[0]
+    assert_qpdf_ok(output.path)
+    assert _first_lines(output.path) == ["Locked page 1", "Locked page 2", "Open page 1"]
+    with pikepdf.open(output.path) as pdf:
+        assert not pdf.is_encrypted
+
+
+def test_merge_wrong_password_fails_clearly(tmp_path: Path, fixtures_dir: Path) -> None:
+    from app.tools.base import ToolFailedError
+
+    locked = make_encrypted_pdf(fixtures_dir / "locked.pdf", password="pw-merge")
+    plain = make_pdf(fixtures_dir / "open.pdf", 1, "Open")
+    wrong = InputFile(
+        locked, "locked.pdf", FileKind.PDF, "application/pdf", 1, 2, encrypted=True, password="nope"
+    )
+    with pytest.raises(ToolFailedError, match="not correct"):
+        MergeTool().run(_context(tmp_path, [wrong, _input(plain, "open.pdf", 1)]))
+
+
+def test_sandbox_decrypts_encrypted_input(tmp_path: Path, fixtures_dir: Path) -> None:
+    locked = make_encrypted_pdf(fixtures_dir / "locked.pdf", password="pw-merge")
+    plain = make_pdf(fixtures_dir / "open.pdf", 1, "Open")
+    locked_input = InputFile(
+        locked, "locked.pdf", FileKind.PDF, "application/pdf", 1, 2, encrypted=True, password="pw-merge"
+    )
+    result = run_in_sandbox(
+        _sandbox_request(
+            tmp_path,
+            [_input(plain, "open.pdf", 1), locked_input],
+            {"pages": [{"file": 1, "page": 2}, {"file": 0, "page": 1}]},
+        ),
+        lambda *_: None,
+        lambda: False,
+    )
+    assert isinstance(result, SandboxSuccess)
+    assert_qpdf_ok(result.outputs[0].path)
+    assert _first_lines(result.outputs[0].path) == ["Locked page 2", "Open page 1"]

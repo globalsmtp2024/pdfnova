@@ -153,7 +153,7 @@ async def delete_upload(upload_id: str, service: TaskServiceDep) -> Response:
 @router.post("/tasks/{task_id}/start", response_model=TaskResponse, status_code=202)
 async def start_task(task_id: str, body: StartTaskRequest, service: TaskServiceDep) -> TaskResponse:
     task = await service.get_owned(task_id)
-    task = await service.start(task, body.options, body.file_order, body.passwords)
+    task = await service.start(task, body.options, body.file_order, body.passwords, body.secrets)
     return service.to_response(task)
 
 

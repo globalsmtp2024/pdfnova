@@ -1,7 +1,10 @@
 from datetime import datetime
-from typing import Any
+from typing import Annotated, Any
 
 from pydantic import BaseModel, Field
+
+SecretName = Annotated[str, Field(min_length=1, max_length=64, pattern=r"^[a-z][a-z0-9_]*$")]
+SecretValue = Annotated[str, Field(max_length=512)]
 
 
 class CreateTaskRequest(BaseModel):
@@ -30,7 +33,8 @@ class UploadResponse(BaseModel):
 class StartTaskRequest(BaseModel):
     options: dict[str, Any] = Field(default_factory=dict)
     file_order: list[str] | None = Field(default=None, max_length=1000)
-    passwords: dict[str, str] = Field(default_factory=dict, max_length=1000)
+    passwords: dict[str, str] = Field(default_factory=dict, max_length=1000, repr=False)
+    secrets: dict[SecretName, SecretValue] = Field(default_factory=dict, max_length=8, repr=False)
 
 
 class TaskFileResponse(BaseModel):

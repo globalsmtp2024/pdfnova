@@ -29,14 +29,6 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { FileCard } from "@/components/tools/file-card";
 import { acceptForKinds, describeKinds } from "@/components/tools/file-kinds";
-import {
-  DEFAULT_MERGE_STATE,
-  DEFAULT_PER_FILE,
-  MergeOptionsPanel,
-  MergePerFileControls,
-  mergeOptionsPayload,
-  type MergeState,
-} from "@/components/tools/option-panels";
 import { TOOL_PANELS, useNoPanel } from "@/components/tools/panels/registry";
 import { PasswordPrompt } from "@/components/tools/password-prompt";
 import { ResultPanel } from "@/components/tools/result-panel";
@@ -140,14 +132,12 @@ export function ToolWorkspace({
   const takeChained = usePendingFiles((state) => state.takeChained);
   const recordUse = useToolPreferences((state) => state.recordUse);
   const user = useSession();
-  const [merge, setMerge] = useState<MergeState>(DEFAULT_MERGE_STATE);
   const consumed = useRef(false);
   const { addFiles, addChained } = session;
   const text = toolText(toolT, definition);
   const spec = description.input_spec;
   const accept = acceptForKinds(spec.accepted_kinds);
   const enoughFiles = session.files.length >= spec.min_files;
-  const isMerge = definition.slug === "merge";
   const usePanel = TOOL_PANELS[definition.slug] ?? useNoPanel;
   const panel = usePanel(session.files);
   const toolProblem = panel && session.allReady ? panel.problem : null;
@@ -196,9 +186,8 @@ export function ToolWorkspace({
 
   const handleStart = async () => {
     try {
-      await session.start(
-        isMerge ? mergeOptionsPayload(merge, session.files) : panel ? panel.payload : {},
-      );
+      await session.start(panel ? panel.payload : {}, panel?.secrets);
+      panel?.clearSecrets?.();
     } catch (error) {
       if (error instanceof ApiError && error.code === "fair_use_limit") {
         const time = formatResetTime(error, locale);
@@ -347,18 +336,7 @@ export function ToolWorkspace({
                           onUnlock={(password) => session.unlockFile(entry.key, password)}
                         />
                       ) : null}
-                      {isMerge ? (
-                        <MergePerFileControls
-                          file={entry}
-                          value={merge.perFile[entry.key] ?? DEFAULT_PER_FILE}
-                          onChange={(next) =>
-                            setMerge((state) => ({
-                              ...state,
-                              perFile: { ...state.perFile, [entry.key]: next },
-                            }))
-                          }
-                        />
-                      ) : null}
+                      {panel?.renderFileExtras ? panel.renderFileExtras(entry) : null}
                     </FileCard>
                   </m.li>
                 ))}
@@ -406,13 +384,7 @@ export function ToolWorkspace({
       <aside aria-label={t("options")} className="lg:sticky lg:top-24 lg:self-start">
         <div className="flex flex-col gap-4 rounded-(--radius-card) border border-border bg-surface p-5 shadow-lifted">
           <h2 className="font-display text-lg font-semibold">{t("options")}</h2>
-          {isMerge ? (
-            <MergeOptionsPanel state={merge} files={session.files} onChange={setMerge} />
-          ) : panel ? (
-            panel.options
-          ) : (
-            <p className="text-sm text-muted">{t("noOptions")}</p>
-          )}
+          {panel ? panel.options : <p className="text-sm text-muted">{t("noOptions")}</p>}
           <div className="flex flex-col gap-2 rounded-xl bg-surface-muted/70 p-3 text-xs text-muted">
             <p className="font-medium text-foreground">
               {t("summaryLine", {

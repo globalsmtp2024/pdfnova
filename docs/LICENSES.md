@@ -33,6 +33,8 @@ Versions are those verified in this repository on 2026-11-20. Re-run the license
 | pypdf | 7.1.1 | BSD-3-Clause |
 | pypdfium2 (bundles PDFium) | 5.15.2 | Apache-2.0 / BSD-3-Clause; PDFium is BSD-3-Clause |
 | Pillow | 13.0.0 | MIT-CMU (HPND) |
+| fonttools | 4.68.0 | MIT |
+| uharfbuzz (bundles HarfBuzz) | 0.57.0 | Apache-2.0; HarfBuzz is MIT ("Old MIT") |
 
 ## Backend development and tests
 
@@ -76,6 +78,17 @@ tailwindcss 4.3.3 (MIT), @tailwindcss/turbopack (MIT), typescript 5.9.3 (Apache-
 ## Fonts
 
 Inter, Plus Jakarta Sans, JetBrains Mono: SIL Open Font License 1.1, self-hosted at build time by `next/font`. DejaVu and Noto fonts in the API image: Bitstream Vera license and OFL 1.1.
+
+Fonts bundled in `apps/api/app/assets/fonts/` for text drawn into PDFs (page numbers, watermarks). Each family folder holds its `OFL.txt`. Source: google/fonts repository, variable fonts instanced to static Regular (wght 400) and Bold (wght 700) with fontTools; only subsets of the glyphs actually used are embedded in output PDFs. Bidirectional ordering is our own implementation; python-bidi (LGPL) is deliberately not used.
+
+| Family | Version | License | Files |
+|---|---|---|---|
+| Inter | 4.001 | SIL OFL 1.1 | Inter-Regular.ttf, Inter-Bold.ttf (opsz 14) |
+| Noto Sans | 2.015 | SIL OFL 1.1 | NotoSans-Regular.ttf, NotoSans-Bold.ttf |
+| Noto Serif | 2.015 | SIL OFL 1.1 | NotoSerif-Regular.ttf, NotoSerif-Bold.ttf |
+| Noto Sans Mono | 2.014 | SIL OFL 1.1 | NotoSansMono-Regular.ttf, NotoSansMono-Bold.ttf |
+| Noto Sans Arabic | 2.012 | SIL OFL 1.1 | NotoSansArabic-Regular.ttf, NotoSansArabic-Bold.ttf |
+| Noto Nastaliq Urdu | 3.009 | SIL OFL 1.1 | NotoNastaliqUrdu-Regular.ttf, NotoNastaliqUrdu-Bold.ttf |
 
 ## System binaries in images
 

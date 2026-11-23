@@ -27,6 +27,9 @@ dependencies = [
   "filetype>=1.2",
   "pikepdf>=9.4.2,<11",
   "pypdf>=5.1",
+  "fonttools>=4.50",
+  "uharfbuzz>=0.40",
+  "pillow>=10.4",
 ]
 
 [project.optional-dependencies]
@@ -67,6 +70,7 @@ known-first-party = ["app", "tests"]
 "alembic/env.py" = ["F401"]
 "app/services/auth.py" = ["S105"]
 "app/services/oauth.py" = ["S106"]
+"app/tools/optimize/repair.py" = ["S603"]
 
 [tool.mypy]
 python_version = "3.11"

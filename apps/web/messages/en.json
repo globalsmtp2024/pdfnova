@@ -810,5 +810,446 @@
       "dropped": "Dropped at position {position}.",
       "cancelled": "Move cancelled."
     }
+  },
+  "tool_compress": {
+    "legend": "Compression level",
+    "levels": {
+      "low": {
+        "title": "Low compression",
+        "description": "Best quality, smaller savings."
+      },
+      "recommended": {
+        "title": "Recommended",
+        "description": "Good quality and a much smaller file."
+      },
+      "extreme": {
+        "title": "Extreme compression",
+        "description": "Smallest file, lower image quality."
+      },
+      "custom": {
+        "title": "Target size",
+        "description": "Aim for a file size you choose."
+      }
+    },
+    "targetLabel": "Target size",
+    "targetHint": "We try the best quality that fits. If it can't fit, you get the smallest version possible.",
+    "unitLabel": "Unit",
+    "unitKB": "KB",
+    "unitMB": "MB",
+    "targetProblem": "Enter a target size larger than zero.",
+    "grayscale": "Convert images to grayscale",
+    "grayscaleHint": "Removes colour from photos for extra savings. Text and drawings keep their colour.",
+    "stripMetadata": "Remove document metadata",
+    "stripMetadataHint": "Drops the title, author and other document properties.",
+    "summary": "{count, plural, one {# file} other {# files}} · {size} in total",
+    "result": {
+      "saved": "Saved {percent}%",
+      "alreadyOptimized": "Already optimized: your original file is returned unchanged",
+      "sizes": "{input} → {output}",
+      "targetMissed": "We couldn't reach {target}. This is the smallest version we could make.",
+      "compareTitle": "First page before and after",
+      "before": "Before",
+      "after": "After"
+    }
+  },
+  "tool_repair": {
+    "explanation": "Repair rebuilds damaged PDFs: broken cross-reference tables, missing trailers, wrong stream lengths, truncated downloads and junk appended to the file. Healthy files are re-saved as a clean copy.",
+    "stepStructure": "Rebuild the file structure with qpdf recovery.",
+    "stepObjects": "Recover objects with two independent PDF readers.",
+    "stepPages": "Salvage individual pages as a last resort.",
+    "rasterize": "Rebuild unreadable pages as images",
+    "rasterizeHint": "Only used when a page cannot be copied any other way. The page keeps its look but its text is no longer selectable, and the report says which pages were affected.",
+    "reportNote": "You get the repaired PDF plus repair-report.txt, which lists what was found, what was fixed and how many pages were recovered.",
+    "summary": "Will create the repaired PDF and a repair report"
+  },
+  "tool_page_numbers": {
+    "position": "Position",
+    "anchors": {
+      "top-left": "Top left",
+      "top-center": "Top center",
+      "top-right": "Top right",
+      "middle-left": "Middle left",
+      "middle-center": "Center",
+      "middle-right": "Middle right",
+      "bottom-left": "Bottom left",
+      "bottom-center": "Bottom center",
+      "bottom-right": "Bottom right"
+    },
+    "marginX": "Side margin",
+    "marginY": "Top/bottom margin",
+    "unit": "Unit",
+    "units": {
+      "pt": "Points",
+      "mm": "Millimetres"
+    },
+    "mirror": "Mirror margins on even pages",
+    "mirrorHint": "Left and right positions swap on even pages, like a printed book.",
+    "format": "Format",
+    "formats": {
+      "n": "1",
+      "page_n": "Page 1",
+      "n_of_total": "1 / N",
+      "page_n_of_total": "Page 1 of N",
+      "custom": "Custom template"
+    },
+    "template": {
+      "label": "Template",
+      "hint": "Use '{n}' for the page number and '{total}' for the last number.",
+      "urdu": "Use Urdu label صفحہ '{n}'",
+      "braces": "The template has unbalanced braces.",
+      "fields": "Use only '{n}' and '{total}' in the template.",
+      "missing": "The template needs '{n}' for the page number."
+    },
+    "style": "Numbering",
+    "styles": {
+      "decimal": "1, 2, 3",
+      "roman_lower": "i, ii, iii",
+      "roman_upper": "I, II, III",
+      "letters_lower": "a, b, c",
+      "letters_upper": "A, B, C"
+    },
+    "digits": "Digits",
+    "digitSets": {
+      "western": "0123",
+      "arabic_indic": "Arabic ٠١٢٣",
+      "extended_arabic_indic": "Urdu ۰۱۲۳"
+    },
+    "startNumber": "Start at number",
+    "firstPage": "First page to number",
+    "skipFirst": "Skip first pages",
+    "skipLast": "Skip last pages",
+    "pages": "Page range (optional)",
+    "pagesPlaceholder": "e.g. 2-end, !5",
+    "pagesInvalid": "Check the page range.",
+    "parity": "Pages",
+    "parities": {
+      "all": "All pages",
+      "odd": "Odd pages",
+      "even": "Even pages"
+    },
+    "font": "Font",
+    "size": "Size (pt)",
+    "color": "Color",
+    "opacity": "Opacity",
+    "bold": "Bold",
+    "boldHint": "Use the bold weight of the chosen font.",
+    "direction": "Text direction",
+    "directions": {
+      "auto": "Automatic",
+      "ltr": "Left to right",
+      "rtl": "Right to left"
+    },
+    "nothing": "These settings leave no pages to number.",
+    "previewAlt": "First page of {name}",
+    "previewCaption": "Preview of page 1",
+    "previewSkipped": "Page 1 won't be numbered",
+    "summary": "{count, plural, one {Numbering # page} other {Numbering # pages}}",
+    "summaryBatch": "{count, plural, one {Same numbering for # file} other {Same numbering for # files}}"
+  },
+  "tool_watermark": {
+    "mode": "Watermark type",
+    "modes": {
+      "text": "Text",
+      "image": "Image"
+    },
+    "text": "Watermark text",
+    "font": "Font",
+    "size": "Size (pt)",
+    "color": "Color",
+    "bold": "Bold",
+    "boldHint": "Use the bold weight of the chosen font.",
+    "image": "Image (PNG or JPG)",
+    "imageHint": "PNG keeps transparency. Up to 10 MB and 40 megapixels.",
+    "imageProblems": {
+      "svg": "SVG isn't supported. Export it as PNG and try again.",
+      "type": "Choose a PNG or JPG image.",
+      "size": "The image is larger than 10 MB.",
+      "read": "That image could not be read."
+    },
+    "scale": "Image width",
+    "opacity": "Opacity",
+    "rotation": "Rotation",
+    "layout": "Layout",
+    "layouts": {
+      "single": "Single",
+      "tiled": "Tiled"
+    },
+    "position": "Position",
+    "anchors": {
+      "top-left": "Top left",
+      "top-center": "Top center",
+      "top-right": "Top right",
+      "middle-left": "Middle left",
+      "middle-center": "Center",
+      "middle-right": "Middle right",
+      "bottom-left": "Bottom left",
+      "bottom-center": "Bottom center",
+      "bottom-right": "Bottom right"
+    },
+    "margin": "Margin (pt)",
+    "offsetX": "Offset X (pt)",
+    "offsetY": "Offset Y (pt)",
+    "spacing": "Spacing (pt)",
+    "layer": "Layer",
+    "layers": {
+      "over": "Over content",
+      "under": "Under content"
+    },
+    "pages": "Page range (optional)",
+    "pagesPlaceholder": "e.g. 1-3, 8-end",
+    "pagesInvalid": "Check the page range.",
+    "parity": "Pages",
+    "parities": {
+      "all": "All pages",
+      "odd": "Odd pages",
+      "even": "Even pages"
+    },
+    "skipFirst": "Skip the first page",
+    "skipFirstHint": "Leave a cover page clean.",
+    "textMissing": "Enter the watermark text.",
+    "imageMissing": "Choose a PNG or JPG image.",
+    "previewAlt": "First page of {name}",
+    "previewCaption": "Preview of page 1",
+    "previewSkipped": "Page 1 won't be watermarked",
+    "summarySingle": "One watermark per page",
+    "summaryTiled": "Tiled across each page",
+    "summaryBatch": "{count, plural, one {Same watermark for # file} other {Same watermark for # files}}"
+  },
+  "tool_crop": {
+    "waiting": "The page preview appears here once the upload finishes.",
+    "unlock": "Unlock this file to see its pages.",
+    "loading": "Loading page sizes…",
+    "inspectFailed": "We couldn't read the page sizes. You can still crop with Remove margins.",
+    "previewUnavailable": "No preview for this file, but the crop area and margins still work.",
+    "previewAlt": "Preview of page {page}",
+    "pageOf": "Page {page} of {total}",
+    "previous": "Previous page",
+    "next": "Next page",
+    "cropArea": "Crop area. Use the arrow keys to move it; hold Shift for bigger steps.",
+    "keyboardHint": "Drag the frame or its handles. With the keyboard, focus the frame or a handle and use the arrow keys (Shift moves 10 pt).",
+    "handles": {
+      "n": "Resize top edge",
+      "s": "Resize bottom edge",
+      "e": "Resize right edge",
+      "w": "Resize left edge",
+      "ne": "Resize top-right corner",
+      "nw": "Resize top-left corner",
+      "se": "Resize bottom-right corner",
+      "sw": "Resize bottom-left corner"
+    },
+    "margins": "Margins to trim",
+    "sides": {
+      "top": "Top",
+      "right": "Right",
+      "bottom": "Bottom",
+      "left": "Left"
+    },
+    "unit": "Unit",
+    "units": {
+      "mm": "mm",
+      "pt": "pt",
+      "in": "in",
+      "percent": "%"
+    },
+    "lockAspect": "Lock aspect ratio",
+    "presets": "Presets",
+    "presetA4": "A4 shape",
+    "presetLetter": "Letter shape",
+    "presetAuto": "Remove margins",
+    "reset": "Reset",
+    "autoActive": "Each page will be trimmed to its own content.",
+    "autoHint": "Every selected page is rendered on the server, the non-white area is found and a small 6 pt padding is kept. Blank pages are left as they are.",
+    "mode": "Crop mode",
+    "modes": {
+      "visual": "Visual (reversible)",
+      "permanent": "Permanent",
+      "visualHint": "Only the CropBox changes. Everything outside stays in the file and can be shown again by resetting the CropBox.",
+      "permanentHint": "Sets the MediaBox, CropBox, TrimBox, BleedBox and ArtBox to the crop area and clips page content to it. Clipped text and images are hidden but still stored in the file. Annotations entirely outside are deleted; form fields are kept."
+    },
+    "applyTo": "Apply to",
+    "apply": {
+      "all": "All pages",
+      "current": "Current page",
+      "range": "Page range",
+      "odd": "Odd pages",
+      "even": "Even pages"
+    },
+    "rangeLabel": "Pages to crop",
+    "noCrop": "Move the crop edges or enter margins first.",
+    "noRange": "Enter the pages to crop.",
+    "batch": "The same margins are applied to all {count} files.",
+    "summary": "Crop area {size}",
+    "summaryAuto": "Trimming each page to its content"
+  },
+  "tool_protect": {
+    "passwordLabel": "Open password",
+    "confirmLabel": "Confirm password",
+    "show": "Show password",
+    "hide": "Hide password",
+    "generate": "Generate strong password",
+    "generated": "Strong password created. Copy it somewhere safe.",
+    "copy": "Copy password",
+    "copied": "Password copied",
+    "copyFailed": "Could not copy. Select the password and copy it yourself.",
+    "strengthLabel": "Strength: {level}",
+    "strength": {
+      "empty": "not set",
+      "veryWeak": "very weak",
+      "weak": "weak",
+      "fair": "fair",
+      "strong": "strong",
+      "veryStrong": "very strong"
+    },
+    "hints": {
+      "tooShort": "Use at least 8 characters.",
+      "common": "This is one of the most common passwords.",
+      "repetitive": "Avoid repeating the same characters.",
+      "addClasses": "Mix upper and lower case letters, numbers and symbols."
+    },
+    "warning": "We cannot recover a lost password. Nobody can open the file without it, so keep a copy before you download.",
+    "permissionsTitle": "What readers may do",
+    "permissions": {
+      "print": {
+        "label": "Print",
+        "description": "Allow printing the document."
+      },
+      "printHigh": {
+        "label": "High-quality print",
+        "description": "Allow full-resolution printing. Turning this on also allows printing."
+      },
+      "copy": {
+        "label": "Copy text and images",
+        "description": "Allow selecting and copying content."
+      },
+      "modify": {
+        "label": "Edit content",
+        "description": "Allow changing the document content."
+      },
+      "annotate": {
+        "label": "Add comments",
+        "description": "Allow adding or changing annotations."
+      },
+      "fillForms": {
+        "label": "Fill in forms",
+        "description": "Allow filling in form fields and signing."
+      },
+      "assemble": {
+        "label": "Assemble pages",
+        "description": "Allow inserting, rotating or deleting pages and bookmarks."
+      }
+    },
+    "accessibilityNote": "Screen readers can always read the text. The PDF standard keeps accessibility on for AES-256 files.",
+    "ownerToggle": "Set a separate owner password",
+    "ownerHelp": "The owner password lets you change permissions later.",
+    "ownerLabel": "Owner password",
+    "ownerRandom": "A random owner password will be created and thrown away, so the permissions cannot be lifted.",
+    "problems": {
+      "needPassword": "Enter an open password.",
+      "mismatch": "The passwords do not match.",
+      "tooLong": "Passwords can be at most {max} bytes long.",
+      "ownerTooLong": "The owner password can be at most {max} bytes long."
+    },
+    "summaryOpen": "AES-256, all permissions allowed",
+    "summaryBlocked": "AES-256, {count, plural, one {# permission} other {# permissions}} blocked"
+  },
+  "tool_unlock": {
+    "notice": "Only unlock files you own or have the right to modify. We never guess or crack passwords.",
+    "statusTitle": "Protection found",
+    "checking": "Checking protection…",
+    "needsPassword": "Needs a password to open",
+    "passwordEntered": "Password entered, ready to unlock",
+    "restricted": "Editing restrictions only, no password needed",
+    "notProtected": "Not protected",
+    "summary": "{count, plural, one {# file will be unlocked} other {# files will be unlocked}}"
+  },
+  "tool_flatten": {
+    "legend": "What to flatten",
+    "forms": "Form fields",
+    "formsHint": "Filled values become part of the page and the form can no longer be edited.",
+    "annotations": "Comments and annotations",
+    "annotationsHint": "Notes, highlights, shapes and drawings are burned into the page.",
+    "stamps": "Stamps",
+    "stampsHint": "Approval and custom stamps become ordinary page content.",
+    "keepLinks": "Keep links clickable",
+    "keepLinksHint": "Hyperlinks stay active. Turn off to remove them as well.",
+    "summaryForms": "form fields",
+    "summaryAnnotations": "comments",
+    "summaryStamps": "stamps",
+    "summary": "{count, plural, one {Flattening {items}} other {Flattening {items} in # files}}",
+    "nothingSelected": "Choose at least one thing to flatten."
+  },
+  "tool_metadata": {
+    "tableLabel": "Document properties before and after",
+    "property": "Property",
+    "before": "Before",
+    "after": "After",
+    "loading": "Reading document properties…",
+    "unlockFirst": "Unlock this file to see its properties.",
+    "hiddenFound": "Found {attachments, plural, one {# attachment} other {# attachments}}, {javascript, plural, one {# script} other {# scripts}} and {thumbnails, plural, one {# page thumbnail} other {# page thumbnails}}.",
+    "batchNote": "Before values come from the first file; changes apply to all {count} files.",
+    "removeAll": "Remove all metadata",
+    "removeAllHint": "Clears every document property and the XMP metadata of the document and its pages.",
+    "propertiesLegend": "Document properties",
+    "fields": {
+      "title": "Title",
+      "author": "Author",
+      "subject": "Subject",
+      "keywords": "Keywords",
+      "creator": "Creator",
+      "producer": "Producer",
+      "creation_date": "Created",
+      "modification_date": "Modified"
+    },
+    "dateHint": "Format D:YYYYMMDDHHmmSS, for example D:20240131093000.",
+    "customTitle": "Custom properties",
+    "customKey": "Name",
+    "customValue": "Value",
+    "customAdd": "Add property",
+    "customRemove": "Remove property",
+    "hiddenTitle": "Hidden data to remove",
+    "hidden": {
+      "attachments": "Attachments and embedded files ({count})",
+      "javascript": "JavaScript ({count})",
+      "thumbnails": "Page thumbnails ({count})"
+    },
+    "hiddenHint": {
+      "attachments": "Files embedded in the PDF and file attachment annotations.",
+      "javascript": "Document scripts, open actions and page or field actions.",
+      "thumbnails": "Small preview images stored with each page."
+    },
+    "removeCount": {
+      "attachments": "{count, plural, one {# attachment} other {# attachments}}",
+      "javascript": "{count, plural, one {# script} other {# scripts}}",
+      "thumbnails": "{count, plural, one {# thumbnail} other {# thumbnails}}"
+    },
+    "summaryRemoveAll": "Removing all metadata",
+    "summaryEdits": "{count, plural, one {Changing # property} other {Changing # properties}}",
+    "summaryHidden": "removing {items}",
+    "invalidDate": "Dates must look like D:YYYYMMDDHHmmSS and be a real date and time.",
+    "invalidKey": "Custom property names start with a letter and use only letters, digits, '.', '_' or '-'.",
+    "reservedKey": "That custom name is a standard property; edit it in its own field.",
+    "duplicateKey": "Each custom property name can only be used once.",
+    "tooLong": "Values are limited to {max} characters.",
+    "tooManyCustom": "You can add up to {max} custom properties.",
+    "nothingToChange": "Change a property or choose something to remove."
+  },
+  "tool_merge": {
+    "modeLegend": "Merge by",
+    "modeFiles": "Whole files",
+    "modePages": "Page by page",
+    "pagesHint": "Every file is expanded into pages. Drag pages to reorder them across files, select pages to rotate or delete them.",
+    "filesHint": "Drag files to reorder them. Use page ranges and rotation on each file card.",
+    "bookmarksLegend": "Bookmarks",
+    "bookmarksBoth": "One per file, originals nested",
+    "bookmarksPerFile": "One per file only",
+    "bookmarksExisting": "Original bookmarks only",
+    "bookmarksNone": "No bookmarks",
+    "bookmarksHint": "A bookmark per file links to that file's first page. Original bookmarks follow the pages you keep.",
+    "formsLegend": "Form fields",
+    "formsPreserve": "Keep fillable",
+    "formsDiscard": "Remove fields",
+    "formsHint": "When two files share a field name, the later one gets its file number in front, like 2_name.",
+    "estimate": "{pages, plural, one {# page} other {# pages}}, about {size}",
+    "empty": "Keep at least one page."
   }
 }

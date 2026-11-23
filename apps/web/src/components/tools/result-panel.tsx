@@ -14,6 +14,7 @@ import { m } from "motion/react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+import { CompressResult } from "@/components/tools/panels/compress";
 import { ToolIcon } from "@/components/tools/tool-icon";
 import { Button } from "@/components/ui/button";
 import { toast, toastError } from "@/components/ui/toaster";
@@ -136,6 +137,7 @@ export function ResultPanel({
           })}
         </p>
       </div>
+      {task.tool === "compress" ? <CompressResult task={task} /> : null}
 
       {task.files_deleted ? (
         <p className="rounded-xl bg-surface-muted px-4 py-3 text-sm text-muted">

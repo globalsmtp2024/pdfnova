@@ -49,12 +49,25 @@ function useThumbnail(file: File | null): string | null {
 }
 
 export function FileThumbnail({ entry }: { entry: LocalFile }) {
-  const url = useThumbnail(entry.file);
+  const remote =
+    entry.uploadId && entry.pageCount && !entry.encrypted
+      ? `/api/v1/files/${entry.uploadId}/pages/1/thumbnail?width=96`
+      : null;
+  const url = useThumbnail(remote ? null : entry.file);
   const Icon =
     entry.file === null ? Link2 : entry.file && isImageFile(entry.file) ? ImageIcon : FileText;
   return (
     <span className="relative flex h-16 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-surface-muted">
-      {url ? (
+      {remote ? (
+        <img
+          src={remote}
+          alt=""
+          loading="lazy"
+          draggable={false}
+          data-file-thumbnail
+          className="size-full object-cover object-top"
+        />
+      ) : url ? (
         <Image
           src={url}
           alt=""

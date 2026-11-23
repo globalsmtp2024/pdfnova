@@ -309,7 +309,7 @@ export function useToolSession(tool: string) {
   }, []);
 
   const start = useCallback(
-    async (options: Record<string, unknown>) => {
+    async (options: Record<string, unknown>, secrets: Record<string, string> = {}) => {
       const current = taskRef.current;
       if (!current) return;
       setStarting(true);
@@ -323,7 +323,7 @@ export function useToolSession(tool: string) {
             .filter((entry) => entry.encrypted && entry.uploadId && entry.password)
             .map((entry) => [entry.uploadId as string, entry.password]),
         );
-        const started = await startTask(current.id, options, order, passwords);
+        const started = await startTask(current.id, options, order, passwords, secrets);
         setFiles((existing) => existing.map((entry) => ({ ...entry, password: "" })));
         taskRef.current = started;
         setTask(started);

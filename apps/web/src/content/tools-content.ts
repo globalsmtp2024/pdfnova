@@ -249,8 +249,8 @@ const OVERRIDES: Partial<Record<string, Partial<Omit<ToolContent, "related">>>> 
   merge: {
     steps: [
       "Drop two or more PDFs, or click to choose them.",
-      "Drag files into order, pick page ranges and rotation for each.",
-      "Press Merge PDF and download one combined document.",
+      "Drag files into order and pick page ranges and rotation, or switch to page mode to arrange single pages across files.",
+      "Choose how bookmarks and form fields are handled, then press Merge PDF and download one combined document.",
     ],
     highlights: [
       {
@@ -258,16 +258,20 @@ const OVERRIDES: Partial<Record<string, Partial<Omit<ToolContent, "related">>>> 
         body: "Include only the pages you need from each file, like 1-3, 5 or 8-last.",
       },
       {
-        title: "Bookmarks for every file",
-        body: "Each source gets a bookmark, with its own outline nested underneath.",
+        title: "Page-by-page mode",
+        body: "Expand every file into pages, then reorder, rotate or delete pages across all files before merging.",
       },
       {
-        title: "Rotate while merging",
-        body: "Fix sideways scans as you combine, without a separate step.",
+        title: "Bookmarks your way",
+        body: "Add one bookmark per file, keep the original bookmarks, or both nested together.",
+      },
+      {
+        title: "Fillable forms keep working",
+        body: "Form fields stay fillable after merging, with clashing names renamed automatically. Or drop them for a clean copy.",
       },
       {
         title: "Up to 100 files",
-        body: "Merge large batches in one go, in exactly the order you set.",
+        body: "Merge large batches in one go, in exactly the order you set, with an output size estimate before you start.",
       },
     ],
     faq: [
@@ -283,12 +287,22 @@ const OVERRIDES: Partial<Record<string, Partial<Omit<ToolContent, "related">>>> 
       {
         question: "Can I merge password-protected PDFs?",
         answer:
-          "Protected files are detected on upload. Unlock them first with Unlock PDF, then merge.",
+          "Yes. Protected files are detected on upload and ask for their password right on the file card. The password is used only for this task, and the merged PDF is saved without a password.",
+      },
+      {
+        question: "What happens to fillable form fields?",
+        answer:
+          "By default fields are kept and stay fillable. If two files use the same field name, the later one is renamed with its file number, like 2_name. You can also choose to remove all form fields.",
       },
       ...SHARED_FAQ(findTool("merge") as ToolDefinition),
     ],
   },
   compress: {
+    steps: [
+      "Drop one or more PDFs, or click to choose them.",
+      "Pick Low, Recommended or Extreme, or enter a target size.",
+      "Press Compress PDF and download the smaller file.",
+    ],
     highlights: [
       {
         title: "Three strength levels",
@@ -296,12 +310,34 @@ const OVERRIDES: Partial<Record<string, Partial<Omit<ToolContent, "related">>>> 
       },
       {
         title: "Smart image handling",
-        body: "Images are resampled and re-encoded while text stays crisp.",
+        body: "Photos are resampled to the size they are shown on the page and re-encoded, while text and vector graphics stay crisp and searchable.",
       },
       {
         title: "See the savings",
-        body: "Before and after sizes are shown the moment it finishes.",
+        body: "Before and after sizes, the percentage saved and a first-page comparison appear the moment it finishes.",
       },
+      {
+        title: "Never bigger",
+        body: "If a file can't be made smaller, you get the original back untouched.",
+      },
+    ],
+    faq: [
+      {
+        question: "Which level should I choose?",
+        answer:
+          "Recommended suits most documents. Low keeps images close to the original, Extreme gives the smallest files for on-screen reading.",
+      },
+      {
+        question: "Will my text stay selectable?",
+        answer:
+          "Yes. Only images are resampled; text, fonts and links are kept, so the PDF stays searchable.",
+      },
+      {
+        question: "What if my target size can't be reached?",
+        answer:
+          "You get the smallest version we could make, and the result shows the actual size so you can decide.",
+      },
+      ...SHARED_FAQ(findTool("compress") as ToolDefinition),
     ],
   },
   split: {
@@ -477,6 +513,320 @@ const OVERRIDES: Partial<Record<string, Partial<Omit<ToolContent, "related">>>> 
       },
       { title: "Tables rebuilt", body: "Tables become real Word tables you can edit and resize." },
       { title: "Scans supported", body: "OCR turns scanned pages into editable text first." },
+    ],
+  },
+  repair: {
+    steps: [
+      "Drop the damaged PDF, even if other tools refuse to open it.",
+      "Optionally allow unreadable pages to be rebuilt as images.",
+      "Press Repair PDF and download the fixed file with its repair report.",
+    ],
+    highlights: [
+      {
+        title: "Several recovery engines",
+        body: "qpdf structural recovery runs first, then two independent PDF readers and finally page-level salvage.",
+      },
+      {
+        title: "Honest report",
+        body: "repair-report.txt lists every problem found and fixed and how many pages were recovered.",
+      },
+      {
+        title: "No silent page loss",
+        body: "The recovered page count is compared with the page tree and the page objects in the file, and any gap is reported.",
+      },
+    ],
+    faq: [
+      {
+        question: "What kinds of damage can be fixed?",
+        answer:
+          "Broken or wrong cross-reference tables, missing trailers, wrong stream lengths, objects missing their end marker, junk appended after the end of the file and many truncated downloads.",
+      },
+      {
+        question: "What if my file is not actually damaged?",
+        answer:
+          "The report says No problems found and you still get a clean, re-saved copy of the document.",
+      },
+      {
+        question: "Will my text stay selectable?",
+        answer:
+          "Yes. Pages are rebuilt from their original objects. Only if you allow it, a page that cannot be copied any other way is rebuilt as an image, and the report names it.",
+      },
+      ...SHARED_FAQ(findTool("repair") as ToolDefinition),
+    ],
+  },
+  "page-numbers": {
+    steps: [
+      "Drop one or more PDFs.",
+      "Pick a position on the 3×3 grid, a format like Page 1 of N, the font and which pages to number. The preview updates as you go.",
+      "Press Add page numbers and download the numbered PDF.",
+    ],
+    highlights: [
+      {
+        title: "Real, searchable text",
+        body: "Numbers are drawn with embedded fonts, so they stay sharp and can be selected and searched.",
+      },
+      {
+        title: "Any format",
+        body: "1, Page 1, 1 / N, Page 1 of N, roman numerals, letters or your own template with {n} and {total}.",
+      },
+      {
+        title: "Urdu and Arabic labels",
+        body: "Right-to-left labels like صفحہ {n} are shaped correctly, with Arabic-Indic digits if you want them.",
+      },
+      {
+        title: "Skip what you need",
+        body: "Start at any number, skip covers or the last pages, number odd or even pages, or use a page range.",
+      },
+    ],
+    faq: [
+      {
+        question: "Do numbers land correctly on rotated or landscape pages?",
+        answer:
+          "Yes. Placement follows the page as you see it, so labels stay upright in the chosen corner on rotated, landscape and cropped pages.",
+      },
+      {
+        question: "What does {total} count?",
+        answer:
+          "The number the last numbered page receives. If you skip the final pages, they are not counted.",
+      },
+      {
+        question: "Can I mirror numbers for printed books?",
+        answer:
+          "Yes. Turn on mirror margins and left and right positions swap on even pages, like a printed book.",
+      },
+      ...SHARED_FAQ(findTool("page-numbers") as ToolDefinition),
+    ],
+  },
+  watermark: {
+    steps: [
+      "Drop one or more PDFs.",
+      "Type your watermark text or choose a PNG or JPG, then set size, opacity, rotation and position, or tile it across the page.",
+      "Press Add watermark and download the stamped PDF.",
+    ],
+    highlights: [
+      {
+        title: "Text or image",
+        body: "Use any text, in several lines and languages including Urdu, or your logo as PNG or JPG.",
+      },
+      {
+        title: "Tiled or placed",
+        body: "Place it once on a 9-point grid with offsets, or repeat it across the page at an angle.",
+      },
+      {
+        title: "Over or under content",
+        body: "Stamp on top of everything or slip it behind the page content like a paper watermark.",
+      },
+      {
+        title: "Light output",
+        body: "The watermark is stored once and reused on every page, so files stay small.",
+      },
+    ],
+    faq: [
+      {
+        question: "Can I use an SVG logo?",
+        answer:
+          "Not directly. Export it as PNG with a transparent background and it will keep its transparency.",
+      },
+      {
+        question: "Why can't I see an under-content watermark?",
+        answer:
+          "Some pages, such as scans, are fully covered by an image. Choose over content and lower the opacity instead.",
+      },
+      {
+        question: "Can I watermark only some pages?",
+        answer:
+          "Yes. Use a page range, odd or even pages, and skip the first page if it is a cover.",
+      },
+      ...SHARED_FAQ(findTool("watermark") as ToolDefinition),
+    ],
+  },
+  crop: {
+    steps: [
+      "Drop one or more PDFs.",
+      "Drag the crop frame on the page preview, type margins in mm, pt, inches or %, or pick Remove margins.",
+      "Choose visual or permanent cropping and the pages to crop, then download.",
+    ],
+    highlights: [
+      {
+        title: "Visual or permanent",
+        body: "Visual cropping only changes the CropBox, so it can be undone. Permanent cropping resizes every page box and clips the content.",
+      },
+      {
+        title: "Remove margins",
+        body: "Each page is rendered, its non-white area is found and the crop fits that content with a small padding.",
+      },
+      {
+        title: "Rotated pages handled",
+        body: "You crop what you see. Rotated pages and unusual page origins are mapped correctly.",
+      },
+    ],
+    faq: [
+      {
+        question: "Is the cropped-away content deleted?",
+        answer:
+          "No. Visual mode only hides it with the CropBox. Permanent mode clips it so viewers and printers can't show it, but the text and images stay inside the file. Annotations lying entirely outside the crop are deleted in permanent mode.",
+      },
+      {
+        question: "Can I crop only some pages?",
+        answer:
+          "Yes. Apply the crop to all pages, the page you are previewing, odd or even pages, or a range like 2-5, 9.",
+      },
+      ...SHARED_FAQ(findTool("crop") as ToolDefinition),
+    ],
+  },
+  protect: {
+    steps: [
+      "Drop one or more PDFs. A file that already has a password asks for it first.",
+      "Type an open password twice or generate a strong one, then choose what readers may do.",
+      "Press Protect PDF and download the encrypted files.",
+    ],
+    highlights: [
+      {
+        title: "AES-256 encryption",
+        body: "Files are encrypted with AES-256, the strongest standard PDF encryption, and checked before you download them.",
+      },
+      {
+        title: "Permission control",
+        body: "Allow or block printing, high-quality printing, copying, editing, comments, form filling and page assembly.",
+      },
+      {
+        title: "Password never stored",
+        body: "Your password is sealed for the job, used once and wiped. It never appears in our database, logs or results.",
+      },
+    ],
+    faq: [
+      {
+        question: "Can you recover a lost password?",
+        answer:
+          "No. We never keep the password, so nobody can recover it. Store it somewhere safe before you download.",
+      },
+      {
+        question: "What is the owner password for?",
+        answer:
+          "It lets the owner change permissions later. If you leave it empty, a random strong owner password is created and thrown away.",
+      },
+      {
+        question: "Do all PDF readers respect the permissions?",
+        answer:
+          "The open password is always enforced. Permissions are honoured by standard readers, but some editors can ignore them, so rely on the open password for secrecy.",
+      },
+      ...SHARED_FAQ(findTool("protect") as ToolDefinition),
+    ],
+  },
+  unlock: {
+    steps: [
+      "Drop up to 50 PDFs. Files that need a password to open ask for it right away.",
+      "Type the password you already know for each locked file. Files with only editing restrictions need nothing.",
+      "Press Unlock PDF and download copies that open without a password and allow printing, copying and editing.",
+    ],
+    highlights: [
+      {
+        title: "Restrictions removed",
+        body: "Printing, copying and editing limits set by an owner password are removed, so the copy behaves like a normal PDF.",
+      },
+      {
+        title: "Passwords stay private",
+        body: "The password you type is sealed for this one task, never written to logs and wiped as soon as the file is unlocked.",
+      },
+      {
+        title: "Batch friendly",
+        body: "Unlock up to 50 files at once. A file with a wrong or missing password is listed in a report while the rest finish.",
+      },
+    ],
+    faq: [
+      {
+        question: "Can you unlock a PDF if I forgot the password?",
+        answer:
+          "No. We never guess, crack or brute-force passwords. A file that needs a password to open can only be unlocked with the correct password you enter.",
+      },
+      {
+        question: "Which files can I unlock?",
+        answer:
+          "Only files you own or have the right to modify. Removing protection from someone else's document without permission may break the law or an agreement.",
+      },
+      {
+        question: "What happens to a file with only editing restrictions?",
+        answer:
+          "It opens without a password, so no prompt is shown. The copy you download has every restriction removed.",
+      },
+      ...SHARED_FAQ(findTool("unlock") as ToolDefinition),
+    ],
+  },
+  flatten: {
+    steps: [
+      "Drop one or more PDFs with forms, comments or stamps.",
+      "Choose what to flatten: form fields, comments and annotations, stamps, and whether links stay clickable.",
+      "Press Flatten PDF and download a document whose content can no longer be edited.",
+    ],
+    highlights: [
+      {
+        title: "Values stay visible",
+        body: "Missing field appearances are generated first, so every filled value is burned into the page exactly as shown.",
+      },
+      {
+        title: "Choose what to lock",
+        body: "Flatten forms, comments or stamps separately, and keep hyperlinks working if you like.",
+      },
+      {
+        title: "Batch friendly",
+        body: "Flatten up to 100 files at once. If one file fails, the rest still finish.",
+      },
+    ],
+    faq: [
+      {
+        question: "What does flattening do?",
+        answer:
+          "It draws form fields, comments and stamps into the page itself and removes the interactive objects, so nobody can change the values afterwards.",
+      },
+      {
+        question: "Is the form removed?",
+        answer:
+          "When form fields are flattened the interactive form is removed completely; the filled-in values remain as ordinary page content.",
+      },
+      {
+        question: "Can I keep links clickable?",
+        answer: "Yes. Links are kept by default; turn the option off to remove them too.",
+      },
+      ...SHARED_FAQ(findTool("flatten") as ToolDefinition),
+    ],
+  },
+  "edit-metadata": {
+    steps: [
+      "Drop one or more PDFs.",
+      "Edit title, author, subject, keywords, dates and custom properties, or remove all metadata and hidden data.",
+      "Compare before and after, then press Edit metadata and download the result.",
+    ],
+    highlights: [
+      {
+        title: "Before and after",
+        body: "See the current properties next to the values you are about to apply.",
+      },
+      {
+        title: "Info and XMP in sync",
+        body: "Document information and XMP metadata are updated together, so every viewer shows the same values.",
+      },
+      {
+        title: "Hidden data clean-up",
+        body: "Remove attachments, JavaScript and page thumbnails, with a count of what was found.",
+      },
+    ],
+    faq: [
+      {
+        question: "What does Remove all metadata clear?",
+        answer:
+          "Every document property plus the XMP metadata stored for the document and for individual pages.",
+      },
+      {
+        question: "What date format is used?",
+        answer:
+          "PDF dates look like D:YYYYMMDDHHmmSS, for example D:20240131093000, optionally followed by a time zone.",
+      },
+      {
+        question: "Can I add my own properties?",
+        answer:
+          "Yes. Add up to 50 custom properties with names made of letters, digits, dots, dashes or underscores.",
+      },
+      ...SHARED_FAQ(findTool("edit-metadata") as ToolDefinition),
     ],
   },
 };

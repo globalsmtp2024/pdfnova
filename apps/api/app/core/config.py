@@ -75,6 +75,7 @@ class Settings(BaseSettings):
     max_pdf_pages: int = 5000
     max_pdf_objects: int = 2_000_000
     max_decompression_ratio: int = 200
+    qpdf_binary: str | None = None
 
     @model_validator(mode="after")
     def _validate_production(self) -> "Settings":

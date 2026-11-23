@@ -5,4 +5,13 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "extract-pages",
   "split",
   "organize",
+  "compress",
+  "repair",
+  "page-numbers",
+  "watermark",
+  "crop",
+  "protect",
+  "unlock",
+  "flatten",
+  "edit-metadata",
 ]);

@@ -39,6 +39,7 @@ const nextConfig: NextConfig = {
     globalNotFound: true,
   },
   turbopack: {
+    root: "C:/python",
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],

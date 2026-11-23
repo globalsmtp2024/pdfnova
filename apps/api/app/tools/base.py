@@ -37,6 +37,7 @@ class InputSpec(BaseModel):
     accepted_kinds: frozenset[FileKind] = frozenset({FileKind.PDF})
     max_file_bytes: int | None = None
     allow_encrypted_pdf: bool = False
+    allow_damaged_pdf: bool = False
 
 
 class CostEstimate(BaseModel):
@@ -99,6 +100,22 @@ class JobContext(Generic[OptionsT]):
     options: OptionsT
     reporter: ProgressReporter = field(default=lambda _fraction, _label: None)
     is_cancelled: CancelCheck = field(default=lambda: False)
+    secrets: dict[str, str] = field(default_factory=dict, repr=False, compare=False)
+
+    def secret(self, name: str) -> str:
+        value = self.secrets.get(name)
+        if not value:
+            raise ToolFailedError(
+                "The password for this task is no longer available. Start the task again.",
+                code="secret_missing",
+            )
+        return value
+
+    def optional_secret(self, name: str) -> str | None:
+        return self.secrets.get(name) or None
+
+    def forget_secrets(self) -> None:
+        self.secrets.clear()
 
     @property
     def output_dir(self) -> Path:
@@ -145,6 +162,8 @@ class Tool(ABC, Generic[OptionsT]):
     options_schema: ClassVar[type[ToolOptions]]
     uses_ai: ClassVar[bool] = False
     decrypt_inputs: ClassVar[bool] = True
+    accepted_secrets: ClassVar[frozenset[str]] = frozenset()
+    required_secrets: ClassVar[frozenset[str]] = frozenset()
     seconds_per_mb: ClassVar[float] = 0.05
     seconds_per_page: ClassVar[float] = 0.01
 

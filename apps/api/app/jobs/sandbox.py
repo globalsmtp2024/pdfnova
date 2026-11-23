@@ -5,7 +5,7 @@ import sys
 import time
 import traceback
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from multiprocessing.connection import Connection
 from multiprocessing.synchronize import Event
 from pathlib import Path
@@ -28,6 +28,7 @@ class SandboxRequest:
     inputs: list[InputFile]
     options: dict[str, Any]
     limits: SandboxLimits
+    secrets: dict[str, str] = field(default_factory=dict, repr=False, compare=False)
 
 
 @dataclass(frozen=True)
@@ -89,8 +90,13 @@ def _child_main(request: SandboxRequest, connection: Connection, cancel_event: E
             options=options,
             reporter=report,
             is_cancelled=cancel_event.is_set,
+            secrets=dict(request.secrets),
         )
-        outputs = tool.run(context)
+        request.secrets.clear()
+        try:
+            outputs = tool.run(context)
+        finally:
+            context.forget_secrets()
         for output in outputs:
             resolved = output.path.resolve()
             if request.workdir.resolve() not in resolved.parents or not resolved.is_file():

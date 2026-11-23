@@ -14,10 +14,11 @@ export function startTask(
   options: Record<string, unknown>,
   fileOrder: string[],
   passwords: Record<string, string> = {},
+  secrets: Record<string, string> = {},
 ): Promise<Task> {
   return apiJson<Task>(`/api/v1/tasks/${taskId}/start`, {
     method: "POST",
-    json: { options, file_order: fileOrder, passwords },
+    json: { options, file_order: fileOrder, passwords, secrets },
   });
 }
 

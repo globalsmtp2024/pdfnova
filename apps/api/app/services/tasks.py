@@ -16,7 +16,7 @@ from app.core.errors import ConflictError, NotFoundError, ToolInputError, Unsupp
 from app.core.secrets import seal_secrets
 from app.core.security import sign_value
 from app.db.base import new_id, utcnow
-from app.files.pdf_safety import inspect_pdf
+from app.files.pdf_safety import DamagedPdfError, inspect_damaged_pdf, inspect_pdf
 from app.files.render import purge_render_cache
 from app.files.sniff import FileKind, UnsafeFileError, sniff_file
 from app.models.task import FileRole, FileStatus, Task, TaskFile, TaskStatus
@@ -249,13 +249,18 @@ class TaskService:
         if sniffed.kind not in tool.input_spec.accepted_kinds:
             return f"{tool.name} cannot open this type of file."
         if sniffed.kind is FileKind.PDF:
+            limits = {
+                "max_pages": self._settings.max_pdf_pages,
+                "max_objects": self._settings.max_pdf_objects,
+                "max_ratio": self._settings.max_decompression_ratio,
+            }
             try:
-                inspection = inspect_pdf(
-                    path,
-                    max_pages=self._settings.max_pdf_pages,
-                    max_objects=self._settings.max_pdf_objects,
-                    max_ratio=self._settings.max_decompression_ratio,
-                )
+                try:
+                    inspection = inspect_pdf(path, **limits)
+                except DamagedPdfError:
+                    if not tool.input_spec.allow_damaged_pdf:
+                        raise
+                    inspection = inspect_damaged_pdf(path, **limits)
             except UnsafeFileError as exc:
                 return str(exc)
             if inspection.encrypted and not tool.input_spec.allow_encrypted_pdf:
@@ -303,6 +308,7 @@ class TaskService:
         options: dict[str, Any],
         file_order: list[str] | None,
         passwords: dict[str, str] | None = None,
+        secrets: dict[str, str] | None = None,
     ) -> Task:
         if task.state is not TaskStatus.CREATED:
             if task.state in {TaskStatus.QUEUED, TaskStatus.RUNNING, TaskStatus.SUCCEEDED}:
@@ -323,6 +329,13 @@ class TaskService:
         unknown = set(supplied) - {f.id for f in inputs}
         if unknown:
             raise ToolInputError("A password was sent for a file that is not part of this task.")
+        job_secrets = {key: value for key, value in (secrets or {}).items() if value}
+        if set(job_secrets) - tool.accepted_secrets:
+            raise ToolInputError("This tool does not accept one of the protected values that were sent.")
+        if tool.required_secrets - set(job_secrets):
+            raise ToolInputError(
+                f"{tool.name} needs a password before it can start.", hint="Enter a password and try again."
+            )
         parsed = tool.parse_options(options)
         tool.validate_inputs(self.input_infos(inputs, frozenset(supplied)), parsed)
         await ensure_task_rate(self._session, self._principal)
@@ -332,7 +345,12 @@ class TaskService:
             record_ai_usage(self._session, self._principal, tool.slug)
         now = utcnow()
         task.options = parsed.model_dump(mode="json")
-        task.secrets_sealed = seal_secrets(self._settings, {"passwords": supplied}) if supplied else None
+        task.secrets_sealed = (
+            seal_secrets(self._settings, {"passwords": supplied, "job": job_secrets})
+            if supplied or job_secrets
+            else None
+        )
+        del job_secrets, supplied
         task.status = TaskStatus.QUEUED.value
         task.queued_at = now
         task.progress = 0.0

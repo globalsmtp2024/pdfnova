@@ -3,6 +3,8 @@ from typing import Any
 
 import pikepdf
 
+from app.files.metadata import read_metadata
+
 POINTS_PER_MM = 72 / 25.4
 SCAN_SAMPLE_PAGES = 10
 
@@ -108,6 +110,7 @@ def inspect_document(path: Path, password: str | None = None) -> dict[str, Any]:
                 "pdf_version": pdf.pdf_version,
                 "size_bytes": path.stat().st_size,
                 "linearized": bool(pdf.is_linearized),
+                "metadata": read_metadata(pdf),
             }
         except (pikepdf.PdfError, KeyError, ValueError, TypeError) as exc:
             raise InspectionError("PDF_UNSUPPORTED", "Parts of this PDF use features we can't read.") from exc
