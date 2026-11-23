@@ -23,4 +23,11 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "header-footer",
   "bates-numbering",
   "background",
+  "resize-pages",
+  "n-up",
+  "grayscale",
+  "remove-annotations",
+  "remove-blank-pages",
+  "reverse-pages",
+  "linearize",
 ]);

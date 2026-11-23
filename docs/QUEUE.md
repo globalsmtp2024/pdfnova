@@ -11,13 +11,13 @@ Handoff file. Tick a box only when the tool is implemented and its smoke case pa
 - [x] 7 Headers and footers
 - [x] 8 Bates numbering
 - [x] 9 Background
-- [ ] 10 Resize page size
-- [ ] 11 N-up and Booklet
-- [ ] 12 Grayscale
-- [ ] 13 Remove annotations
-- [ ] 14 Remove blank pages
-- [ ] 15 Reverse pages
-- [ ] 16 Linearize
+- [x] 10 Resize page size
+- [x] 11 N-up and Booklet
+- [x] 12 Grayscale
+- [x] 13 Remove annotations
+- [x] 14 Remove blank pages
+- [x] 15 Reverse pages
+- [x] 16 Linearize
 - [ ] 17 Bookmarks editor
 - [ ] 18 Attachments manager
 - [ ] 19 Hyperlinks manager
