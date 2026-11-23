@@ -11,7 +11,7 @@ REQUEST_TIMEOUT_SECONDS = 120.0
 DEFAULT_MODELS = {
     "anthropic": "claude-sonnet-5-5",
     "openai": "gpt-4.1-mini",
-    "google": "gemini-2.5-flash",
+    "google": "gemini-3.8-flash",
     "mistral": "mistral-small-latest",
 }
 BASE_URLS = {
