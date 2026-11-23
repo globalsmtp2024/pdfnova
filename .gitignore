@@ -29,3 +29,4 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
+apps/api/*.egg-info/
