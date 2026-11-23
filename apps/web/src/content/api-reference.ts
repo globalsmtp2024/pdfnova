@@ -98,6 +98,24 @@ export const ENDPOINT_GROUPS: EndpointGroup[] = [
         summary: "Remove a file before the task starts.",
         auth: "optional",
       },
+      {
+        method: "POST",
+        path: "/api/v1/tasks/{task_id}/chain",
+        summary: "Use an output file of an earlier task as an input here, without downloading it.",
+        auth: "optional",
+      },
+      {
+        method: "POST",
+        path: "/api/v1/files/{file_id}/inspect",
+        summary: "Read page count, page sizes, permissions and structure of an uploaded PDF.",
+        auth: "optional",
+      },
+      {
+        method: "GET",
+        path: "/api/v1/files/{file_id}/pages/{page}/thumbnail",
+        summary: "Render one page as a WebP thumbnail (width query parameter).",
+        auth: "optional",
+      },
     ],
   },
   {
