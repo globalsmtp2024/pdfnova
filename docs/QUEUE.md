@@ -18,9 +18,9 @@ Handoff file. Tick a box only when the tool is implemented and its smoke case pa
 - [x] 14 Remove blank pages
 - [x] 15 Reverse pages
 - [x] 16 Linearize
-- [ ] 17 Bookmarks editor
-- [ ] 18 Attachments manager
-- [ ] 19 Hyperlinks manager
+- [x] 17 Bookmarks editor
+- [x] 18 Attachments manager
+- [x] 19 Hyperlinks manager
 - [ ] 20 Sign PDF (draw/type/upload, place anywhere)
 - [ ] 21 Fill PDF forms
 - [ ] 22 Redact PDF (manual boxes + regex, true removal)

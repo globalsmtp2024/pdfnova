@@ -30,4 +30,7 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "remove-blank-pages",
   "reverse-pages",
   "linearize",
+  "bookmarks",
+  "attachments",
+  "hyperlinks",
 ]);

@@ -15,6 +15,8 @@ for slug in slugs:
         live = live.replace("]);", f'  "{slug}",\n]);')
 open("apps/web/src/config/live.ts", "w", encoding="utf8", newline="\n").write(live)
 subprocess.run(["node", "scripts/fields.mjs"], cwd="apps/web", check=True)
+subprocess.run(["node", "scripts/toolnames.mjs"], cwd="apps/web", check=True)
+subprocess.run(["npx", "prettier", "--write", "messages"], cwd="apps/web", check=True, shell=True, capture_output=True)
 subprocess.run(["git", "add", "-A"], check=True)
 subprocess.run(
     ["git", "commit", "-q", "-m", message + "\n\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"],

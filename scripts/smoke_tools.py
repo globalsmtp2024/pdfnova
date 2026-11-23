@@ -133,6 +133,12 @@ CASES: list[Case] = [
     Case("remove-blank-pages", pdf_upload()),
     Case("reverse-pages", pdf_upload()),
     Case("linearize", pdf_upload()),
+    Case("bookmarks", pdf_upload(), {"bookmarks": ["Intro | 1", "Details | 2 | 2", "End | 3"]}),
+    Case(
+        "attachments",
+        [("sample.pdf", sample_pdf(), "application/pdf"), ("note.txt", b"attached text", "text/plain")],
+    ),
+    Case("hyperlinks", pdf_upload(), {"add_links": ["1 | 72 | 700 | 200 | 20 | https://example.com"]}),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

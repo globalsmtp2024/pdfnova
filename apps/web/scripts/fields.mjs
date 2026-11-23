@@ -76,6 +76,15 @@ const FIELDS = {
   remove_form_fields: ["Remove form fields", "فارم فیلڈز ہٹائیں"],
   sensitivity: ["Blank detection sensitivity (0.9-1)", "خالی صفحے کی حساسیت (0.9-1)"],
   keep_pages_with_text: ["Keep pages that contain text", "متن والے صفحات رکھیں"],
+  bookmarks: ["Bookmarks (Title | page | level)", "بُک مارکس (عنوان | صفحہ | سطح)"],
+  bookmarks_hint: ["One per line, for example: Chapter 1 | 3 | 1", "ہر سطر میں ایک، مثلاً: باب 1 | 3 | 1"],
+  replace_existing: ["Replace existing bookmarks", "موجودہ بُک مارکس بدل دیں"],
+  remove_all: ["Remove all", "سب ہٹائیں"],
+  remove_names: ["File names to remove (one per line)", "ہٹانے والی فائلوں کے نام (ہر سطر میں ایک)"],
+  extract_all: ["Also extract the attached files", "منسلک فائلیں بھی نکالیں"],
+  remove_external: ["Remove web links", "ویب لنکس ہٹائیں"],
+  add_links: ["Add links (page | x | y | width | height | URL)", "لنکس شامل کریں (صفحہ | x | y | چوڑائی | اونچائی | URL)"],
+  replace_urls: ["Rewrite URLs (old => new, one per line)", "URL بدلیں (پرانا => نیا، ہر سطر میں ایک)"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

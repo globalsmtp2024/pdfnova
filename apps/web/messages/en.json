@@ -1328,7 +1328,16 @@
     "remove_links": "Remove links",
     "remove_form_fields": "Remove form fields",
     "sensitivity": "Blank detection sensitivity (0.9-1)",
-    "keep_pages_with_text": "Keep pages that contain text"
+    "keep_pages_with_text": "Keep pages that contain text",
+    "bookmarks": "Bookmarks (Title | page | level)",
+    "bookmarks_hint": "One per line, for example: Chapter 1 | 3 | 1",
+    "replace_existing": "Replace existing bookmarks",
+    "remove_all": "Remove all",
+    "remove_names": "File names to remove (one per line)",
+    "extract_all": "Also extract the attached files",
+    "remove_external": "Remove web links",
+    "add_links": "Add links (page | x | y | width | height | URL)",
+    "replace_urls": "Rewrite URLs (old => new, one per line)"
   },
   "tools": {
     "remove-annotations": {
