@@ -247,6 +247,17 @@ class OverlayDocument:
         self._text[cache_key] = stamp
         return stamp
 
+    def vector_stamp(
+        self, content: str, width: float, height: float, opacity: float, blend: str | None = None
+    ) -> Stamp:
+        state = pikepdf.Dictionary(
+            Type=pikepdf.Name.ExtGState, ca=round(opacity, 3), CA=round(opacity, 3)
+        )
+        if blend:
+            state["/BM"] = pikepdf.Name("/" + blend)
+        resources = pikepdf.Dictionary(ExtGState=pikepdf.Dictionary(GS0=self.pdf.make_indirect(state)))
+        return self._form(("/GS0 gs\n" + content).encode("ascii"), width, height, resources)
+
     def image_stamp(self, image: PreparedImage, width: float, height: float, opacity: float) -> Stamp:
         cache_key = ("image", id(image), round(width, 3), round(height, 3), round(opacity, 3))
         if cache_key in self._groups:

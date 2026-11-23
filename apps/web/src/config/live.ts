@@ -70,4 +70,5 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "image-add-text",
   "digital-sign",
   "verify-signatures",
+  "edit-pdf",
 ]);

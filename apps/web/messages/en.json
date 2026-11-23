@@ -1584,5 +1584,57 @@
       "needCertificate": "Choose your .p12 or .pfx certificate file.",
       "tooLarge": "That certificate file is larger than 64 KB."
     }
+  },
+  "tool_edit_pdf": {
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "pageOf": "Page {page} of {count}",
+    "undo": "Undo",
+    "redo": "Redo",
+    "loadFailed": "This page could not be shown.",
+    "tools": "Editing tools",
+    "chooseImage": "Image to place (PNG or JPG, up to 3 MB)",
+    "imageRejected": "Choose a PNG or JPG smaller than 3 MB.",
+    "defaultText": "Text",
+    "linkAddress": "Web address",
+    "color": "Colour",
+    "fill": "Fill",
+    "noFill": "None",
+    "strokeWidth": "Line width",
+    "fontSize": "Text size",
+    "bold": "Bold",
+    "selected": "Selected item",
+    "delete": "Delete",
+    "summary": "{count, plural, one {# edit ready to apply} other {# edits ready to apply}}",
+    "problems": {
+      "none": "Make at least one edit on the page.",
+      "badLink": "Links must start with http://, https://, mailto: or tel:."
+    },
+    "tool": {
+      "select": "Select and move",
+      "text": "Text",
+      "image": "Image",
+      "rectangle": "Rectangle",
+      "ellipse": "Ellipse",
+      "line": "Line",
+      "arrow": "Arrow",
+      "highlight": "Highlight",
+      "draw": "Draw",
+      "note": "Sticky note",
+      "link": "Link"
+    },
+    "hint": {
+      "select": "Click an item to select it, drag to move it, press Delete to remove it.",
+      "text": "Click on the page to place text, then edit it below.",
+      "image": "Choose a PNG or JPG, then click or drag on the page.",
+      "rectangle": "Drag on the page to draw a rectangle.",
+      "ellipse": "Drag on the page to draw an ellipse.",
+      "line": "Drag to draw a straight line.",
+      "arrow": "Drag to draw an arrow.",
+      "highlight": "Drag over text to highlight it.",
+      "draw": "Press and draw freehand.",
+      "note": "Click to drop a sticky note.",
+      "link": "Drag a box, then set the web address."
+    }
   }
 }

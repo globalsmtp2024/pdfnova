@@ -186,6 +186,29 @@ def signed_ok(outputs: list[tuple[str, bytes]]) -> str | None:
     return None if len(reader.embedded_signatures) == 1 else "no signature found"
 
 
+def edit_operations() -> list[dict]:
+    import base64
+
+    image = base64.b64encode(sample_image("PNG", (60, 40))).decode()
+    return [
+        {"type": "text", "page": 1, "x": 10, "y": 20, "text": "Edited سلام", "size": 20, "color": "#CC0000"},
+        {"type": "image", "page": 1, "x": 50, "y": 50, "width": 20, "height": 10, "image_data": image},
+        {"type": "rectangle", "page": 1, "x": 10, "y": 40, "width": 30, "height": 10, "fill": "#DDEEFF"},
+        {"type": "ellipse", "page": 2, "x": 10, "y": 40, "width": 30, "height": 10},
+        {"type": "line", "page": 2, "x1": 10, "y1": 10, "x2": 60, "y2": 30, "arrow": True},
+        {"type": "highlight", "page": 2, "x": 10, "y": 5, "width": 40, "height": 4},
+        {"type": "draw", "page": 2, "points": [[10, 60], [20, 65], [35, 62], [50, 70]]},
+        {"type": "note", "page": 1, "x": 80, "y": 10, "text": "Check this"},
+        {"type": "link", "page": 1, "x": 10, "y": 80, "width": 30, "height": 5, "url": "https://example.com"},
+    ]
+
+
+def edit_ok(outputs: list[tuple[str, bytes]]) -> str | None:
+    with pikepdf.open(io.BytesIO(outputs[0][1])) as pdf:
+        subtypes = {str(a.get("/Subtype")) for a in pdf.pages[0].get("/Annots", [])}
+        return None if {"/Text", "/Link"} <= subtypes else f"annotations missing {subtypes}"
+
+
 def pdf_upload(pages: int = 3) -> list[Upload]:
     return [("sample.pdf", sample_pdf(pages), "application/pdf")]
 
@@ -397,6 +420,7 @@ CASES: list[Case] = [
     Case("image-add-text", [("p.png", sample_image("PNG", (600, 400)), "image/png")], {"text": "سلام Hello"}, check=images_decode),
     Case("digital-sign", pdf_upload(1), {"visible": True, "reason": "Smoke"}, secrets=p12_secrets(), check=signed_ok),
     Case("verify-signatures", [("signed.pdf", signed_pdf(), "application/pdf")], {}, check=contains_text("Document unchanged since signing: yes")),
+    Case("edit-pdf", pdf_upload(2), {"operations": edit_operations()}, check=edit_ok),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]
