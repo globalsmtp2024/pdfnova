@@ -82,6 +82,44 @@ def table_pdf() -> bytes:
     return buffer.getvalue()
 
 
+def dup_pdf() -> bytes:
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    for label in ("Alpha", "Alpha", "Beta"):
+        pdf.drawString(72, 700, label)
+        pdf.showPage()
+    pdf.save()
+    return buffer.getvalue()
+
+
+def image_pdf() -> bytes:
+    from reportlab.lib.utils import ImageReader
+
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    pdf.drawImage(ImageReader(io.BytesIO(sample_image("PNG"))), 72, 500, 200, 150)
+    pdf.drawString(72, 450, "Caption")
+    pdf.showPage()
+    pdf.save()
+    return buffer.getvalue()
+
+
+def no_images(outputs: list[tuple[str, bytes]]) -> str | None:
+    with pikepdf.open(io.BytesIO(outputs[0][1])) as pdf:
+        for obj in pdf.objects:
+            if isinstance(obj, pikepdf.Stream) and obj.get("/Subtype") == "/Image":
+                return "image remains"
+        return None if "Caption" in pdf.pages[0].Contents.read_bytes().decode("latin-1") else "text lost"
+
+
+def page_count(expected: int) -> Check:
+    def check(outputs: list[tuple[str, bytes]]) -> str | None:
+        with pikepdf.open(io.BytesIO(outputs[0][1])) as pdf:
+            return None if len(pdf.pages) == expected else f"expected {expected} pages got {len(pdf.pages)}"
+
+    return check
+
+
 def pdf_upload(pages: int = 3) -> list[Upload]:
     return [("sample.pdf", sample_pdf(pages), "application/pdf")]
 
@@ -284,6 +322,10 @@ CASES: list[Case] = [
     Case("pdf-to-powerpoint", pdf_upload(2), {}, check=zip_has("ppt/slides/slide2.xml")),
     Case("pdf-to-html", pdf_upload(2), {}, check=contains_text("Smoke page 1")),
     Case("pdf-to-csv", [("t.pdf", table_pdf(), "application/pdf")], {}, check=contains_text("Book")),
+    Case("remove-duplicate-pages", [("d.pdf", dup_pdf(), "application/pdf")], {}, check=page_count(2)),
+    Case("remove-images", [("i.pdf", image_pdf(), "application/pdf")], {}, check=no_images),
+    Case("remove-hidden-data", pdf_upload(), {}),
+    Case("interleave-pages", pdf_upload(3) + [("even.pdf", sample_pdf(3), "application/pdf")], {}, check=page_count(6)),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

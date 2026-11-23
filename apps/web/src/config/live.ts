@@ -61,4 +61,8 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "pdf-to-powerpoint",
   "pdf-to-html",
   "pdf-to-csv",
+  "remove-duplicate-pages",
+  "remove-images",
+  "remove-hidden-data",
+  "interleave-pages",
 ]);

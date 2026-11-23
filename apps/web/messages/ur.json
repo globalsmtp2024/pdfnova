@@ -791,6 +791,22 @@
     "workflow": {
       "name": "ورک فلو رنر",
       "description": "کئی PDF ٹولز کو ایک ہی کام میں ترتیب سے چلائیں۔"
+    },
+    "remove-duplicate-pages": {
+      "name": "ڈپلیکیٹ صفحات ہٹائیں",
+      "description": "دہرائے گئے صفحات ہٹائیں اور پہلی کاپی رکھیں۔"
+    },
+    "remove-images": {
+      "name": "تصاویر ہٹائیں",
+      "description": "تصاویر ہٹائیں اور متن رکھیں۔"
+    },
+    "remove-hidden-data": {
+      "name": "جاوا اسکرپٹ اور چھپا ڈیٹا ہٹائیں",
+      "description": "شیئر کرنے سے پہلے اسکرپٹس، منسلکات اور میٹا ڈیٹا ہٹائیں۔"
+    },
+    "interleave-pages": {
+      "name": "طاق اور جفت اسکین ملائیں",
+      "description": "اگلے اور پچھلے صفحات کے اسکین کو ایک دستاویز میں ملائیں۔"
     }
   },
   "password": {
@@ -1530,7 +1546,16 @@
     "delimiter_comma": "کوما",
     "delimiter_semicolon": "سیمی کولن",
     "delimiter_tab": "ٹیب",
-    "guard_formulas": "اسپریڈشیٹ فارمولوں سے تحفظ"
+    "guard_formulas": "اسپریڈشیٹ فارمولوں سے تحفظ",
+    "compare": "صفحات کا موازنہ",
+    "compare_appearance": "ظاہری شکل",
+    "compare_text": "صرف متن",
+    "javascript": "جاوا اسکرپٹ ہٹائیں",
+    "attachments": "شامل فائلیں ہٹائیں",
+    "thumbnails": "تھمب نیلز ہٹائیں",
+    "metadata": "میٹا ڈیٹا ہٹائیں",
+    "reverse_second": "دوسری فائل الٹی ترتیب میں ہے",
+    "allow_unequal": "صفحات کی مختلف تعداد کی اجازت دیں"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",

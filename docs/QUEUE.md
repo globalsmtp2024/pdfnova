@@ -54,8 +54,8 @@ Phase 3 leftovers
 - [x] 1 PDF to PowerPoint
 - [x] 2 PDF to HTML
 - [x] 3 PDF to CSV tables
-- [ ] 4 Remove duplicate pages, Remove images, Remove JavaScript/hidden data
-- [ ] 5 Interleave odd/even scans
+- [x] 4 Remove duplicate pages, Remove images, Remove JavaScript/hidden data
+- [x] 5 Interleave odd/even scans
 - [ ] 6 Image tools: remove background (rembg if installable), image watermark, add text to image
 
 Phase 4

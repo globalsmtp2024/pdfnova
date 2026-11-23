@@ -178,6 +178,15 @@ const FIELDS = {
   delimiter_semicolon: ["Semicolon", "سیمی کولن"],
   delimiter_tab: ["Tab", "ٹیب"],
   guard_formulas: ["Protect against spreadsheet formulas", "اسپریڈشیٹ فارمولوں سے تحفظ"],
+  compare: ["Compare pages by", "صفحات کا موازنہ"],
+  compare_appearance: ["Appearance", "ظاہری شکل"],
+  compare_text: ["Text only", "صرف متن"],
+  javascript: ["Remove JavaScript", "جاوا اسکرپٹ ہٹائیں"],
+  attachments: ["Remove embedded files", "شامل فائلیں ہٹائیں"],
+  thumbnails: ["Remove thumbnails", "تھمب نیلز ہٹائیں"],
+  metadata: ["Remove metadata", "میٹا ڈیٹا ہٹائیں"],
+  reverse_second: ["Second file is in reverse order", "دوسری فائل الٹی ترتیب میں ہے"],
+  allow_unequal: ["Allow different page counts", "صفحات کی مختلف تعداد کی اجازت دیں"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

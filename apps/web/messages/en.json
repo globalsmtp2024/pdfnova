@@ -1430,7 +1430,16 @@
     "delimiter_comma": "Comma",
     "delimiter_semicolon": "Semicolon",
     "delimiter_tab": "Tab",
-    "guard_formulas": "Protect against spreadsheet formulas"
+    "guard_formulas": "Protect against spreadsheet formulas",
+    "compare": "Compare pages by",
+    "compare_appearance": "Appearance",
+    "compare_text": "Text only",
+    "javascript": "Remove JavaScript",
+    "attachments": "Remove embedded files",
+    "thumbnails": "Remove thumbnails",
+    "metadata": "Remove metadata",
+    "reverse_second": "Second file is in reverse order",
+    "allow_unequal": "Allow different page counts"
   },
   "tools": {
     "remove-annotations": {
@@ -1468,6 +1477,22 @@
     "pdf-to-csv": {
       "name": "PDF to CSV",
       "description": "Extract each PDF table as a CSV file."
+    },
+    "remove-duplicate-pages": {
+      "name": "Remove duplicate pages",
+      "description": "Delete repeated pages and keep the first copy."
+    },
+    "remove-images": {
+      "name": "Remove images",
+      "description": "Strip pictures and keep the text."
+    },
+    "remove-hidden-data": {
+      "name": "Remove JavaScript and hidden data",
+      "description": "Remove scripts, attachments and metadata before sharing."
+    },
+    "interleave-pages": {
+      "name": "Interleave odd and even scans",
+      "description": "Combine front-side and back-side scans into one document."
     }
   },
   "tool_sign": {

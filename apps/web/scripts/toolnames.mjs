@@ -1,6 +1,10 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const NAMES = {
+  "interleave-pages": [["Interleave odd and even scans", "Combine front-side and back-side scans into one document."], ["طاق اور جفت اسکین ملائیں", "اگلے اور پچھلے صفحات کے اسکین کو ایک دستاویز میں ملائیں۔"]],
+  "remove-duplicate-pages": [["Remove duplicate pages", "Delete repeated pages and keep the first copy."], ["ڈپلیکیٹ صفحات ہٹائیں", "دہرائے گئے صفحات ہٹائیں اور پہلی کاپی رکھیں۔"]],
+  "remove-images": [["Remove images", "Strip pictures and keep the text."], ["تصاویر ہٹائیں", "تصاویر ہٹائیں اور متن رکھیں۔"]],
+  "remove-hidden-data": [["Remove JavaScript and hidden data", "Remove scripts, attachments and metadata before sharing."], ["جاوا اسکرپٹ اور چھپا ڈیٹا ہٹائیں", "شیئر کرنے سے پہلے اسکرپٹس، منسلکات اور میٹا ڈیٹا ہٹائیں۔"]],
   "pdf-to-powerpoint": [["PDF to PowerPoint", "Turn each PDF page into a slide."], ["PDF سے پاورپوائنٹ", "ہر PDF صفحے کو سلائیڈ میں بدلیں۔"]],
   "pdf-to-html": [["PDF to HTML", "Convert a PDF into a clean HTML page."], ["PDF سے HTML", "PDF کو صاف HTML صفحے میں بدلیں۔"]],
   "pdf-to-csv": [["PDF to CSV", "Extract each PDF table as a CSV file."], ["PDF سے CSV", "PDF کے ہر جدول کو CSV میں نکالیں۔"]],

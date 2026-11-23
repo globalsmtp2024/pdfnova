@@ -711,6 +711,10 @@ export const TOOLS: ToolDefinition[] = [
     ["stamp"],
   ),
   tool("image-rotate", "Rotate image", "image", "Rotate and flip images.", ["image"], ["turn"]),
+  tool("remove-duplicate-pages", "Remove duplicate pages", "organize", "Delete repeated pages and keep the first copy.", ["pdf"], ["duplicate", "repeat", "dedupe"]),
+  tool("remove-images", "Remove images", "optimize", "Strip pictures and keep the text.", ["pdf"], ["pictures", "photos"]),
+  tool("remove-hidden-data", "Remove JavaScript and hidden data", "optimize", "Remove scripts, attachments and metadata before sharing.", ["pdf"], ["javascript", "sanitize", "metadata", "privacy"]),
+  tool("interleave-pages", "Interleave odd and even scans", "organize", "Combine front-side and back-side scans into one document.", ["pdf"], ["duplex", "odd", "even", "scan", "collate"]),
 ];
 
 export function findTool(slug: string): ToolDefinition | undefined {
