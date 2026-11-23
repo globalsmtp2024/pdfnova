@@ -8,9 +8,9 @@ Handoff file. Tick a box only when the tool is implemented and its smoke case pa
 - [x] 4 PDF to Markdown
 - [x] 5 Text to PDF
 - [x] 6 Markdown to PDF
-- [ ] 7 Headers and footers
-- [ ] 8 Bates numbering
-- [ ] 9 Background
+- [x] 7 Headers and footers
+- [x] 8 Bates numbering
+- [x] 9 Background
 - [ ] 10 Resize page size
 - [ ] 11 N-up and Booklet
 - [ ] 12 Grayscale

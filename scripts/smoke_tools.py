@@ -122,6 +122,9 @@ CASES: list[Case] = [
     Case("pdf-to-image", pdf_upload(), {"format": "png", "dpi": 72}, check=images_decode),
     Case("pdf-to-text", pdf_upload(), {}, check=contains_text("Smoke page 2")),
     Case("pdf-to-markdown", pdf_upload(), {}, check=contains_text("Smoke page")),
+    Case("header-footer", pdf_upload(), {"header_center": "Report {date}", "footer_right": "{n} / {total}"}),
+    Case("bates-numbering", pdf_upload(), {"prefix": "ABC-", "digits": 5}),
+    Case("background", pdf_upload(), {"mode": "color", "color": "#FFF8DC"}),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

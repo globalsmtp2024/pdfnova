@@ -20,4 +20,7 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "pdf-to-markdown",
   "text-to-pdf",
   "markdown-to-pdf",
+  "header-footer",
+  "bates-numbering",
+  "background",
 ]);
