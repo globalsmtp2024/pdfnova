@@ -95,8 +95,9 @@ export function useSignPanel(files: LocalFile[]): ToolPanelView {
   };
 
   const image = mode === "draw" ? drawn : mode === "upload" ? uploaded : null;
-  const missing = mode === "text" ? text.trim() === "" : image === null ? t("needImage") : null;
-  const problem = error ?? (mode === "text" ? (text.trim() ? null : t("needText")) : missing);
+  const missing =
+    mode === "text" ? (text.trim() ? null : t("needText")) : image ? null : t("needImage");
+  const problem = error ?? missing;
 
   const number = (value: number, setter: (next: number) => void, min: number, max: number) => (
     <Input
