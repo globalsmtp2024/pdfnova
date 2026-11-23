@@ -6,6 +6,7 @@ from pikepdf import Name, String
 from pydantic import Field, field_validator
 
 from app.core.errors import ToolInputError
+from app.files.sniff import FileKind
 from app.text.fonts import FontKey
 from app.text.geometry import multiply, page_geometry, stamp_matrix
 from app.text.images import decode_image_data, prepare_image
@@ -22,7 +23,6 @@ from app.tools.base import (
 )
 from app.tools.edit.stamping import STAMP_SPEC, check_expression, checked_color, select_pages, stamp_each
 from app.tools.pdfkit import open_pdf, output_pdf, pdf_name, save_pdf
-from app.files.sniff import FileKind
 
 SIGN_TEXT_SIZE = 48.0
 TRUE_WORDS = {"on", "yes", "true", "1", "checked", "x"}

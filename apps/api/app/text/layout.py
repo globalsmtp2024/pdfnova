@@ -5,7 +5,7 @@ import pikepdf
 from app.text.bidi import paragraph_is_rtl
 from app.text.fonts import FontKey
 from app.text.geometry import translate
-from app.text.overlay import OverlayDocument, RGB, TextStyle
+from app.text.overlay import RGB, OverlayDocument, TextStyle
 from app.text.shaping import shape_line
 
 A4_SIZE = (595.0, 842.0)

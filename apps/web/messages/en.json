@@ -2054,5 +2054,22 @@
       "delivered": "Delivered",
       "failed": "Failed"
     }
+  },
+  "cloud": {
+    "pickFile": "Choose a file from {service}",
+    "pickFolder": "Choose a folder in {service}",
+    "location": "Location",
+    "search": "Search by name",
+    "failed": "Could not load this folder.",
+    "empty": "Nothing here.",
+    "saveHere": "Save in this folder",
+    "importFrom": "Import from {service}",
+    "connect": "Connect {service}",
+    "saveTo": "Save to {service}",
+    "saved": "Saved “{name}”",
+    "connected": "Connected",
+    "disconnect": "Disconnect",
+    "noneConfigured": "No cloud services are set up on this server yet.",
+    "title": "Cloud accounts"
   }
 }

@@ -9,7 +9,6 @@ from pydantic import Field
 from app.core.errors import ToolInputError
 from app.files.sniff import FileKind
 from app.tools.base import (
-    InputFile,
     InputFileInfo,
     InputSpec,
     JobContext,

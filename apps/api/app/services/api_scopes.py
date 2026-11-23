@@ -18,6 +18,7 @@ PREFIX_SCOPES: tuple[tuple[str, str], ...] = (
     ("/api/v1/files", "tasks"),
     ("/api/v1/uploads", "tasks"),
     ("/api/v1/library", "library"),
+    ("/api/v1/cloud", "library"),
     ("/api/v1/esign/requests", "esign"),
     ("/api/v1/teams", "teams"),
     ("/api/v1/webhooks", "webhooks"),

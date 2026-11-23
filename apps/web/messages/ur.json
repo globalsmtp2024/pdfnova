@@ -2100,5 +2100,22 @@
       "delivered": "پہنچ گیا",
       "failed": "ناکام"
     }
+  },
+  "cloud": {
+    "pickFile": "{service} سے فائل منتخب کریں",
+    "pickFolder": "{service} میں فولڈر منتخب کریں",
+    "location": "مقام",
+    "search": "نام سے تلاش کریں",
+    "failed": "یہ فولڈر لوڈ نہیں ہو سکا۔",
+    "empty": "یہاں کچھ نہیں۔",
+    "saveHere": "اس فولڈر میں محفوظ کریں",
+    "importFrom": "{service} سے درآمد کریں",
+    "connect": "{service} جوڑیں",
+    "saveTo": "{service} میں محفوظ کریں",
+    "saved": "“{name}” محفوظ ہو گئی",
+    "connected": "منسلک",
+    "disconnect": "منقطع کریں",
+    "noneConfigured": "اس سرور پر ابھی کوئی کلاؤڈ سروس سیٹ اپ نہیں ہے۔",
+    "title": "کلاؤڈ اکاؤنٹس"
   }
 }

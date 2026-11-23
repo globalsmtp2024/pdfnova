@@ -1,3 +1,4 @@
+from app.models.cloud import CloudConnection
 from app.models.esign import (
     FieldKind,
     RecipientStatus,
@@ -8,9 +9,8 @@ from app.models.esign import (
     SignRequestStatus,
 )
 from app.models.library import LibraryFile, LibraryFolder
-from app.models.team import Team, TeamInvite, TeamMember, TeamRole, TeamWorkflow
 from app.models.task import AiUsageEvent, FileRole, FileStatus, Task, TaskFile, TaskStatus
-from app.models.webhook import Webhook, WebhookDelivery
+from app.models.team import Team, TeamInvite, TeamMember, TeamRole, TeamWorkflow
 from app.models.user import (
     ApiKey,
     ContactMessage,
@@ -20,26 +20,28 @@ from app.models.user import (
     RefreshToken,
     User,
 )
+from app.models.webhook import Webhook, WebhookDelivery
 
 __all__ = [
-    "FieldKind",
-    "RecipientStatus",
-    "SignEvent",
-    "SignField",
-    "SignRecipient",
-    "SignRequest",
-    "SignRequestStatus",
     "AiUsageEvent",
     "ApiKey",
+    "CloudConnection",
     "ContactMessage",
+    "FieldKind",
     "FileRole",
     "FileStatus",
     "LibraryFile",
     "LibraryFolder",
     "OAuthAccount",
     "OneTimeToken",
+    "RecipientStatus",
     "RecoveryCode",
     "RefreshToken",
+    "SignEvent",
+    "SignField",
+    "SignRecipient",
+    "SignRequest",
+    "SignRequestStatus",
     "Task",
     "TaskFile",
     "TaskStatus",

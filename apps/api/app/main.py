@@ -9,6 +9,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from app.api.routes import (
     account,
     auth,
+    cloud,
     contact,
     esign,
     fair_use,
@@ -102,6 +103,7 @@ def create_app(settings: Settings | None = None, container: Container | None = N
         pages.router,
         esign.router,
         library.router,
+        cloud.router,
         teams.router,
         webhooks.router,
     ):

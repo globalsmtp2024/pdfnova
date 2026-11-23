@@ -29,6 +29,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { FileCard } from "@/components/tools/file-card";
 import { acceptForKinds, describeKinds } from "@/components/tools/file-kinds";
+import { CloudImportButtons } from "@/components/cloud/cloud-actions";
 import { AiBudget } from "@/components/tools/ai-budget";
 import { FALLBACK_PANEL, TOOL_PANELS } from "@/components/tools/panels/registry";
 import { PasswordPrompt } from "@/components/tools/password-prompt";
@@ -300,6 +301,7 @@ export function ToolWorkspace({
             {t("pasteHint", { keys: "Ctrl V" })}
           </span>
           <UrlImport onImport={session.importUrl} busy={session.importing} />
+          <CloudImportButtons onImport={session.importCloud} busy={session.importing} />
         </div>
       </div>
     );
@@ -359,6 +361,7 @@ export function ToolWorkspace({
             />
             <div className="flex justify-center">
               <UrlImport onImport={session.importUrl} busy={session.importing} />
+              <CloudImportButtons onImport={session.importCloud} busy={session.importing} />
             </div>
           </>
         ) : null}

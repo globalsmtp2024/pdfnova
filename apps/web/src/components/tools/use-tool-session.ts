@@ -17,6 +17,7 @@ import {
 } from "@/lib/tasks";
 import type { Task, TaskEvent } from "@/lib/types";
 import { uploadFile } from "@/lib/upload";
+import { importCloudToTask } from "@/lib/cloud";
 
 export type LocalFileStatus = "queued" | "uploading" | "ready" | "error";
 
@@ -150,6 +151,36 @@ export function useToolSession(tool: string) {
       try {
         const current = await ensureTask();
         const upload = await importFromUrl(current.id, url);
+        setFiles((existing) => [
+          ...existing,
+          {
+            key: newKey(),
+            file: null,
+            name: upload.filename,
+            size: upload.size,
+            status: "ready",
+            uploaded: upload.size,
+            uploadId: upload.id,
+            pageCount: upload.page_count,
+            encrypted: upload.encrypted,
+            password: "",
+            unlocked: false,
+            error: null,
+          },
+        ]);
+      } finally {
+        setImporting(false);
+      }
+    },
+    [ensureTask],
+  );
+
+  const importCloud = useCallback(
+    async (provider: string, fileId: string) => {
+      setImporting(true);
+      try {
+        const current = await ensureTask();
+        const upload = await importCloudToTask(current.id, provider, fileId);
         setFiles((existing) => [
           ...existing,
           {
@@ -428,6 +459,7 @@ export function useToolSession(tool: string) {
     addFiles,
     addChained,
     importUrl,
+    importCloud,
     retryFile,
     removeFile,
     moveFile,

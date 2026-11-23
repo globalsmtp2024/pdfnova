@@ -71,6 +71,15 @@ class Settings(BaseSettings):
     github_client_id: str | None = None
     github_client_secret: SecretStr | None = None
 
+    cloud_google_client_id: str | None = None
+    cloud_google_client_secret: SecretStr | None = None
+    cloud_dropbox_app_key: str | None = None
+    cloud_dropbox_app_secret: SecretStr | None = None
+    cloud_microsoft_client_id: str | None = None
+    cloud_microsoft_client_secret: SecretStr | None = None
+    cloud_microsoft_tenant: str = "common"
+    cloud_test_provider: bool = False
+
     sentry_dsn: str | None = None
     metrics_enabled: bool = True
     webhooks_enabled: bool = True

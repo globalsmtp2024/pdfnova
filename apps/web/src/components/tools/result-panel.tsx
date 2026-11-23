@@ -15,6 +15,7 @@ import { m } from "motion/react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+import { CloudExportButtons } from "@/components/cloud/cloud-actions";
 import { CompressResult } from "@/components/tools/panels/compress";
 import { ToolIcon } from "@/components/tools/tool-icon";
 import { Button } from "@/components/ui/button";
@@ -179,6 +180,9 @@ export function ResultPanel({
             <Link2 aria-hidden />
             {t("copyLink")}
           </Button>
+          {signedIn && primary && !archive ? (
+            <CloudExportButtons source={{ task_id: task.id, output_file_id: primary.id }} />
+          ) : null}
           {signedIn ? (
             <Button
               variant="outline"

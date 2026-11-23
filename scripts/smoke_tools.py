@@ -881,6 +881,53 @@ def run_webhooks(client: httpx.Client) -> str:
     return "ok"
 
 
+def run_cloud(client: httpx.Client) -> str:
+    from urllib.parse import parse_qs, urlsplit
+
+    problem = sign_in_new_user(client, "cloud")
+    if problem:
+        return problem
+    providers = client.get("/api/v1/cloud/providers").json()
+    if [p["name"] for p in providers] != ["testcloud"] or providers[0]["connected"]:
+        return f"providers {providers}"
+    connect = client.get("/api/v1/cloud/testcloud/connect").json()["url"]
+    query = parse_qs(urlsplit(connect).query)
+    callback = client.get("/api/v1/cloud/testcloud/callback", params={"code": query["code"][0], "state": query["state"][0]}, follow_redirects=False)
+    if callback.status_code != 303 or "cloud=testcloud" not in callback.headers["location"]:
+        return f"callback {callback.status_code} {callback.headers.get('location')}"
+    bad = client.get("/api/v1/cloud/testcloud/callback", params={"code": "fake-code", "state": query["state"][0] + "x"}, follow_redirects=False)
+    if bad.status_code < 400:
+        return "forged state accepted"
+    if client.get("/api/v1/cloud/providers").json()[0]["account"] != "tester@example.com":
+        return "not connected"
+    root = client.get("/api/v1/cloud/testcloud/files").json()
+    if {e["name"] for e in root} != {"Docs", "sample.pdf"}:
+        return f"root listing {root}"
+    nested = client.get("/api/v1/cloud/testcloud/files", params={"folder": "docs"}).json()
+    if [e["name"] for e in nested] != ["nested.pdf"]:
+        return "folder listing failed"
+    if [e["name"] for e in client.get("/api/v1/cloud/testcloud/files", params={"q": "nest"}).json()] != ["nested.pdf"]:
+        return "search failed"
+    sample = next(e for e in root if e["name"] == "sample.pdf")
+    imported = client.post("/api/v1/cloud/testcloud/import", json={"file_id": sample["id"]})
+    if imported.status_code != 201:
+        return f"library import {imported.status_code} {imported.text[:100]}"
+    task = client.post("/api/v1/tasks", json={"tool": "rotate"}).json()
+    into_task = client.post(f"/api/v1/tasks/{task['id']}/cloud-imports", json={"provider": "testcloud", "file_id": sample["id"]})
+    if into_task.status_code != 201 or into_task.json()["filename"] != "sample.pdf":
+        return f"task import {into_task.status_code} {into_task.text[:100]}"
+    exported = client.post("/api/v1/cloud/testcloud/export", json={"library_file_id": imported.json()["id"], "folder_id": "docs"})
+    if exported.status_code != 200:
+        return f"export {exported.status_code} {exported.text[:100]}"
+    if len(client.get("/api/v1/cloud/testcloud/files", params={"folder": "docs"}).json()) != 2:
+        return "export not visible"
+    if client.delete("/api/v1/cloud/testcloud").status_code != 204:
+        return "disconnect failed"
+    if client.get("/api/v1/cloud/testcloud/files").status_code != 400:
+        return "listing allowed after disconnect"
+    return "ok"
+
+
 def main() -> int:
     only = set(sys.argv[1].split(",")) if len(sys.argv) > 1 else None
     failures = 0
@@ -890,6 +937,10 @@ def main() -> int:
         if only and "workflow-templates" in only:
             outcome = run_workflow_templates(client)
             print(f"{'workflow-templates':20} {outcome}")
+            failures += outcome != "ok"
+        if only and "cloud" in only:
+            outcome = run_cloud(client)
+            print(f"{'cloud':20} {outcome}")
             failures += outcome != "ok"
         if only and "webhooks" in only:
             outcome = run_webhooks(client)

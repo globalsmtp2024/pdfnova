@@ -7,7 +7,14 @@ from fastapi import APIRouter, Depends, Header, Request, Response, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
-from app.api.deps import ContainerDep, PrincipalDep, SessionDep, enforce_rate_limit, limit_by_ip
+from app.api.deps import (
+    ContainerDep,
+    CurrentUser,
+    PrincipalDep,
+    SessionDep,
+    enforce_rate_limit,
+    limit_by_ip,
+)
 from app.core.errors import PayloadTooLargeError, ToolInputError
 from app.fair_use import get_fair_use
 from app.models.task import Task, TaskStatus
@@ -222,3 +229,39 @@ async def task_events(
             "Connection": "keep-alive",
         },
     )
+
+
+class CloudImportRequest(BaseModel):
+    provider: str = Field(min_length=1, max_length=32)
+    file_id: str = Field(min_length=1, max_length=1000)
+
+
+@router.post("/tasks/{task_id}/cloud-imports", response_model=UploadResponse, status_code=201)
+async def import_from_cloud(
+    task_id: str,
+    body: CloudImportRequest,
+    request: Request,
+    service: TaskServiceDep,
+    container: ContainerDep,
+    session: SessionDep,
+    user: CurrentUser,
+) -> UploadResponse:
+    from app.api.routes.cloud import access_token, cloud_failure, connection_for, provider_or_404
+    from app.cloud import CloudError
+
+    await limit_by_ip(request, container, "cloud-import", limit=60, window=3600)
+    task = await service.get_owned(task_id)
+    provider = provider_or_404(container, body.provider)
+    record = await connection_for(session, user, body.provider)
+    token = await access_token(container, session, provider, record)
+    try:
+        downloaded = await provider.download(token, body.file_id, get_fair_use().max_file_bytes)
+    except CloudError as exc:
+        raise cloud_failure(exc) from exc
+    upload = await service.create_upload(task, downloaded.filename, len(downloaded.data))
+    chunk_size = container.settings.upload_chunk_size
+    for offset in range(0, len(downloaded.data), chunk_size):
+        upload = await service.receive_chunk(
+            task, upload, offset, downloaded.data[offset : offset + chunk_size]
+        )
+    return service.upload_response(upload)

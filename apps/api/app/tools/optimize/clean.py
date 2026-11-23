@@ -2,8 +2,8 @@ import io
 from typing import Any
 
 import pikepdf
-from PIL import Image
 from pikepdf import PdfImage
+from PIL import Image
 from pydantic import Field
 
 from app.core.errors import ToolInputError

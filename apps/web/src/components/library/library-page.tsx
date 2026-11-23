@@ -15,6 +15,8 @@ import { useSearchParams } from "next/navigation";
 import { useFormatter, useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 
+import { CloudExportButtons } from "@/components/cloud/cloud-actions";
+import { CloudConnections } from "@/components/cloud/cloud-connections";
 import { EmptyState } from "@/components/ui/blocks";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -102,6 +104,7 @@ function FileRow({
           </>
         ) : (
           <>
+            <CloudExportButtons source={{ library_file_id: file.id }} />
             <a
               href={`/api/v1/library/files/${file.id}/download${teamParam}`}
               className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
@@ -180,6 +183,7 @@ function FileRow({
 
 export function LibraryPage() {
   const t = useTranslations("library");
+  const cloudT = useTranslations("cloud");
   const session = useSession();
   const signedIn = Boolean(session.data);
   const teams = useTeams(signedIn);
@@ -324,6 +328,10 @@ export function LibraryPage() {
             <FolderPlus aria-hidden />
           </Button>
         </form>
+        <div className="flex flex-col gap-2 rounded-xl border border-border p-3">
+          <h3 className="text-sm font-medium">{cloudT("title")}</h3>
+          <CloudConnections />
+        </div>
         {quota.data ? (
           <div className="flex flex-col gap-1.5 rounded-xl border border-border p-3 text-xs" data-library-quota>
             <div className="flex justify-between">
