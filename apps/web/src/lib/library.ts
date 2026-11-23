@@ -25,6 +25,7 @@ export type LibraryQuota = {
   trash_days: number;
 };
 export type LibraryQuery = {
+  teamId: string | null;
   folderId: string | null;
   q: string;
   tag: string;
@@ -38,6 +39,7 @@ export function useLibraryFiles(query: LibraryQuery, enabled: boolean) {
     queryKey: [...ROOT, "files", query],
     queryFn: () => {
       const params = new URLSearchParams();
+      if (query.teamId) params.set("team_id", query.teamId);
       if (query.folderId) params.set("folder_id", query.folderId);
       if (query.q) params.set("q", query.q);
       if (query.tag) params.set("tag", query.tag);
@@ -48,34 +50,39 @@ export function useLibraryFiles(query: LibraryQuery, enabled: boolean) {
   });
 }
 
-export function useLibraryFolders(enabled: boolean) {
+function scoped(path: string, teamId: string | null): string {
+  return teamId ? `${path}${path.includes("?") ? "&" : "?"}team_id=${teamId}` : path;
+}
+
+export function useLibraryFolders(enabled: boolean, teamId: string | null = null) {
   return useQuery({
-    queryKey: [...ROOT, "folders"],
-    queryFn: () => apiJson<LibraryFolder[]>("/api/v1/library/folders"),
+    queryKey: [...ROOT, "folders", teamId],
+    queryFn: () => apiJson<LibraryFolder[]>(scoped("/api/v1/library/folders", teamId)),
     enabled,
   });
 }
 
-export function useLibraryQuota(enabled: boolean) {
+export function useLibraryQuota(enabled: boolean, teamId: string | null = null) {
   return useQuery({
-    queryKey: [...ROOT, "quota"],
-    queryFn: () => apiJson<LibraryQuota>("/api/v1/library/quota"),
+    queryKey: [...ROOT, "quota", teamId],
+    queryFn: () => apiJson<LibraryQuota>(scoped("/api/v1/library/quota", teamId)),
     enabled,
   });
 }
 
-export function useLibraryMutations() {
+export function useLibraryMutations(teamId: string | null = null) {
   const queryClient = useQueryClient();
   const refresh = () => queryClient.invalidateQueries({ queryKey: ROOT });
   return {
+    teamId,
     createFolder: useMutation({
       mutationFn: (input: { name: string; parent_id: string | null }) =>
-        apiJson<LibraryFolder>("/api/v1/library/folders", { method: "POST", json: input }),
+        apiJson<LibraryFolder>(scoped("/api/v1/library/folders", teamId), { method: "POST", json: input }),
       onSuccess: refresh,
     }),
     renameFolder: useMutation({
       mutationFn: (input: { id: string; name: string }) =>
-        apiJson<LibraryFolder>(`/api/v1/library/folders/${input.id}`, {
+        apiJson<LibraryFolder>(scoped(`/api/v1/library/folders/${input.id}`, teamId), {
           method: "PATCH",
           json: { name: input.name },
         }),
@@ -83,7 +90,7 @@ export function useLibraryMutations() {
     }),
     deleteFolder: useMutation({
       mutationFn: (id: string) =>
-        apiJson<{ trashed_files: number }>(`/api/v1/library/folders/${id}`, { method: "DELETE" }),
+        apiJson<{ trashed_files: number }>(scoped(`/api/v1/library/folders/${id}`, teamId), { method: "DELETE" }),
       onSuccess: refresh,
     }),
     updateFile: useMutation({
@@ -95,28 +102,28 @@ export function useLibraryMutations() {
         move?: boolean;
       }) => {
         const { id, ...body } = input;
-        return apiJson<LibraryFile>(`/api/v1/library/files/${id}`, { method: "PATCH", json: body });
+        return apiJson<LibraryFile>(scoped(`/api/v1/library/files/${id}`, teamId), { method: "PATCH", json: body });
       },
       onSuccess: refresh,
     }),
     trashFile: useMutation({
       mutationFn: (id: string) =>
-        apiJson<LibraryFile>(`/api/v1/library/files/${id}`, { method: "DELETE" }),
+        apiJson<LibraryFile>(scoped(`/api/v1/library/files/${id}`, teamId), { method: "DELETE" }),
       onSuccess: refresh,
     }),
     restoreFile: useMutation({
       mutationFn: (id: string) =>
-        apiJson<LibraryFile>(`/api/v1/library/files/${id}/restore`, { method: "POST" }),
+        apiJson<LibraryFile>(scoped(`/api/v1/library/files/${id}/restore`, teamId), { method: "POST" }),
       onSuccess: refresh,
     }),
     deleteForever: useMutation({
       mutationFn: async (id: string) => {
-        await apiFetch(`/api/v1/library/files/${id}/permanent`, { method: "DELETE" });
+        await apiFetch(scoped(`/api/v1/library/files/${id}/permanent`, teamId), { method: "DELETE" });
       },
       onSuccess: refresh,
     }),
     emptyTrash: useMutation({
-      mutationFn: () => apiJson<{ deleted: number }>("/api/v1/library/trash", { method: "DELETE" }),
+      mutationFn: () => apiJson<{ deleted: number }>(scoped("/api/v1/library/trash", teamId), { method: "DELETE" }),
       onSuccess: refresh,
     }),
     upload: useMutation({
@@ -124,6 +131,7 @@ export function useLibraryMutations() {
         const form = new FormData();
         form.append("file", input.file);
         if (input.folderId) form.append("folder_id", input.folderId);
+        if (teamId) form.append("team_id", teamId);
         const response = await apiFetch("/api/v1/library/files", { method: "POST", body: form });
         return (await response.json()) as LibraryFile;
       },
@@ -131,7 +139,10 @@ export function useLibraryMutations() {
     }),
     saveFromTask: useMutation({
       mutationFn: (input: { task_id: string; output_file_id: string }) =>
-        apiJson<LibraryFile>("/api/v1/library/files/from-task", { method: "POST", json: input }),
+        apiJson<LibraryFile>("/api/v1/library/files/from-task", {
+          method: "POST",
+          json: teamId ? { ...input, team_id: teamId } : input,
+        }),
       onSuccess: refresh,
     }),
   };

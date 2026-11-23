@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Check, Copy, FileClock, FolderHeart, KeyRound, Layers, LogIn, PenLine, Workflow } from "lucide-react";
+import { Activity, Check, Copy, FileClock, FolderHeart, KeyRound, Layers, LogIn, PenLine, Users, Workflow } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState, type FormEvent, type ReactNode } from "react";
 
@@ -323,6 +323,12 @@ export function Dashboard() {
           <p className="text-sm text-muted">{t("esign.subtitle")}</p>
           <Link href="/dashboard/signatures" className="text-sm font-medium text-primary underline">
             {t("esign.newRequest")}
+          </Link>
+        </Panel>
+        <Panel title={t("teams.title")} icon={Users}>
+          <p className="text-sm text-muted">{t("teams.subtitle")}</p>
+          <Link href="/dashboard/teams" className="text-sm font-medium text-primary underline">
+            {t("teams.title")}
           </Link>
         </Panel>
         <Panel title={t("library.title")} icon={FolderHeart}>

@@ -10,7 +10,9 @@ from app.core.errors import ToolInputError
 from app.db.base import utcnow
 from app.fair_use import get_fair_use
 from app.models.library import LibraryFile, LibraryFolder
+from app.models.user import User
 from app.services import library as service
+from app.services.permissions import Permission, require_team
 
 router = APIRouter(prefix="/api/v1/library", tags=["library"])
 
@@ -65,6 +67,16 @@ class FromTask(BaseModel):
     output_file_id: str = Field(min_length=1, max_length=64)
     folder_id: str | None = None
     name: str | None = Field(default=None, max_length=255)
+    team_id: str | None = None
+
+
+async def scope_for(
+    session: SessionDep, user: User, team_id: str | None, permission: Permission
+) -> service.Scope:
+    if team_id:
+        await require_team(session, user, team_id, permission)
+        return service.Scope(user.id, team_id)
+    return service.Scope(user.id)
 
 
 def file_out(record: LibraryFile) -> FileOut:
@@ -88,15 +100,14 @@ def folder_out(folder: LibraryFolder) -> FolderOut:
 
 
 @router.get("/quota", response_model=QuotaOut)
-async def quota(session: SessionDep, user: CurrentUser) -> QuotaOut:
+async def quota(session: SessionDep, user: CurrentUser, team_id: str | None = None) -> QuotaOut:
     from sqlalchemy import func
 
-    count = await session.scalar(
-        select(func.count()).select_from(LibraryFile).where(LibraryFile.user_id == user.id)
-    )
+    scope = await scope_for(session, user, team_id, Permission.FILES_READ)
+    count = await session.scalar(select(func.count()).select_from(LibraryFile).where(scope.file_filter()))
     limits = get_fair_use()
     return QuotaOut(
-        used_bytes=await service.used_bytes(session, user.id),
+        used_bytes=await service.used_bytes(session, scope),
         limit_bytes=limits.library_bytes,
         file_count=int(count or 0),
         trash_days=limits.library_trash_days,
@@ -104,36 +115,45 @@ async def quota(session: SessionDep, user: CurrentUser) -> QuotaOut:
 
 
 @router.get("/folders", response_model=list[FolderOut])
-async def list_folders(session: SessionDep, user: CurrentUser) -> list[FolderOut]:
+async def list_folders(session: SessionDep, user: CurrentUser, team_id: str | None = None) -> list[FolderOut]:
+    scope = await scope_for(session, user, team_id, Permission.FILES_READ)
     rows = await session.scalars(
-        select(LibraryFolder).where(LibraryFolder.user_id == user.id).order_by(LibraryFolder.name)
+        select(LibraryFolder).where(scope.folder_filter()).order_by(LibraryFolder.name)
     )
     return [folder_out(row) for row in rows]
 
 
 @router.post("/folders", response_model=FolderOut, status_code=201)
-async def create_folder(body: FolderCreate, session: SessionDep, user: CurrentUser) -> FolderOut:
-    return folder_out(await service.create_folder(session, user.id, body.name, body.parent_id))
+async def create_folder(
+    body: FolderCreate, session: SessionDep, user: CurrentUser, team_id: str | None = None
+) -> FolderOut:
+    scope = await scope_for(session, user, team_id, Permission.FOLDERS_MANAGE)
+    return folder_out(await service.create_folder(session, scope, body.name, body.parent_id))
 
 
 @router.patch("/folders/{folder_id}", response_model=FolderOut)
 async def update_folder(
-    folder_id: str, body: FolderUpdate, session: SessionDep, user: CurrentUser
+    folder_id: str, body: FolderUpdate, session: SessionDep, user: CurrentUser, team_id: str | None = None
 ) -> FolderOut:
-    folder = await service.get_folder(session, user.id, folder_id)
+    scope = await scope_for(session, user, team_id, Permission.FOLDERS_MANAGE)
+    folder = await service.get_folder(session, scope, folder_id)
     if body.name is not None:
         if "/" in body.name or not body.name.strip():
             raise ToolInputError("Folder names cannot contain a slash.")
         folder.name = body.name.strip()
         await session.commit()
     if body.move:
-        folder = await service.move_folder(session, user.id, folder_id, body.parent_id)
+        folder = await service.move_folder(session, scope, folder_id, body.parent_id)
     return folder_out(folder)
 
 
 @router.delete("/folders/{folder_id}")
-async def delete_folder(folder_id: str, session: SessionDep, user: CurrentUser) -> dict[str, int]:
-    return {"trashed_files": await service.delete_folder(session, user.id, folder_id)}
+async def delete_folder(
+    folder_id: str, session: SessionDep, user: CurrentUser, team_id: str | None = None
+) -> dict[str, int]:
+    await scope_for(session, user, team_id, Permission.FOLDERS_MANAGE)
+    scope = await scope_for(session, user, team_id, Permission.FILES_DELETE)
+    return {"trashed_files": await service.delete_folder(session, scope, folder_id)}
 
 
 @router.get("/files", response_model=list[FileOut])
@@ -145,9 +165,11 @@ async def list_files(
     tag: Annotated[str, Field(max_length=40)] = "",
     trash: bool = False,
     everywhere: bool = False,
+    team_id: str | None = None,
 ) -> list[FileOut]:
+    scope = await scope_for(session, user, team_id, Permission.FILES_READ)
     rows = await service.search_files(
-        session, user.id, folder_id, q.strip(), tag.strip().lower(), trash, everywhere
+        session, scope, folder_id, q.strip(), tag.strip().lower(), trash, everywhere
     )
     return [file_out(row) for row in rows]
 
@@ -159,7 +181,9 @@ async def upload_file(
     user: CurrentUser,
     file: Annotated[UploadFile, File()],
     folder_id: Annotated[str | None, Form()] = None,
+    team_id: Annotated[str | None, Form()] = None,
 ) -> FileOut:
+    scope = await scope_for(session, user, team_id or None, Permission.FILES_WRITE)
     data = await file.read(service.MAX_UPLOAD_BYTES + 1)
     if len(data) > service.MAX_UPLOAD_BYTES:
         raise ToolInputError("That file is larger than 100 MB.")
@@ -168,7 +192,7 @@ async def upload_file(
     record = await service.save_bytes(
         container,
         session,
-        user.id,
+        scope,
         file.filename or "file",
         data,
         file.content_type or "application/octet-stream",
@@ -182,22 +206,28 @@ async def upload_file(
 async def save_from_task(
     body: FromTask, container: ContainerDep, session: SessionDep, principal: PrincipalDep
 ) -> FileOut:
+    if principal.user is None:
+        raise ToolInputError("Sign in to save files to My files.")
+    scope = await scope_for(session, principal.user, body.team_id, Permission.FILES_WRITE)
     record = await service.save_task_output(
-        container, session, principal, body.task_id, body.output_file_id, body.folder_id, body.name
+        container, session, principal, body.task_id, body.output_file_id, body.folder_id, body.name, scope
     )
     return file_out(record)
 
 
 @router.patch("/files/{file_id}", response_model=FileOut)
-async def update_file(file_id: str, body: FileUpdate, session: SessionDep, user: CurrentUser) -> FileOut:
-    record = await service.get_file(session, user.id, file_id)
+async def update_file(
+    file_id: str, body: FileUpdate, session: SessionDep, user: CurrentUser, team_id: str | None = None
+) -> FileOut:
+    scope = await scope_for(session, user, team_id, Permission.FILES_WRITE)
+    record = await service.get_file(session, scope, file_id)
     if body.name is not None:
         record.name = service.clean_name(body.name, record.name)
     if body.tags is not None:
         record.tags = service.clean_tags(body.tags)
     if body.move:
         if body.folder_id is not None:
-            await service.get_folder(session, user.id, body.folder_id)
+            await service.get_folder(session, scope, body.folder_id)
         record.folder_id = body.folder_id
     await session.commit()
     return file_out(record)
@@ -205,9 +235,14 @@ async def update_file(file_id: str, body: FileUpdate, session: SessionDep, user:
 
 @router.get("/files/{file_id}/download")
 async def download_file(
-    file_id: str, container: ContainerDep, session: SessionDep, user: CurrentUser
+    file_id: str,
+    container: ContainerDep,
+    session: SessionDep,
+    user: CurrentUser,
+    team_id: str | None = None,
 ) -> Response:
-    record = await service.get_file(session, user.id, file_id)
+    scope = await scope_for(session, user, team_id, Permission.FILES_READ)
+    record = await service.get_file(session, scope, file_id)
     safe = record.name.replace('"', "").replace("\r", "").replace("\n", "")
     return StreamingResponse(
         container.storage.iter_bytes(record.storage_key),
@@ -217,16 +252,22 @@ async def download_file(
 
 
 @router.delete("/files/{file_id}", response_model=FileOut)
-async def trash_file(file_id: str, session: SessionDep, user: CurrentUser) -> FileOut:
-    record = await service.get_file(session, user.id, file_id)
+async def trash_file(
+    file_id: str, session: SessionDep, user: CurrentUser, team_id: str | None = None
+) -> FileOut:
+    scope = await scope_for(session, user, team_id, Permission.FILES_DELETE)
+    record = await service.get_file(session, scope, file_id)
     record.deleted_at = record.deleted_at or utcnow()
     await session.commit()
     return file_out(record)
 
 
 @router.post("/files/{file_id}/restore", response_model=FileOut)
-async def restore_file(file_id: str, session: SessionDep, user: CurrentUser) -> FileOut:
-    record = await service.get_file(session, user.id, file_id)
+async def restore_file(
+    file_id: str, session: SessionDep, user: CurrentUser, team_id: str | None = None
+) -> FileOut:
+    scope = await scope_for(session, user, team_id, Permission.FILES_DELETE)
+    record = await service.get_file(session, scope, file_id)
     record.deleted_at = None
     await session.commit()
     return file_out(record)
@@ -234,19 +275,27 @@ async def restore_file(file_id: str, session: SessionDep, user: CurrentUser) -> 
 
 @router.delete("/files/{file_id}/permanent", status_code=204)
 async def delete_permanently(
-    file_id: str, container: ContainerDep, session: SessionDep, user: CurrentUser
+    file_id: str,
+    container: ContainerDep,
+    session: SessionDep,
+    user: CurrentUser,
+    team_id: str | None = None,
 ) -> Response:
-    record = await service.get_file(session, user.id, file_id)
+    scope = await scope_for(session, user, team_id, Permission.FILES_DELETE)
+    record = await service.get_file(session, scope, file_id)
     await service.purge_file(container, session, record)
     await session.commit()
     return Response(status_code=204)
 
 
 @router.delete("/trash")
-async def empty_trash(container: ContainerDep, session: SessionDep, user: CurrentUser) -> dict[str, int]:
+async def empty_trash(
+    container: ContainerDep, session: SessionDep, user: CurrentUser, team_id: str | None = None
+) -> dict[str, int]:
+    scope = await scope_for(session, user, team_id, Permission.FILES_DELETE)
     rows = list(
         await session.scalars(
-            select(LibraryFile).where(LibraryFile.user_id == user.id, LibraryFile.deleted_at.is_not(None))
+            select(LibraryFile).where(scope.file_filter(), LibraryFile.deleted_at.is_not(None))
         )
     )
     for record in rows:

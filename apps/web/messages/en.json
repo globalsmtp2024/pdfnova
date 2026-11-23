@@ -1911,7 +1911,12 @@
     },
     "galleryTitle": "Ready-made workflows",
     "galleryBody": "Open one in the builder, adjust it and run it on your PDFs.",
-    "useTemplate": "Open in builder"
+    "useTemplate": "Open in builder",
+    "teamWorkflows": "Team workflows",
+    "team": "Team",
+    "chooseTeam": "Choose a team",
+    "saveToTeam": "Save to team",
+    "savedToTeam": "Saved to the team"
   },
   "batch": {
     "title": "Batch runner",
@@ -1969,6 +1974,49 @@
     "save": "Save",
     "moveToTrash": "Move to trash",
     "restore": "Restore",
-    "deleteForever": "Delete forever"
+    "deleteForever": "Delete forever",
+    "space": "Space",
+    "personal": "Personal"
+  },
+  "teams": {
+    "title": "Teams",
+    "subtitle": "Share files and workflows with the people you work with.",
+    "signInTitle": "Sign in to use teams",
+    "signInBody": "Teams, shared folders and shared workflows live in your account.",
+    "signIn": "Sign in",
+    "newTeam": "New team name",
+    "create": "Create team",
+    "memberCount": "{count, plural, one {# member} other {# members}}",
+    "emptyTitle": "No teams yet",
+    "emptyBody": "Create a team to share a folder and workflows.",
+    "notFound": "This team was not found.",
+    "sharedFiles": "Shared files",
+    "deleteTeam": "Delete team",
+    "members": "Members",
+    "changeRole": "Change role",
+    "leave": "Leave team",
+    "removeMember": "Remove member",
+    "invite": "Invite people",
+    "email": "Email",
+    "roleLabel": "Role",
+    "sendInvite": "Send invitation",
+    "inviteSent": "Invitation sent",
+    "revoke": "Revoke",
+    "workflows": "Shared workflows",
+    "openInBuilder": "Open in builder",
+    "delete": "Delete",
+    "noWorkflows": "No shared workflows yet. Save one from the workflow builder.",
+    "acceptTitle": "Join a team",
+    "acceptSignIn": "Sign in with the email address that received the invitation.",
+    "acceptBody": "Accept the invitation to join the team.",
+    "accept": "Accept invitation",
+    "joined": "You joined {name}.",
+    "openTeam": "Open the team",
+    "role": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "member": "Member",
+      "viewer": "Viewer"
+    }
   }
 }

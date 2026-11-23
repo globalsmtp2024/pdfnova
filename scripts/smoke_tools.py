@@ -744,6 +744,69 @@ def run_library(client: httpx.Client) -> str:
     return "ok"
 
 
+def run_teams(client: httpx.Client) -> str:
+    import re
+    from pathlib import Path
+
+    problem = sign_in_new_user(client, "owner")
+    if problem:
+        return problem
+    owner_email = client.get("/api/v1/auth/me").json()["email"]
+    team = client.post("/api/v1/teams", json={"name": "Smoke team"})
+    if team.status_code != 201:
+        return f"team {team.status_code}"
+    team_id = team.json()["id"]
+    with httpx.Client(base_url=BASE, timeout=60) as member:
+        member.get("/api/v1/auth/csrf")
+        member.headers["x-csrf-token"] = member.cookies.get("pn_csrf") or ""
+        problem = sign_in_new_user(member, "member")
+        if problem:
+            return problem
+        member_email = member.get("/api/v1/auth/me").json()["email"]
+        if member.get(f"/api/v1/teams/{team_id}").status_code != 404:
+            return "outsider can see team"
+        invite = client.post(f"/api/v1/teams/{team_id}/invites", json={"email": member_email, "role": "viewer"})
+        if invite.status_code != 201:
+            return f"invite {invite.status_code} {invite.text[:100]}"
+        time.sleep(0.4)
+        tokens = re.findall(r"/teams/accept/([A-Za-z0-9_-]{30,})", Path("/tmp/claude-0/api.log").read_text(errors="ignore"))
+        if not tokens:
+            return "no invite email"
+        accepted = member.post("/api/v1/teams/invites/accept", json={"token": tokens[-1]})
+        if accepted.status_code != 200 or accepted.json()["role"] != "viewer":
+            return f"accept {accepted.status_code} {accepted.text[:100]}"
+        if member.post("/api/v1/teams/invites/accept", json={"token": tokens[-1]}).status_code == 200:
+            return "invite reusable"
+        upload = client.post("/api/v1/library/files", files={"file": ("team.pdf", sample_pdf(1), "application/pdf")}, data={"team_id": team_id})
+        if upload.status_code != 201:
+            return f"team upload {upload.status_code} {upload.text[:100]}"
+        file_id = upload.json()["id"]
+        listing = member.get("/api/v1/library/files", params={"team_id": team_id}).json()
+        if [f["id"] for f in listing] != [file_id]:
+            return "viewer cannot read team files"
+        denied = member.post("/api/v1/library/files", files={"file": ("x.pdf", sample_pdf(1), "application/pdf")}, data={"team_id": team_id})
+        if denied.status_code != 403:
+            return f"viewer upload allowed {denied.status_code}"
+        if member.delete(f"/api/v1/library/files/{file_id}", params={"team_id": team_id}).status_code != 403:
+            return "viewer delete allowed"
+        if member.get(f"/api/v1/library/files/{file_id}/download").status_code != 404:
+            return "personal scope leaks team file"
+        promote = client.patch(f"/api/v1/teams/{team_id}/members/{member.get('/api/v1/auth/me').json()['id']}", json={"role": "member"})
+        if promote.status_code != 200:
+            return f"promote {promote.status_code}"
+        if member.post("/api/v1/library/files", files={"file": ("x.pdf", sample_pdf(1), "application/pdf")}, data={"team_id": team_id}).status_code != 201:
+            return "member upload failed"
+        if member.patch(f"/api/v1/teams/{team_id}/members/{member.get('/api/v1/auth/me').json()['id']}", json={"role": "admin"}).status_code != 403:
+            return "member self-promotion allowed"
+        graph = {"name": "Shared", "nodes": [{"id": "a", "tool": "compress", "options": {}}], "edges": []}
+        if member.post(f"/api/v1/teams/{team_id}/workflows", json=graph).status_code != 201:
+            return "member workflow save failed"
+        if client.get(f"/api/v1/teams/{team_id}/workflows").json()[0]["name"] != "Shared":
+            return "workflow not shared"
+    del owner_email
+    return "ok"
+
+
 def main() -> int:
     only = set(sys.argv[1].split(",")) if len(sys.argv) > 1 else None
     failures = 0
@@ -753,6 +816,10 @@ def main() -> int:
         if only and "workflow-templates" in only:
             outcome = run_workflow_templates(client)
             print(f"{'workflow-templates':20} {outcome}")
+            failures += outcome != "ok"
+        if only and "teams" in only:
+            outcome = run_teams(client)
+            print(f"{'teams':20} {outcome}")
             failures += outcome != "ok"
         if only and "library" in only:
             outcome = run_library(client)

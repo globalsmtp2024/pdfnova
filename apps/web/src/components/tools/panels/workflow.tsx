@@ -27,7 +27,9 @@ import type { LocalFile } from "@/components/tools/use-tool-session";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { findTool } from "@/config/tools";
-import { useAvailableTools } from "@/lib/session";
+import { useAvailableTools, useSession } from "@/lib/session";
+import { useTeamMutations, useTeams, useTeamWorkflows } from "@/lib/teams";
+import { toast, toastError } from "@/components/ui/toaster";
 import { toolText } from "@/lib/tool-text";
 import {
   fanOutTooWide,
@@ -100,6 +102,13 @@ export function useWorkflowPanel(files: LocalFile[]): ToolPanelView {
   const toolT = useTranslations("tools");
   const params = useSearchParams();
   const available = useAvailableTools();
+  const session = useSession();
+  const teams = useTeams(Boolean(session.data));
+  const [teamId, setTeamId] = useState<string | null>(params.get("team"));
+  const teamWorkflows = useTeamWorkflows(teamId, Boolean(session.data));
+  const teamMutations = useTeamMutations(teamId);
+  const activeTeam = teams.data?.find((team) => team.id === teamId);
+  const canWriteTeam = activeTeam ? activeTeam.role !== "viewer" : false;
   const [seed] = useState(() => findTemplate(params.get("template")));
   const [nodes, setNodes] = useState<GraphNode[]>(() => (seed ? structuredClone(seed.nodes) : []));
   const [edges, setEdges] = useState<GraphEdge[]>(() => (seed ? structuredClone(seed.edges) : []));
@@ -422,6 +431,63 @@ export function useWorkflowPanel(files: LocalFile[]): ToolPanelView {
             {t("removeStep")}
           </Button>
         </fieldset>
+      ) : null}
+
+      {session.data && (teams.data?.length ?? 0) > 0 ? (
+        <section className="flex flex-col gap-2" data-workflow-team>
+          <h3 className="text-sm font-medium">{t("teamWorkflows")}</h3>
+          <select
+            value={teamId ?? ""}
+            onChange={(event) => setTeamId(event.target.value || null)}
+            aria-label={t("team")}
+            className="h-10 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
+          >
+            <option value="">{t("chooseTeam")}</option>
+            {(teams.data ?? []).map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
+              </option>
+            ))}
+          </select>
+          {teamId ? (
+            <>
+              {(teamWorkflows.data ?? []).map((workflow) => (
+                <button
+                  key={workflow.id}
+                  type="button"
+                  className="truncate text-start text-sm text-primary underline"
+                  onClick={() => loadGraph(workflow.graph.nodes, workflow.graph.edges)}
+                >
+                  {workflow.name}
+                </button>
+              ))}
+              {canWriteTeam ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={!saveName.trim() || !nodes.length || problem !== null}
+                  loading={teamMutations.saveWorkflow.isPending}
+                  onClick={() =>
+                    teamMutations.saveWorkflow.mutate(
+                      {
+                        name: saveName.trim(),
+                        nodes: payload.nodes.map(({ id, tool, options }) => ({ id, tool, options })),
+                        edges,
+                      },
+                      {
+                        onSuccess: () => toast.success(t("savedToTeam")),
+                        onError: toastError,
+                      },
+                    )
+                  }
+                >
+                  {t("saveToTeam")}
+                </Button>
+              ) : null}
+            </>
+          ) : null}
+        </section>
       ) : null}
 
       <details

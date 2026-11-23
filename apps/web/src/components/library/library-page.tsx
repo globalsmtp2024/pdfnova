@@ -11,6 +11,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useFormatter, useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 
@@ -29,6 +30,7 @@ import {
   type LibraryFile,
 } from "@/lib/library";
 import { useSession } from "@/lib/session";
+import { useTeams } from "@/lib/teams";
 import { cn, formatBytes } from "@/lib/utils";
 
 type View = { kind: "folder"; id: string | null } | { kind: "trash" };
@@ -38,17 +40,22 @@ function FileRow({
   trash,
   folders,
   actions,
+  readOnly,
+  canDelete,
 }: {
   file: LibraryFile;
   trash: boolean;
   folders: { id: string; name: string }[];
   actions: ReturnType<typeof useLibraryMutations>;
+  readOnly: boolean;
+  canDelete: boolean;
 }) {
   const t = useTranslations("library");
   const format = useFormatter();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(file.name);
   const [tags, setTags] = useState(file.tags.join(", "));
+  const teamParam = actions.teamId ? `?team_id=${actions.teamId}` : "";
 
   const save = () => {
     actions.updateFile.mutate(
@@ -96,29 +103,33 @@ function FileRow({
         ) : (
           <>
             <a
-              href={`/api/v1/library/files/${file.id}/download`}
+              href={`/api/v1/library/files/${file.id}/download${teamParam}`}
               className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
             >
               <Download aria-hidden />
               {t("download")}
             </a>
-            <Button
-              size="sm"
-              variant="ghost"
-              aria-label={t("edit")}
-              onClick={() => setEditing(!editing)}
-              data-library-edit
-            >
-              <Pencil aria-hidden />
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              aria-label={t("moveToTrash")}
-              onClick={() => actions.trashFile.mutate(file.id, { onError: toastError })}
-            >
-              <Trash2 aria-hidden />
-            </Button>
+            {readOnly ? null : (
+              <Button
+                size="sm"
+                variant="ghost"
+                aria-label={t("edit")}
+                onClick={() => setEditing(!editing)}
+                data-library-edit
+              >
+                <Pencil aria-hidden />
+              </Button>
+            )}
+            {canDelete ? (
+              <Button
+                size="sm"
+                variant="ghost"
+                aria-label={t("moveToTrash")}
+                onClick={() => actions.trashFile.mutate(file.id, { onError: toastError })}
+              >
+                <Trash2 aria-hidden />
+              </Button>
+            ) : null}
           </>
         )}
       </div>
@@ -171,6 +182,9 @@ export function LibraryPage() {
   const t = useTranslations("library");
   const session = useSession();
   const signedIn = Boolean(session.data);
+  const teams = useTeams(signedIn);
+  const params = useSearchParams();
+  const [teamId, setTeamId] = useState<string | null>(params.get("team"));
   const [view, setView] = useState<View>({ kind: "folder", id: null });
   const [search, setSearch] = useState("");
   const [tag, setTag] = useState("");
@@ -178,10 +192,13 @@ export function LibraryPage() {
   const picker = useRef<HTMLInputElement>(null);
   const trash = view.kind === "trash";
   const folderId = view.kind === "folder" ? view.id : null;
-  const files = useLibraryFiles({ folderId, q: search.trim(), tag, trash }, signedIn);
-  const folders = useLibraryFolders(signedIn);
-  const quota = useLibraryQuota(signedIn);
-  const actions = useLibraryMutations();
+  const files = useLibraryFiles({ teamId, folderId, q: search.trim(), tag, trash }, signedIn);
+  const folders = useLibraryFolders(signedIn, teamId);
+  const quota = useLibraryQuota(signedIn, teamId);
+  const actions = useLibraryMutations(teamId);
+  const activeTeam = teams.data?.find((team) => team.id === teamId);
+  const readOnly = activeTeam?.role === "viewer";
+  const canDelete = !activeTeam || activeTeam.role === "owner" || activeTeam.role === "admin";
 
   if (session.isPending) return <Skeleton className="h-60 w-full" />;
   if (!session.data) {
@@ -205,6 +222,26 @@ export function LibraryPage() {
   return (
     <div className="grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]" data-library>
       <aside className="flex flex-col gap-4">
+        <label className="flex flex-col gap-1 text-sm font-medium">
+          {t("space")}
+          <select
+            value={teamId ?? ""}
+            onChange={(event) => {
+              setTeamId(event.target.value || null);
+              setView({ kind: "folder", id: null });
+              setTag("");
+            }}
+            className="h-10 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
+            data-library-space
+          >
+            <option value="">{t("personal")}</option>
+            {(teams.data ?? []).map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
+              </option>
+            ))}
+          </select>
+        </label>
         <nav aria-label={t("folders")} className="flex flex-col gap-1">
           <button
             type="button"
@@ -264,6 +301,7 @@ export function LibraryPage() {
           </button>
         </nav>
         <form
+          hidden={readOnly}
           className="flex gap-2"
           onSubmit={(event) => {
             event.preventDefault();
@@ -336,7 +374,7 @@ export function LibraryPage() {
                 }}
                 data-library-upload
               />
-              <Button variant="primary" onClick={() => picker.current?.click()} loading={actions.upload.isPending}>
+              <Button variant="primary" disabled={readOnly} onClick={() => picker.current?.click()} loading={actions.upload.isPending}>
                 <Upload aria-hidden />
                 {t("upload")}
               </Button>
@@ -372,6 +410,8 @@ export function LibraryPage() {
                 trash={trash}
                 folders={folders.data ?? []}
                 actions={actions}
+                readOnly={readOnly}
+                canDelete={canDelete}
               />
             ))}
           </ul>

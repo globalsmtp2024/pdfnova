@@ -1,9 +1,10 @@
 import hashlib
 import re
 import uuid
+from dataclasses import dataclass
 from datetime import timedelta
 
-from sqlalchemy import func, or_, select
+from sqlalchemy import ColumnElement, and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.container import Container
@@ -23,8 +24,25 @@ MAX_UPLOAD_BYTES = 100 * 1024 * 1024
 TAG_PATTERN = re.compile(r"[^\w\- ]", re.UNICODE)
 
 
-def library_key(user_id: str, file_id: str) -> str:
-    return f"library/{user_id}/{file_id}"
+@dataclass(frozen=True)
+class Scope:
+    user_id: str
+    team_id: str | None = None
+
+    def key(self, file_id: str) -> str:
+        if self.team_id:
+            return f"library/team/{self.team_id}/{file_id}"
+        return f"library/{self.user_id}/{file_id}"
+
+    def folder_filter(self) -> ColumnElement[bool]:
+        if self.team_id:
+            return LibraryFolder.team_id == self.team_id
+        return and_(LibraryFolder.user_id == self.user_id, LibraryFolder.team_id.is_(None))
+
+    def file_filter(self) -> ColumnElement[bool]:
+        if self.team_id:
+            return LibraryFile.team_id == self.team_id
+        return and_(LibraryFile.user_id == self.user_id, LibraryFile.team_id.is_(None))
 
 
 def clean_tags(tags: list[str]) -> list[str]:
@@ -40,25 +58,27 @@ def clean_name(name: str, fallback: str = "file") -> str:
     return safe_filename(name.strip(), fallback)[:255]
 
 
-async def used_bytes(session: AsyncSession, user_id: str) -> int:
+async def used_bytes(session: AsyncSession, scope: Scope) -> int:
     total = await session.scalar(
-        select(func.coalesce(func.sum(LibraryFile.size_bytes), 0)).where(LibraryFile.user_id == user_id)
+        select(func.coalesce(func.sum(LibraryFile.size_bytes), 0)).where(scope.file_filter())
     )
     return int(total or 0)
 
 
-async def ensure_room(session: AsyncSession, user_id: str, extra: int) -> None:
+async def ensure_room(session: AsyncSession, scope: Scope, extra: int) -> None:
     limit = get_fair_use().library_bytes
-    if await used_bytes(session, user_id) + extra > limit:
+    if await used_bytes(session, scope) + extra > limit:
         raise QuotaExceededError(
             "Your My files storage is full.",
             hint="Delete files, empty the trash or download and remove older ones.",
         )
 
 
-async def get_folder(session: AsyncSession, user_id: str, folder_id: str) -> LibraryFolder:
-    folder = await session.get(LibraryFolder, folder_id)
-    if folder is None or folder.user_id != user_id:
+async def get_folder(session: AsyncSession, scope: Scope, folder_id: str) -> LibraryFolder:
+    folder = await session.scalar(
+        select(LibraryFolder).where(LibraryFolder.id == folder_id, scope.folder_filter())
+    )
+    if folder is None:
         raise NotFoundError("That folder was not found.")
     return folder
 
@@ -76,45 +96,41 @@ async def folder_depth(session: AsyncSession, folder: LibraryFolder) -> int:
 
 
 async def create_folder(
-    session: AsyncSession, user_id: str, name: str, parent_id: str | None
+    session: AsyncSession, scope: Scope, name: str, parent_id: str | None
 ) -> LibraryFolder:
     cleaned = name.strip()
     if not cleaned or len(cleaned) > 120 or "/" in cleaned:
         raise ToolInputError("Folder names must be 1 to 120 characters and cannot contain a slash.")
-    count = await session.scalar(
-        select(func.count()).select_from(LibraryFolder).where(LibraryFolder.user_id == user_id)
-    )
+    count = await session.scalar(select(func.count()).select_from(LibraryFolder).where(scope.folder_filter()))
     if (count or 0) >= MAX_FOLDERS_PER_USER:
         raise QuotaExceededError("You have reached the folder limit.")
     if parent_id is not None:
-        parent = await get_folder(session, user_id, parent_id)
+        parent = await get_folder(session, scope, parent_id)
         if await folder_depth(session, parent) >= MAX_FOLDER_DEPTH:
             raise ToolInputError("Folders can be nested up to eight levels.")
-    folder = LibraryFolder(user_id=user_id, parent_id=parent_id, name=cleaned)
+    folder = LibraryFolder(user_id=scope.user_id, team_id=scope.team_id, parent_id=parent_id, name=cleaned)
     session.add(folder)
     await session.commit()
     return folder
 
 
-async def descendants(session: AsyncSession, user_id: str, folder_id: str) -> list[str]:
+async def descendants(session: AsyncSession, scope: Scope, folder_id: str) -> list[str]:
     found = [folder_id]
     frontier = [folder_id]
     while frontier:
         rows = await session.scalars(
-            select(LibraryFolder.id).where(
-                LibraryFolder.user_id == user_id, LibraryFolder.parent_id.in_(frontier)
-            )
+            select(LibraryFolder.id).where(scope.folder_filter(), LibraryFolder.parent_id.in_(frontier))
         )
         frontier = [row for row in rows if row not in found]
         found.extend(frontier)
     return found
 
 
-async def delete_folder(session: AsyncSession, user_id: str, folder_id: str) -> int:
-    await get_folder(session, user_id, folder_id)
-    ids = await descendants(session, user_id, folder_id)
+async def delete_folder(session: AsyncSession, scope: Scope, folder_id: str) -> int:
+    await get_folder(session, scope, folder_id)
+    ids = await descendants(session, scope, folder_id)
     files = await session.scalars(
-        select(LibraryFile).where(LibraryFile.user_id == user_id, LibraryFile.folder_id.in_(ids))
+        select(LibraryFile).where(scope.file_filter(), LibraryFile.folder_id.in_(ids))
     )
     trashed = 0
     now = utcnow()
@@ -131,13 +147,13 @@ async def delete_folder(session: AsyncSession, user_id: str, folder_id: str) -> 
 
 
 async def move_folder(
-    session: AsyncSession, user_id: str, folder_id: str, parent_id: str | None
+    session: AsyncSession, scope: Scope, folder_id: str, parent_id: str | None
 ) -> LibraryFolder:
-    folder = await get_folder(session, user_id, folder_id)
+    folder = await get_folder(session, scope, folder_id)
     if parent_id is not None:
-        if parent_id in await descendants(session, user_id, folder_id):
+        if parent_id in await descendants(session, scope, folder_id):
             raise ToolInputError("A folder cannot be moved into itself.")
-        await get_folder(session, user_id, parent_id)
+        await get_folder(session, scope, parent_id)
     folder.parent_id = parent_id
     await session.commit()
     return folder
@@ -146,7 +162,7 @@ async def move_folder(
 async def save_bytes(
     container: Container,
     session: AsyncSession,
-    user_id: str,
+    scope: Scope,
     name: str,
     data: bytes,
     mime_type: str,
@@ -155,14 +171,15 @@ async def save_bytes(
     page_count: int | None = None,
 ) -> LibraryFile:
     if folder_id is not None:
-        await get_folder(session, user_id, folder_id)
-    await ensure_room(session, user_id, len(data))
+        await get_folder(session, scope, folder_id)
+    await ensure_room(session, scope, len(data))
     file_id = uuid.uuid4().hex
-    key = library_key(user_id, file_id)
+    key = scope.key(file_id)
     container.storage.put_bytes(key, data)
     record = LibraryFile(
         id=file_id,
-        user_id=user_id,
+        user_id=scope.user_id,
+        team_id=scope.team_id,
         folder_id=folder_id,
         name=clean_name(name),
         mime_type=mime_type,
@@ -186,6 +203,7 @@ async def save_task_output(
     output_file_id: str,
     folder_id: str | None,
     name: str | None,
+    scope: Scope,
 ) -> LibraryFile:
     user = principal.user
     if user is None:
@@ -205,7 +223,7 @@ async def save_task_output(
     return await save_bytes(
         container,
         session,
-        user.id,
+        scope,
         name or task_file.original_name,
         data,
         task_file.mime_type,
@@ -215,23 +233,23 @@ async def save_task_output(
     )
 
 
-async def get_file(session: AsyncSession, user_id: str, file_id: str) -> LibraryFile:
-    record = await session.get(LibraryFile, file_id)
-    if record is None or record.user_id != user_id:
+async def get_file(session: AsyncSession, scope: Scope, file_id: str) -> LibraryFile:
+    record = await session.scalar(select(LibraryFile).where(LibraryFile.id == file_id, scope.file_filter()))
+    if record is None:
         raise NotFoundError("That file was not found.")
     return record
 
 
 async def search_files(
     session: AsyncSession,
-    user_id: str,
+    scope: Scope,
     folder_id: str | None,
     query: str,
     tag: str,
     trash: bool,
     everywhere: bool,
 ) -> list[LibraryFile]:
-    statement = select(LibraryFile).where(LibraryFile.user_id == user_id)
+    statement = select(LibraryFile).where(scope.file_filter())
     statement = statement.where(
         LibraryFile.deleted_at.is_not(None) if trash else LibraryFile.deleted_at.is_(None)
     )

@@ -8,6 +8,7 @@ from app.models.esign import (
     SignRequestStatus,
 )
 from app.models.library import LibraryFile, LibraryFolder
+from app.models.team import Team, TeamInvite, TeamMember, TeamRole, TeamWorkflow
 from app.models.task import AiUsageEvent, FileRole, FileStatus, Task, TaskFile, TaskStatus
 from app.models.user import (
     ApiKey,
@@ -41,5 +42,10 @@ __all__ = [
     "Task",
     "TaskFile",
     "TaskStatus",
+    "Team",
+    "TeamInvite",
+    "TeamMember",
+    "TeamRole",
+    "TeamWorkflow",
     "User",
 ]

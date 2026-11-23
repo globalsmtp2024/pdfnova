@@ -17,6 +17,7 @@ from app.api.routes import (
     library,
     pages,
     tasks,
+    teams,
     tools,
 )
 from app.container import Container, build_container
@@ -92,6 +93,7 @@ def create_app(settings: Settings | None = None, container: Container | None = N
         pages.router,
         esign.router,
         library.router,
+        teams.router,
     ):
         app.include_router(router)
     return app

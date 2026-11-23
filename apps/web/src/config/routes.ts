@@ -10,6 +10,7 @@ const EXTRA_PAGES = [
   "/dashboard",
   "/batch",
   "/dashboard/files",
+  "/dashboard/teams",
   "/dashboard/signatures",
   "/dashboard/signatures/new",
   "/settings",
@@ -37,6 +38,8 @@ const DYNAMIC: Record<string, ReadonlySet<string>> = {
 const DYNAMIC_PATTERNS: readonly RegExp[] = [
   /^\/dashboard\/signatures\/[A-Za-z0-9]{1,64}$/,
   /^\/sign\/[A-Za-z0-9_-]{20,100}$/,
+  /^\/dashboard\/teams\/[A-Za-z0-9]{1,64}$/,
+  /^\/teams\/accept\/[A-Za-z0-9_-]{20,100}$/,
 ];
 
 const KNOWN = new Set<string>([...STATIC_PAGES, ...EXTRA_PAGES]);
