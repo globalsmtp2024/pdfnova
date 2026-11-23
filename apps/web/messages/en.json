@@ -1412,7 +1412,13 @@
     "height_percent": "Height (%)",
     "angle": "Angle",
     "flip_horizontal": "Flip horizontally",
-    "flip_vertical": "Flip vertically"
+    "flip_vertical": "Flip vertically",
+    "filter": "Filter",
+    "filter_color": "Colour",
+    "filter_grayscale": "Grayscale",
+    "filter_black_white": "Black and white",
+    "auto_crop": "Auto-crop to the page",
+    "straighten": "Straighten tilted pages"
   },
   "tools": {
     "remove-annotations": {
@@ -1430,6 +1436,10 @@
     "workflow": {
       "name": "Workflow runner",
       "description": "Chain several PDF tools into one run."
+    },
+    "scan-to-pdf": {
+      "name": "Scan to PDF",
+      "description": "Turn photos of pages into a clean, straightened scan PDF."
     }
   },
   "tool_sign": {

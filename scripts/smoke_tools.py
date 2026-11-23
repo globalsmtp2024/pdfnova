@@ -33,6 +33,21 @@ def sample_image(fmt: str = "PNG", size: tuple[int, int] = (320, 240)) -> bytes:
     return buffer.getvalue()
 
 
+def scan_photo() -> bytes:
+    from PIL import ImageDraw
+
+    canvas_image = Image.new("RGB", (900, 700), (70, 60, 50))
+    page = Image.new("RGB", (600, 480), (245, 245, 240))
+    drawer = ImageDraw.Draw(page)
+    for row in range(10):
+        drawer.line((30, 40 + row * 40, 570, 40 + row * 40), fill=(20, 20, 20), width=6)
+    tilted = page.rotate(3, expand=True, fillcolor=(70, 60, 50))
+    canvas_image.paste(tilted, (130, 90))
+    buffer = io.BytesIO()
+    canvas_image.save(buffer, format="JPEG")
+    return buffer.getvalue()
+
+
 def pdf_upload(pages: int = 3) -> list[Upload]:
     return [("sample.pdf", sample_pdf(pages), "application/pdf")]
 
@@ -206,6 +221,7 @@ CASES: list[Case] = [
     Case("image-convert", [("p.png", sample_image("PNG"), "image/png")], {"format": "webp"}, check=images_decode),
     Case("image-crop", [("p.png", sample_image("PNG", (800, 600)), "image/png")], {"aspect": "1:1"}, check=images_decode),
     Case("image-rotate", [("p.png", sample_image("PNG", (400, 300)), "image/png")], {"angle": 90}, check=images_decode),
+    Case("scan-to-pdf", [("a.jpg", scan_photo(), "image/jpeg"), ("b.jpg", scan_photo(), "image/jpeg")], {"filter": "black_white"}),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

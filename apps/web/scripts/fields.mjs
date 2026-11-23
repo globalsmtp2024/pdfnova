@@ -160,6 +160,12 @@ const FIELDS = {
   angle: ["Angle", "زاویہ"],
   flip_horizontal: ["Flip horizontally", "افقی الٹیں"],
   flip_vertical: ["Flip vertically", "عمودی الٹیں"],
+  filter: ["Filter", "فلٹر"],
+  filter_color: ["Colour", "رنگین"],
+  filter_grayscale: ["Grayscale", "گرے اسکیل"],
+  filter_black_white: ["Black and white", "سیاہ و سفید"],
+  auto_crop: ["Auto-crop to the page", "صفحے کے مطابق خودکار کراپ"],
+  straighten: ["Straighten tilted pages", "ترچھے صفحات سیدھے کریں"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

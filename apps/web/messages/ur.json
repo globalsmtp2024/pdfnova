@@ -518,7 +518,7 @@
     },
     "scan-to-pdf": {
       "name": "اسکین سے PDF",
-      "description": "کیمرے سے صفحات اسکین کر کے صاف PDF بنائیں۔"
+      "description": "صفحات کی تصاویر کو صاف اور سیدھے اسکین PDF میں بدلیں۔"
     },
     "compress": {
       "name": "PDF کمپریس کریں",
@@ -1512,7 +1512,13 @@
     "height_percent": "اونچائی (%)",
     "angle": "زاویہ",
     "flip_horizontal": "افقی الٹیں",
-    "flip_vertical": "عمودی الٹیں"
+    "flip_vertical": "عمودی الٹیں",
+    "filter": "فلٹر",
+    "filter_color": "رنگین",
+    "filter_grayscale": "گرے اسکیل",
+    "filter_black_white": "سیاہ و سفید",
+    "auto_crop": "صفحے کے مطابق خودکار کراپ",
+    "straighten": "ترچھے صفحات سیدھے کریں"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",

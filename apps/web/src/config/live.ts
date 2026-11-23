@@ -52,4 +52,5 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "image-convert",
   "image-crop",
   "image-rotate",
+  "scan-to-pdf",
 ]);
