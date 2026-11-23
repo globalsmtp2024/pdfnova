@@ -4,6 +4,7 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { Inter, JetBrains_Mono, Noto_Nastaliq_Urdu, Plus_Jakarta_Sans } from "next/font/google";
 import { notFound } from "next/navigation";
 
+import { ServiceWorkerRegistration } from "@/components/pwa/service-worker-registration";
 import { Providers } from "@/components/providers";
 import { brand } from "@/config/brand";
 import { siteUrl } from "@/config/site";
@@ -48,6 +49,8 @@ export const metadata: Metadata = {
     description: brand.tagline,
   },
   twitter: { card: "summary_large_image" },
+  icons: { apple: "/icons/apple-touch-icon.png" },
+  appleWebApp: { capable: true, title: brand.name },
 };
 
 export const viewport: Viewport = {
@@ -75,6 +78,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>{children}</Providers>
+          <ServiceWorkerRegistration />
         </NextIntlClientProvider>
       </body>
     </html>

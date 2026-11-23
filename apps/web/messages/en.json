@@ -2071,5 +2071,11 @@
     "disconnect": "Disconnect",
     "noneConfigured": "No cloud services are set up on this server yet.",
     "title": "Cloud accounts"
+  },
+  "share": {
+    "title": "Shared files",
+    "nothing": "No shared files were found. Share a file to the app from your phone or open a tool to start.",
+    "received": "{count, plural, one {# file received} other {# files received}}",
+    "chooseTool": "Pick what to do with it"
   }
 }

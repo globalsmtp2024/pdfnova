@@ -9,6 +9,7 @@ export const NOT_FOUND_PATH = "/page-not-found";
 const EXTRA_PAGES = [
   "/dashboard",
   "/batch",
+  "/share",
   "/dashboard/files",
   "/dashboard/teams",
   "/dashboard/webhooks",

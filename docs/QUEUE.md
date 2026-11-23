@@ -79,7 +79,7 @@ Phase 6
 - [x] 20 Teams (invite, roles, shared folders/workflows, central permission module)
 - [x] 21 API keys with scopes, webhooks, OpenAPI docs page, SDK skeletons, CLI
 - [x] 22 Cloud import/export (Drive, Dropbox, OneDrive behind CloudProvider with test double)
-- [ ] 23 PWA (manifest, service worker, offline page, share-target)
+- [x] 23 PWA (manifest, service worker, offline page, share-target)
 - [ ] 24 Private mode (client-side pdf-lib tools)
 - [ ] 25 Smart suggestions after upload and scheduled workflows
 - [ ] 26 Admin panel

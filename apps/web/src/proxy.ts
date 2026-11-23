@@ -34,5 +34,5 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/((?!api|health|docs|openapi\\.json|_next|_vercel|.*\\..*).*)",
+  matcher: "/((?!api|health|docs|openapi\\.json|share-target|_next|_vercel|.*\\..*).*)",
 };
