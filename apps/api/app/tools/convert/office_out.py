@@ -39,10 +39,10 @@ def clean(text: str) -> str:
     return ILLEGAL_XML.sub("", text)
 
 
-def in_any_box(line: dict[str, Any], boxes: list[tuple[float, float, float, float]]) -> bool:
+def in_any_box(line: dict[str, Any], boxes: Sequence[tuple[float, ...]]) -> bool:
     center_x = (line["x0"] + line["x1"]) / 2
     center_y = (line["top"] + line["bottom"]) / 2
-    return any(x0 <= center_x <= x1 and top <= center_y <= bottom for x0, top, x1, bottom in boxes)
+    return any(x0 <= center_x <= x1 and top <= center_y <= bottom for x0, top, x1, bottom in (box[:4] for box in boxes))
 
 
 def line_style(line: dict[str, Any]) -> tuple[float, bool]:

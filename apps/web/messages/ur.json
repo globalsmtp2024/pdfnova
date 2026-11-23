@@ -593,8 +593,8 @@
       "description": "حقیقی پیراگراف اور جدولوں کے ساتھ قابلِ ترمیم DOCX۔"
     },
     "pdf-to-powerpoint": {
-      "name": "PDF سے PowerPoint",
-      "description": "PDF صفحات کو قابلِ ترمیم سلائیڈز میں بدلیں۔"
+      "name": "PDF سے پاورپوائنٹ",
+      "description": "ہر PDF صفحے کو سلائیڈ میں بدلیں۔"
     },
     "pdf-to-excel": {
       "name": "PDF سے Excel",
@@ -610,7 +610,7 @@
     },
     "pdf-to-html": {
       "name": "PDF سے HTML",
-      "description": "PDF صفحات سے ریسپانسیو HTML۔"
+      "description": "PDF کو صاف HTML صفحے میں بدلیں۔"
     },
     "pdf-to-text": {
       "name": "PDF سے متن",
@@ -618,7 +618,7 @@
     },
     "pdf-to-csv": {
       "name": "PDF سے CSV",
-      "description": "تجزیے کے لیے جدولیں CSV میں۔"
+      "description": "PDF کے ہر جدول کو CSV میں نکالیں۔"
     },
     "pdf-to-epub": {
       "name": "PDF سے EPUB",
@@ -1523,7 +1523,14 @@
     "level_1b": "PDF/A-1b",
     "level_2b": "PDF/A-2b (تجویز کردہ)",
     "level_3b": "PDF/A-3b",
-    "allow_unembedded_fonts": "کچھ فونٹس ایمبیڈ نہ ہوں تب بھی تبدیل کریں (توثیق نہ ہو سکتی ہے)"
+    "allow_unembedded_fonts": "کچھ فونٹس ایمبیڈ نہ ہوں تب بھی تبدیل کریں (توثیق نہ ہو سکتی ہے)",
+    "mode_editable": "قابل ترمیم متن باکس",
+    "mode_picture": "صفحے کی تصاویر",
+    "delimiter": "جداکار",
+    "delimiter_comma": "کوما",
+    "delimiter_semicolon": "سیمی کولن",
+    "delimiter_tab": "ٹیب",
+    "guard_formulas": "اسپریڈشیٹ فارمولوں سے تحفظ"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",

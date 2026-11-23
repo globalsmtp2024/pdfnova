@@ -171,6 +171,13 @@ const FIELDS = {
   level_2b: ["PDF/A-2b (recommended)", "PDF/A-2b (تجویز کردہ)"],
   level_3b: ["PDF/A-3b", "PDF/A-3b"],
   allow_unembedded_fonts: ["Convert even if some fonts are not embedded (may not validate)", "کچھ فونٹس ایمبیڈ نہ ہوں تب بھی تبدیل کریں (توثیق نہ ہو سکتی ہے)"],
+  mode_editable: ["Editable text boxes", "قابل ترمیم متن باکس"],
+  mode_picture: ["Page pictures", "صفحے کی تصاویر"],
+  delimiter: ["Delimiter", "جداکار"],
+  delimiter_comma: ["Comma", "کوما"],
+  delimiter_semicolon: ["Semicolon", "سیمی کولن"],
+  delimiter_tab: ["Tab", "ٹیب"],
+  guard_formulas: ["Protect against spreadsheet formulas", "اسپریڈشیٹ فارمولوں سے تحفظ"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

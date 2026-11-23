@@ -71,6 +71,17 @@ def pdfa_marked(outputs: list[tuple[str, bytes]]) -> str | None:
     return None
 
 
+def table_pdf() -> bytes:
+    from reportlab.lib import colors
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+
+    buffer = io.BytesIO()
+    grid = Table([["Item", "Qty", "Price"], ["Pen", "2", "=1+1"], ["Book", "5", "12.50"]])
+    grid.setStyle(TableStyle([("GRID", (0, 0), (-1, -1), 0.5, colors.black)]))
+    SimpleDocTemplate(buffer, pagesize=A4).build([grid])
+    return buffer.getvalue()
+
+
 def pdf_upload(pages: int = 3) -> list[Upload]:
     return [("sample.pdf", sample_pdf(pages), "application/pdf")]
 
@@ -270,6 +281,9 @@ CASES: list[Case] = [
     Case("image-rotate", [("p.png", sample_image("PNG", (400, 300)), "image/png")], {"angle": 90}, check=images_decode),
     Case("scan-to-pdf", [("a.jpg", scan_photo(), "image/jpeg"), ("b.jpg", scan_photo(), "image/jpeg")], {"filter": "black_white"}),
     Case("pdf-to-pdfa", [("embedded.pdf", embedded_font_pdf(), "application/pdf")], {"level": "2b"}, check=pdfa_marked),
+    Case("pdf-to-powerpoint", pdf_upload(2), {}, check=zip_has("ppt/slides/slide2.xml")),
+    Case("pdf-to-html", pdf_upload(2), {}, check=contains_text("Smoke page 1")),
+    Case("pdf-to-csv", [("t.pdf", table_pdf(), "application/pdf")], {}, check=contains_text("Book")),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

@@ -51,9 +51,9 @@ Not in the queue and staying "Coming soon": full editor, e-sign requests, digita
 # QUEUE 2
 
 Phase 3 leftovers
-- [ ] 1 PDF to PowerPoint
-- [ ] 2 PDF to HTML
-- [ ] 3 PDF to CSV tables
+- [x] 1 PDF to PowerPoint
+- [x] 2 PDF to HTML
+- [x] 3 PDF to CSV tables
 - [ ] 4 Remove duplicate pages, Remove images, Remove JavaScript/hidden data
 - [ ] 5 Interleave odd/even scans
 - [ ] 6 Image tools: remove background (rembg if installable), image watermark, add text to image

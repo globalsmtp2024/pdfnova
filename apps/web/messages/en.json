@@ -1423,7 +1423,14 @@
     "level_1b": "PDF/A-1b",
     "level_2b": "PDF/A-2b (recommended)",
     "level_3b": "PDF/A-3b",
-    "allow_unembedded_fonts": "Convert even if some fonts are not embedded (may not validate)"
+    "allow_unembedded_fonts": "Convert even if some fonts are not embedded (may not validate)",
+    "mode_editable": "Editable text boxes",
+    "mode_picture": "Page pictures",
+    "delimiter": "Delimiter",
+    "delimiter_comma": "Comma",
+    "delimiter_semicolon": "Semicolon",
+    "delimiter_tab": "Tab",
+    "guard_formulas": "Protect against spreadsheet formulas"
   },
   "tools": {
     "remove-annotations": {
@@ -1449,6 +1456,18 @@
     "pdf-to-pdfa": {
       "name": "PDF to PDF/A",
       "description": "Archive-ready PDF/A-1b, 2b and 3b."
+    },
+    "pdf-to-powerpoint": {
+      "name": "PDF to PowerPoint",
+      "description": "Turn each PDF page into a slide."
+    },
+    "pdf-to-html": {
+      "name": "PDF to HTML",
+      "description": "Convert a PDF into a clean HTML page."
+    },
+    "pdf-to-csv": {
+      "name": "PDF to CSV",
+      "description": "Extract each PDF table as a CSV file."
     }
   },
   "tool_sign": {

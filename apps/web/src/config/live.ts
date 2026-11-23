@@ -58,4 +58,7 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "powerpoint-to-pdf",
   "excel-to-pdf",
   "ocr",
+  "pdf-to-powerpoint",
+  "pdf-to-html",
+  "pdf-to-csv",
 ]);
