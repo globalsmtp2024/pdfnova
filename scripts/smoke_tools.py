@@ -120,6 +120,16 @@ def page_count(expected: int) -> Check:
     return check
 
 
+def subject_image() -> bytes:
+    from PIL import ImageDraw
+
+    image = Image.new("RGB", (240, 240), (255, 255, 255))
+    ImageDraw.Draw(image).ellipse((60, 60, 180, 180), fill=(200, 30, 30))
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG")
+    return buffer.getvalue()
+
+
 def pdf_upload(pages: int = 3) -> list[Upload]:
     return [("sample.pdf", sample_pdf(pages), "application/pdf")]
 
@@ -326,6 +336,9 @@ CASES: list[Case] = [
     Case("remove-images", [("i.pdf", image_pdf(), "application/pdf")], {}, check=no_images),
     Case("remove-hidden-data", pdf_upload(), {}),
     Case("interleave-pages", pdf_upload(3) + [("even.pdf", sample_pdf(3), "application/pdf")], {}, check=page_count(6)),
+    Case("image-remove-background", [("p.png", subject_image(), "image/png")], {}, check=images_decode),
+    Case("image-watermark", [("p.png", sample_image("PNG", (600, 400)), "image/png")], {"text": "DRAFT", "tile": True}, check=images_decode),
+    Case("image-add-text", [("p.png", sample_image("PNG", (600, 400)), "image/png")], {"text": "سلام Hello"}, check=images_decode),
     Case("text-to-pdf", [("note.txt", TEXT_SAMPLE.encode("utf-8") * 40, "text/plain")]),
     Case("markdown-to-pdf", [("doc.md", MARKDOWN_SAMPLE.encode("utf-8"), "text/markdown")]),
 ]

@@ -1,6 +1,9 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const NAMES = {
+  "image-remove-background": [["Remove background", "Cut out subjects cleanly."], ["پس منظر ہٹائیں", "موضوع کو صاف کاٹیں۔"]],
+  "image-watermark": [["Watermark image", "Protect images with text or a logo."], ["تصویر پر واٹر مارک", "متن یا لوگو سے تصاویر کو محفوظ کریں۔"]],
+  "image-add-text": [["Add text to image", "Add a caption or title to an image."], ["تصویر میں متن شامل کریں", "تصویر میں کیپشن یا عنوان شامل کریں۔"]],
   "interleave-pages": [["Interleave odd and even scans", "Combine front-side and back-side scans into one document."], ["طاق اور جفت اسکین ملائیں", "اگلے اور پچھلے صفحات کے اسکین کو ایک دستاویز میں ملائیں۔"]],
   "remove-duplicate-pages": [["Remove duplicate pages", "Delete repeated pages and keep the first copy."], ["ڈپلیکیٹ صفحات ہٹائیں", "دہرائے گئے صفحات ہٹائیں اور پہلی کاپی رکھیں۔"]],
   "remove-images": [["Remove images", "Strip pictures and keep the text."], ["تصاویر ہٹائیں", "تصاویر ہٹائیں اور متن رکھیں۔"]],

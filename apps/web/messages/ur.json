@@ -766,11 +766,11 @@
     },
     "image-remove-background": {
       "name": "پس منظر ہٹائیں",
-      "description": "موضوع کو صاف طور پر الگ کریں۔"
+      "description": "موضوع کو صاف کاٹیں۔"
     },
     "image-watermark": {
       "name": "تصویر پر واٹر مارک",
-      "description": "متن یا لوگو سے تصاویر محفوظ کریں۔"
+      "description": "متن یا لوگو سے تصاویر کو محفوظ کریں۔"
     },
     "image-rotate": {
       "name": "تصویر گھمائیں",
@@ -807,6 +807,10 @@
     "interleave-pages": {
       "name": "طاق اور جفت اسکین ملائیں",
       "description": "اگلے اور پچھلے صفحات کے اسکین کو ایک دستاویز میں ملائیں۔"
+    },
+    "image-add-text": {
+      "name": "تصویر میں متن شامل کریں",
+      "description": "تصویر میں کیپشن یا عنوان شامل کریں۔"
     }
   },
   "password": {
@@ -1390,9 +1394,9 @@
     "dpi": "ریزولوشن (DPI)",
     "pages": "صفحات (مثلاً 1-3، 5، last)",
     "font": "فونٹ",
-    "font_noto-sans": "سادہ فونٹ",
-    "font_noto-serif": "سیریف فونٹ",
-    "font_noto-sans-mono": "یکساں چوڑائی",
+    "font_noto-sans": "Noto Sans",
+    "font_noto-serif": "Noto Serif",
+    "font_noto-sans-mono": "Noto Sans Mono",
     "size": "فونٹ کا سائز",
     "page_markers": "صفحات کے نشان شامل کریں",
     "page_separators": "صفحات کے درمیان لکیر",
@@ -1555,7 +1559,38 @@
     "thumbnails": "تھمب نیلز ہٹائیں",
     "metadata": "میٹا ڈیٹا ہٹائیں",
     "reverse_second": "دوسری فائل الٹی ترتیب میں ہے",
-    "allow_unequal": "صفحات کی مختلف تعداد کی اجازت دیں"
+    "allow_unequal": "صفحات کی مختلف تعداد کی اجازت دیں",
+    "kind": "قسم",
+    "kind_text": "متن",
+    "kind_logo": "لوگو (آخر میں اپ لوڈ کریں)",
+    "text": "متن",
+    "bold": "موٹا",
+    "size_percent": "سائز (تصویر کا %)",
+    "rotation": "گھماؤ (ڈگری)",
+    "tile": "پوری تصویر پر دہرائیں",
+    "margin_percent": "حاشیہ (%)",
+    "model": "معیار",
+    "model_fast": "تیز",
+    "model_quality": "بہترین",
+    "background": "پس منظر",
+    "background_transparent": "شفاف",
+    "background_white": "سفید",
+    "background_color": "رنگ",
+    "box": "پس منظر باکس",
+    "box_color": "باکس کا رنگ (ہیکس)",
+    "box_opacity": "باکس کی شفافیت",
+    "position_top_left": "اوپر بائیں",
+    "position_top_center": "اوپر درمیان",
+    "position_top_right": "اوپر دائیں",
+    "position_middle_left": "درمیان بائیں",
+    "position_center": "مرکز",
+    "position_middle_right": "درمیان دائیں",
+    "position_bottom_left": "نیچے بائیں",
+    "position_bottom_center": "نیچے درمیان",
+    "position_bottom_right": "نیچے دائیں",
+    "font_inter": "Inter",
+    "font_noto-sans-arabic": "Noto Sans Arabic",
+    "font_noto-nastaliq-urdu": "نوٹو نستعلیق اردو"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",

@@ -65,4 +65,7 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "remove-images",
   "remove-hidden-data",
   "interleave-pages",
+  "image-remove-background",
+  "image-watermark",
+  "image-add-text",
 ]);

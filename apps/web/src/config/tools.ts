@@ -715,6 +715,7 @@ export const TOOLS: ToolDefinition[] = [
   tool("remove-images", "Remove images", "optimize", "Strip pictures and keep the text.", ["pdf"], ["pictures", "photos"]),
   tool("remove-hidden-data", "Remove JavaScript and hidden data", "optimize", "Remove scripts, attachments and metadata before sharing.", ["pdf"], ["javascript", "sanitize", "metadata", "privacy"]),
   tool("interleave-pages", "Interleave odd and even scans", "organize", "Combine front-side and back-side scans into one document.", ["pdf"], ["duplex", "odd", "even", "scan", "collate"]),
+  tool("image-add-text", "Add text to image", "image", "Add a caption or title to an image.", ["image"], ["caption", "title", "text", "meme"]),
 ];
 
 export function findTool(slug: string): ToolDefinition | undefined {

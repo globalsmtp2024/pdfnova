@@ -1274,9 +1274,9 @@
     "dpi": "Resolution (DPI)",
     "pages": "Pages (e.g. 1-3, 5, last)",
     "font": "Font",
-    "font_noto-sans": "Sans-serif",
-    "font_noto-serif": "Serif",
-    "font_noto-sans-mono": "Monospace",
+    "font_noto-sans": "Noto Sans",
+    "font_noto-serif": "Noto Serif",
+    "font_noto-sans-mono": "Noto Sans Mono",
     "size": "Font size",
     "page_markers": "Add page markers",
     "page_separators": "Separate pages with a line",
@@ -1439,7 +1439,38 @@
     "thumbnails": "Remove thumbnails",
     "metadata": "Remove metadata",
     "reverse_second": "Second file is in reverse order",
-    "allow_unequal": "Allow different page counts"
+    "allow_unequal": "Allow different page counts",
+    "kind": "Type",
+    "kind_text": "Text",
+    "kind_logo": "Logo (upload it last)",
+    "text": "Text",
+    "bold": "Bold",
+    "size_percent": "Size (% of image)",
+    "rotation": "Rotation (degrees)",
+    "tile": "Repeat across the image",
+    "margin_percent": "Margin (%)",
+    "model": "Quality",
+    "model_fast": "Fast",
+    "model_quality": "Best",
+    "background": "Background",
+    "background_transparent": "Transparent",
+    "background_white": "White",
+    "background_color": "Colour",
+    "box": "Backing box",
+    "box_color": "Box colour (hex)",
+    "box_opacity": "Box opacity",
+    "position_top_left": "Top left",
+    "position_top_center": "Top centre",
+    "position_top_right": "Top right",
+    "position_middle_left": "Middle left",
+    "position_center": "Centre",
+    "position_middle_right": "Middle right",
+    "position_bottom_left": "Bottom left",
+    "position_bottom_center": "Bottom centre",
+    "position_bottom_right": "Bottom right",
+    "font_inter": "Inter",
+    "font_noto-sans-arabic": "Noto Sans Arabic",
+    "font_noto-nastaliq-urdu": "Noto Nastaliq Urdu"
   },
   "tools": {
     "remove-annotations": {
@@ -1493,6 +1524,18 @@
     "interleave-pages": {
       "name": "Interleave odd and even scans",
       "description": "Combine front-side and back-side scans into one document."
+    },
+    "image-remove-background": {
+      "name": "Remove background",
+      "description": "Cut out subjects cleanly."
+    },
+    "image-watermark": {
+      "name": "Watermark image",
+      "description": "Protect images with text or a logo."
+    },
+    "image-add-text": {
+      "name": "Add text to image",
+      "description": "Add a caption or title to an image."
     }
   },
   "tool_sign": {

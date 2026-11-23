@@ -56,7 +56,7 @@ Phase 3 leftovers
 - [x] 3 PDF to CSV tables
 - [x] 4 Remove duplicate pages, Remove images, Remove JavaScript/hidden data
 - [x] 5 Interleave odd/even scans
-- [ ] 6 Image tools: remove background (rembg if installable), image watermark, add text to image
+- [x] 6 Image tools: remove background (rembg if installable), image watermark, add text to image
 
 Phase 4
 - [ ] 7 Digital signature (pyHanko, PKCS#12 in memory only, visible/invisible) and Verify signatures
