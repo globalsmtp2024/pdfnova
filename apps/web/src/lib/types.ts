@@ -67,6 +67,7 @@ export type ToolDescription = {
   };
   options_schema: Record<string, unknown>;
   uses_ai: boolean;
+  workflow_step?: boolean;
 };
 
 export type User = {

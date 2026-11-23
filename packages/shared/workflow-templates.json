@@ -1,0 +1,204 @@
+[
+  {
+    "slug": "clean-and-shrink",
+    "nodes": [
+      {
+        "id": "blanks",
+        "tool": "remove-blank-pages",
+        "options": {}
+      },
+      {
+        "id": "dupes",
+        "tool": "remove-duplicate-pages",
+        "options": {}
+      },
+      {
+        "id": "small",
+        "tool": "compress",
+        "options": {}
+      }
+    ],
+    "edges": [
+      {
+        "source": "blanks",
+        "target": "dupes"
+      },
+      {
+        "source": "dupes",
+        "target": "small"
+      }
+    ]
+  },
+  {
+    "slug": "privacy-scrub",
+    "nodes": [
+      {
+        "id": "hidden",
+        "tool": "remove-hidden-data",
+        "options": {}
+      },
+      {
+        "id": "notes",
+        "tool": "remove-annotations",
+        "options": {}
+      },
+      {
+        "id": "flat",
+        "tool": "flatten",
+        "options": {}
+      },
+      {
+        "id": "fast",
+        "tool": "linearize",
+        "options": {}
+      }
+    ],
+    "edges": [
+      {
+        "source": "hidden",
+        "target": "notes"
+      },
+      {
+        "source": "notes",
+        "target": "flat"
+      },
+      {
+        "source": "flat",
+        "target": "fast"
+      }
+    ]
+  },
+  {
+    "slug": "numbered-draft",
+    "nodes": [
+      {
+        "id": "numbers",
+        "tool": "page-numbers",
+        "options": {}
+      },
+      {
+        "id": "mark",
+        "tool": "watermark",
+        "options": {
+          "text": "DRAFT"
+        }
+      },
+      {
+        "id": "small",
+        "tool": "compress",
+        "options": {}
+      }
+    ],
+    "edges": [
+      {
+        "source": "numbers",
+        "target": "mark"
+      },
+      {
+        "source": "mark",
+        "target": "small"
+      }
+    ]
+  },
+  {
+    "slug": "archive-ready",
+    "nodes": [
+      {
+        "id": "hidden",
+        "tool": "remove-hidden-data",
+        "options": {}
+      },
+      {
+        "id": "small",
+        "tool": "compress",
+        "options": {}
+      },
+      {
+        "id": "archive",
+        "tool": "pdf-to-pdfa",
+        "options": {
+          "level": "2b"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "hidden",
+        "target": "small"
+      },
+      {
+        "source": "small",
+        "target": "archive"
+      }
+    ]
+  },
+  {
+    "slug": "two-copies",
+    "nodes": [
+      {
+        "id": "gray",
+        "tool": "grayscale",
+        "options": {},
+        "label": "print-copy"
+      },
+      {
+        "id": "printsmall",
+        "tool": "compress",
+        "options": {},
+        "label": "print-copy"
+      },
+      {
+        "id": "clean",
+        "tool": "remove-hidden-data",
+        "options": {},
+        "label": "web-copy"
+      },
+      {
+        "id": "web",
+        "tool": "linearize",
+        "options": {},
+        "label": "web-copy"
+      }
+    ],
+    "edges": [
+      {
+        "source": "gray",
+        "target": "printsmall"
+      },
+      {
+        "source": "clean",
+        "target": "web"
+      }
+    ]
+  },
+  {
+    "slug": "scan-cleanup",
+    "nodes": [
+      {
+        "id": "blanks",
+        "tool": "remove-blank-pages",
+        "options": {}
+      },
+      {
+        "id": "text",
+        "tool": "ocr",
+        "options": {}
+      },
+      {
+        "id": "small",
+        "tool": "compress",
+        "options": {}
+      }
+    ],
+    "edges": [
+      {
+        "source": "blanks",
+        "target": "text"
+      },
+      {
+        "source": "text",
+        "target": "small"
+      }
+    ]
+  }
+]

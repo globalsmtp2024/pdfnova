@@ -37,3 +37,11 @@ const target = resolve(here, "../src/config/brand.generated.json");
 mkdirSync(dirname(target), { recursive: true });
 const brand = JSON.parse(readFileSync(source, "utf8"));
 writeFileSync(target, `${JSON.stringify(brand, null, 2)}\n`);
+
+const templatesSource = resolve(here, "../../../packages/shared/workflow-templates.json");
+const templatesTarget = resolve(here, "../src/config/workflow-templates.generated.json");
+try {
+  copyFileSync(templatesSource, templatesTarget);
+} catch {
+  writeFileSync(templatesTarget, "[]\n");
+}

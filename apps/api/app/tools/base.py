@@ -238,4 +238,11 @@ class Tool(ABC, Generic[OptionsT]):
             },
             "options_schema": cls.options_schema.model_json_schema(),
             "uses_ai": cls.uses_ai,
+            "workflow_step": (
+                cls.slug != "workflow"
+                and not cls.uses_ai
+                and not cls.required_secrets
+                and not cls.accepted_secrets
+                and FileKind.PDF in cls.input_spec.accepted_kinds
+            ),
         }

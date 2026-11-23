@@ -661,12 +661,30 @@ def run_esign(client: httpx.Client) -> str:
     return pdfs_open([("signed.pdf", final.content)]) or "ok"
 
 
+def run_workflow_templates(client: httpx.Client) -> str:
+    import json
+    from pathlib import Path
+
+    templates = json.loads((Path(__file__).resolve().parent.parent / "packages/shared/workflow-templates.json").read_text())
+    for template in templates:
+        files = [("embedded.pdf", embedded_font_pdf(), "application/pdf")]
+        case = Case("workflow", files, {"nodes": template["nodes"], "edges": template["edges"]})
+        outcome = run_case(client, case)
+        if outcome != "ok":
+            return f"{template['slug']}: {outcome}"
+    return "ok"
+
+
 def main() -> int:
     only = set(sys.argv[1].split(",")) if len(sys.argv) > 1 else None
     failures = 0
     with httpx.Client(base_url=BASE, timeout=120) as client:
         client.get("/api/v1/auth/csrf")
         client.headers["x-csrf-token"] = client.cookies.get("pn_csrf") or ""
+        if only and "workflow-templates" in only:
+            outcome = run_workflow_templates(client)
+            print(f"{'workflow-templates':20} {outcome}")
+            failures += outcome != "ok"
         if only and "esign" in only:
             outcome = run_esign(client)
             print(f"{'esign':20} {outcome}")

@@ -41,4 +41,5 @@ yarn-error.log*
 next-env.d.ts
 
 /src/config/brand.generated.json
+/src/config/workflow-templates.generated.json
 /public/pdf.worker.min.mjs

@@ -1861,5 +1861,54 @@
     "ownKey": "Using your own AI key: no shared allowance is used.",
     "remaining": "{count, plural, one {# AI run left today} other {# AI runs left today}}",
     "exhausted": "The shared allowance is used up for today. Add your own key in Settings to continue."
+  },
+  "workflowBuilder": {
+    "input": "Your PDFs",
+    "templates": "Start from a template",
+    "addStep": "Add a step",
+    "canvasHint": "Click a step to add after it, or drag between steps to branch. Up to {max} steps.",
+    "optionsJson": "Step options (JSON)",
+    "outputLabel": "Output name prefix",
+    "removeStep": "Remove step",
+    "myWorkflows": "My workflows",
+    "saveName": "Workflow name",
+    "save": "Save",
+    "delete": "Delete",
+    "summary": "{steps, plural, one {# step} other {# steps}}, {outputs, plural, one {# output} other {# outputs}}",
+    "problems": {
+      "empty": "Add at least one step.",
+      "json": "A step has options that are not valid JSON.",
+      "cycle": "The workflow contains a loop.",
+      "fanout": "A step can feed at most {max} branches."
+    },
+    "template": {
+      "clean-and-shrink": {
+        "name": "Clean and shrink",
+        "description": "Remove blank and repeated pages, then compress."
+      },
+      "privacy-scrub": {
+        "name": "Privacy scrub",
+        "description": "Strip scripts, hidden data, comments and form fields."
+      },
+      "numbered-draft": {
+        "name": "Numbered draft",
+        "description": "Number the pages, stamp DRAFT and compress."
+      },
+      "archive-ready": {
+        "name": "Archive ready",
+        "description": "Clean, compress and convert to PDF/A."
+      },
+      "two-copies": {
+        "name": "Two copies",
+        "description": "Make a small grayscale print copy and a fast web copy at once."
+      },
+      "scan-cleanup": {
+        "name": "Scan cleanup",
+        "description": "Drop blank pages, add searchable text and compress."
+      }
+    },
+    "galleryTitle": "Ready-made workflows",
+    "galleryBody": "Open one in the builder, adjust it and run it on your PDFs.",
+    "useTemplate": "Open in builder"
   }
 }

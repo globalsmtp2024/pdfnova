@@ -73,7 +73,7 @@ Phase 5
 - [x] 16 AI safety layer (injection delimiters, fair-use budget display, BYOK test connection)
 
 Phase 6
-- [ ] 17 Workflow visual builder (React Flow) + templates gallery with 6 templates
+- [x] 17 Workflow visual builder (React Flow) + templates gallery with 6 templates
 - [ ] 18 Batch runner UI with per-file status and retry-failed
 - [ ] 19 My files workspace (save outputs, folders, rename, tags, search, trash, quota meter)
 - [ ] 20 Teams (invite, roles, shared folders/workflows, central permission module)

@@ -5,11 +5,11 @@ import { getTranslations } from "next-intl/server";
 import { WorkflowIllustration } from "@/components/illustrations";
 import { WorkflowCard } from "@/components/marketing/workflow-card";
 import { ToolIcon } from "@/components/tools/tool-icon";
-import { Badge } from "@/components/ui/badge";
-import { Callout } from "@/components/ui/blocks";
 import { PageHero } from "@/components/ui/page-hero";
 import { Section, SectionHeader } from "@/components/ui/section";
 import { findTool } from "@/config/tools";
+import { Link } from "@/i18n/navigation";
+import { WORKFLOW_TEMPLATES } from "@/lib/workflow-graph";
 import { WORKFLOWS } from "@/content/workflows";
 import { initPage, pageMetadata } from "@/lib/page";
 import { toolText } from "@/lib/tool-text";
@@ -44,10 +44,40 @@ export default async function WorkflowsPage({ params }: PageProps<"/[locale]/wor
         aside={<WorkflowIllustration labels={["OCR", "Compress", "Protect"]} />}
       />
       <Section>
-        <Callout tone="info" title={t("workflowsPage.notYet")}>
-          {t("workflowsPage.notYetBody")}
-        </Callout>
-        <ul className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <SectionHeader
+          id="templates-heading"
+          title={t("workflowBuilder.galleryTitle")}
+          subtitle={t("workflowBuilder.galleryBody")}
+        />
+        <ul className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3" data-workflow-gallery>
+          {WORKFLOW_TEMPLATES.map((template) => (
+            <li key={template.slug}>
+              <Link
+                href={`/tools/workflow?template=${template.slug}`}
+                className="flex h-full flex-col gap-3 rounded-(--radius-card) border border-border bg-surface p-5 shadow-soft transition hover:border-primary/50 hover:shadow-lifted"
+              >
+                <h3 className="font-display text-lg font-semibold">
+                  {t(`workflowBuilder.template.${template.slug}.name`)}
+                </h3>
+                <p className="text-sm text-muted">
+                  {t(`workflowBuilder.template.${template.slug}.description`)}
+                </p>
+                <span className="flex flex-wrap items-center gap-1.5">
+                  {template.nodes.map((node) => (
+                    <span key={node.id} className="flex items-center gap-1 text-xs text-muted">
+                      <ToolIcon slug={node.tool} size="sm" />
+                      {toolName(node.tool)}
+                    </span>
+                  ))}
+                </span>
+                <span className="mt-auto text-sm font-medium text-primary">
+                  {t("workflowBuilder.useTemplate")}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <ul className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {WORKFLOWS.map((workflow) => (
             <li key={workflow.slug}>
               <WorkflowCard workflow={workflow} />
@@ -58,12 +88,10 @@ export default async function WorkflowsPage({ params }: PageProps<"/[locale]/wor
       <Section tone="surface" aria-labelledby="builder-heading">
         <SectionHeader
           id="builder-heading"
-          eyebrow={<Badge>{t("workflowsPage.notYet")}</Badge>}
           title={t("workflowsPage.builderTitle")}
           subtitle={t("workflowsPage.builderBody")}
         />
         <div
-          aria-hidden
           className="relative mt-8 overflow-hidden rounded-(--radius-card) border border-border bg-background bg-grid p-6 shadow-lifted sm:p-10"
         >
           <div className="pointer-events-none flex flex-col items-center gap-4 opacity-90 select-none md:flex-row md:justify-center">
@@ -85,11 +113,14 @@ export default async function WorkflowsPage({ params }: PageProps<"/[locale]/wor
               <Plus className="size-5" />
             </span>
           </div>
-          <div className="absolute end-4 bottom-4 flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs text-muted">
-            <MousePointerClick className="size-3.5" />
-            <Workflow className="size-3.5" />
-            {t("workflowsPage.notYet")}
-          </div>
+          <Link
+            href="/tools/workflow"
+            className="absolute end-4 bottom-4 flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-primary"
+          >
+            <MousePointerClick className="size-3.5" aria-hidden />
+            <Workflow className="size-3.5" aria-hidden />
+            {t("workflowBuilder.useTemplate")}
+          </Link>
         </div>
       </Section>
     </>
