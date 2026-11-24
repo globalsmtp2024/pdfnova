@@ -2,7 +2,7 @@ import re
 import subprocess
 import sys
 
-numbers = [int(x) for x in sys.argv[1].split(",")]
+numbers = [int(x) for x in sys.argv[1].split(",") if x]
 slugs = [x for x in sys.argv[2].split(",") if x]
 message = sys.argv[3]
 queue = open("docs/QUEUE.md", encoding="utf8").read()

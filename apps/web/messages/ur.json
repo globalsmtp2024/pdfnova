@@ -1663,7 +1663,10 @@
     "categories": "زمرے (ہر سطر میں ایک، اختیاری)",
     "include_past": "گزری ہوئی تاریخیں شامل کریں",
     "output_all": "کیلنڈر، JSON اور CSV",
-    "output_ics": "کیلنڈر (.ics)"
+    "output_ics": "کیلنڈر (.ics)",
+    "remove_attachments": "منسلک فائلیں ہٹائیں",
+    "remove_javascript": "اسکرپٹس ہٹائیں",
+    "remove_thumbnails": "صفحے کے تھمب نیل ہٹائیں"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",

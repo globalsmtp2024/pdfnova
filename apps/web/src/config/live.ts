@@ -77,4 +77,5 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "ai-rename",
   "ai-categorize",
   "ai-key-dates",
+  "remove-metadata",
 ]);
