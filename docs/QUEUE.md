@@ -91,3 +91,23 @@ Phase 7
 - [x] 30 Deployment files and docs/DEPLOYMENT_VPS.md
 - [x] 31 Legal and info pages
 - [x] 32 .env.example + startup validation, Makefile, README quick start
+
+## QUEUE 3
+
+- [ ] 1 Catalog consistency script (scripts/audit_catalog.py) and fix every reported gap
+- [ ] 2 Remove duplicate "Create PDF forms" entry; "Remove metadata" alias opens metadata tool in remove-all mode, Live, redirects kept
+- [ ] 3 EPUB to PDF (own zipfile reader, bookmarks, malicious EPUB handling)
+- [ ] 4 PDF to EPUB (reflowable, TOC, cover, valid structure)
+- [ ] 5 PDF to Word/PowerPoint/Excel (OCR) with language selector
+- [ ] 6 Forms review at code level (validation, states, labels, CSRF-safe submit)
+- [ ] 7 Custom (OpenAI-compatible) AI provider in Settings
+- [ ] 8 Urdu for every remaining English-only page and string; i18n:check passes
+- [ ] 9 Features section redesign (home bento grid and /features)
+- [ ] 10 Forms polish (placeholders, icons, show/hide password, inline validation)
+- [ ] 11 Button and icon pass
+- [ ] 12 Accessibility and SEO code-level pass
+- [ ] 13 Performance code-level pass
+- [ ] 14 Security code-level recheck
+- [ ] 15 Fix STATUS.md (Live, Coming soon, Unverified)
+- [ ] 16 Clean ruff and mypy; eslint warnings in touched files
+- [ ] 17 FINAL CHECK (typecheck, i18n:check, production build, smoke all tools)
