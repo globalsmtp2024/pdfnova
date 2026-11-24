@@ -52,6 +52,8 @@ export const STATIC_PAGES = [
   "/status",
   "/compare",
   "/shortcuts",
+  "/batch",
+  "/private",
   "/accessibility",
   "/legal/terms",
   "/legal/privacy",

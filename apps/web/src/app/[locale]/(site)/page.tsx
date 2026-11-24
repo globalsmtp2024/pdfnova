@@ -36,7 +36,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const t = await getTranslations({ locale, namespace: "home" });
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
+    "@type": "SoftwareApplication",
     name: brand.name,
     url: siteUrl,
     applicationCategory: "BusinessApplication",

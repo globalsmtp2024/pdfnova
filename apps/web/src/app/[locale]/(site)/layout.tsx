@@ -13,7 +13,7 @@ export default async function SiteLayout({ children, params }: LayoutProps<"/[lo
     <>
       <AnnouncementBar />
       <SiteHeader />
-      <main id="main" className="flex flex-1 flex-col">
+      <main id="main" tabIndex={-1} className="flex flex-1 flex-col outline-none">
         {children}
       </main>
       <SiteFooter />

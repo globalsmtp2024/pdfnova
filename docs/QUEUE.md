@@ -105,7 +105,7 @@ Phase 7
 - [x] 9 Features section redesign (home bento grid and /features)
 - [x] 10 Forms polish (placeholders, icons, show/hide password, inline validation)
 - [x] 11 Button and icon pass
-- [ ] 12 Accessibility and SEO code-level pass
+- [x] 12 Accessibility and SEO code-level pass
 - [ ] 13 Performance code-level pass
 - [ ] 14 Security code-level recheck
 - [ ] 15 Fix STATUS.md (Live, Coming soon, Unverified)

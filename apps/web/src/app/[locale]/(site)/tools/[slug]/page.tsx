@@ -9,7 +9,8 @@ import { MeshBackground } from "@/components/ui/backgrounds";
 import { Breadcrumbs } from "@/components/ui/blocks";
 import { categoryOf, findTool, TOOLS } from "@/config/tools";
 import { routing } from "@/i18n/routing";
-import { alternatesFor } from "@/lib/seo";
+import { getToolContent } from "@/content/tools-content";
+import { alternatesFor, openGraphFor } from "@/lib/seo";
 import { toolText } from "@/lib/tool-text";
 
 export function generateStaticParams() {
@@ -27,7 +28,8 @@ export async function generateMetadata({
     title: text.name,
     description: text.description,
     alternates: alternatesFor(locale, `/tools/${slug}`),
-    openGraph: { title: text.name, description: text.description },
+    openGraph: openGraphFor(locale, `/tools/${slug}`, text.name, text.description),
+    twitter: { card: "summary_large_image", title: text.name, description: text.description },
   };
 }
 
@@ -39,8 +41,40 @@ export default async function ToolRoute({ params }: PageProps<"/[locale]/tools/[
   const t = await getTranslations();
   const text = toolText(await getTranslations("tools"), tool);
   const category = categoryOf(tool.category);
+  const content = getToolContent(tool.slug, locale);
+  const structuredData = content
+    ? [
+        {
+          "@context": "https://schema.org",
+          "@type": "HowTo",
+          name: text.name,
+          description: text.description,
+          step: content.steps.map((step, index) => ({
+            "@type": "HowToStep",
+            position: index + 1,
+            text: step,
+          })),
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: content.faq.map((item) => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: { "@type": "Answer", text: item.answer },
+          })),
+        },
+      ]
+    : [];
   return (
     <>
+      {structuredData.map((entry) => (
+        <script
+          key={entry["@type"]}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(entry) }}
+        />
+      ))}
       <section className="relative isolate overflow-hidden">
         <MeshBackground pattern="dots" />
         <div className="container-page flex flex-col gap-8 pt-6 pb-14 sm:pb-20">
