@@ -33,7 +33,7 @@ Only three tools are not Live: `pdf-to-word-ocr`, `pdf-to-powerpoint-ocr` and `p
 | `eslint src` | no errors, no warnings |
 | `ruff check` and `ruff format` (api) | clean |
 | `mypy app` | 31 errors from pinned pikepdf stubs, listed in `docs/FAILED.md` |
-| `scripts/smoke_tools.py`, all tools | 80 of 84 pass; AI tools pass against the local stub |
+| `scripts/smoke_tools.py`, all tools | 77 of 84 pass (AI tools and remove-images re-run and pass; AI only against the local stub) |
 | Smoke failures | `word-to-pdf`, `excel-to-pdf`, `powerpoint-to-pdf`, `ocr`, `pdf-to-word-ocr`, `pdf-to-powerpoint-ocr`, `pdf-to-excel-ocr`: LibreOffice and Tesseract are not installed on this machine (see `docs/FAILED.md`) |
 
 Note: the first three Office tools and `ocr` stay marked Live because they passed on Linux with the binaries installed; the three OCR conversion tools stay Coming soon.
