@@ -80,7 +80,8 @@ export function useScheduleMutations() {
       onSuccess: refresh,
     }),
     runNow: useMutation({
-      mutationFn: (id: string) => apiJson<Schedule>(`/api/v1/schedules/${id}/run`, { method: "POST" }),
+      mutationFn: (id: string) =>
+        apiJson<Schedule>(`/api/v1/schedules/${id}/run`, { method: "POST" }),
       onSuccess: refresh,
     }),
   };

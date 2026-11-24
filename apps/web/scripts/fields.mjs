@@ -273,6 +273,7 @@ const FIELDS = {
   language_es: ["Spanish", "ہسپانوی"],
   language_en: ["English", "انگریزی"],
   language_ur: ["Urdu", "اردو"],
+  language_hint: ["Pick up to four languages. Only languages installed on the server are listed.", "زیادہ سے زیادہ چار زبانیں چنیں۔ صرف سرور پر نصب زبانیں دکھائی جاتی ہیں۔"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

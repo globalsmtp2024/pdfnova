@@ -93,11 +93,19 @@ function FileRow({
         </span>
         {trash ? (
           <>
-            <Button size="sm" variant="outline" onClick={() => actions.restoreFile.mutate(file.id, { onError: toastError })}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => actions.restoreFile.mutate(file.id, { onError: toastError })}
+            >
               <RotateCcw aria-hidden />
               {t("restore")}
             </Button>
-            <Button size="sm" variant="ghost" onClick={() => actions.deleteForever.mutate(file.id, { onError: toastError })}>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => actions.deleteForever.mutate(file.id, { onError: toastError })}
+            >
               <Trash2 aria-hidden />
               {t("deleteForever")}
             </Button>
@@ -139,7 +147,10 @@ function FileRow({
       {!editing && file.tags.length ? (
         <div className="flex flex-wrap gap-1">
           {file.tags.map((tag) => (
-            <span key={tag} className="rounded-full bg-surface-muted px-2 py-0.5 text-xs text-muted">
+            <span
+              key={tag}
+              className="rounded-full bg-surface-muted px-2 py-0.5 text-xs text-muted"
+            >
               {tag}
             </span>
           ))}
@@ -253,7 +264,9 @@ export function LibraryPage() {
             aria-current={view.kind === "folder" && view.id === null ? "page" : undefined}
             className={cn(
               "flex items-center gap-2 rounded-lg px-3 py-2 text-start text-sm",
-              view.kind === "folder" && view.id === null ? "bg-primary-subtle text-primary" : "hover:bg-surface-muted",
+              view.kind === "folder" && view.id === null
+                ? "bg-primary-subtle text-primary"
+                : "hover:bg-surface-muted",
             )}
           >
             <Folder className="size-4" aria-hidden />
@@ -267,7 +280,9 @@ export function LibraryPage() {
                 aria-current={view.kind === "folder" && view.id === folder.id ? "page" : undefined}
                 className={cn(
                   "flex min-w-0 flex-1 items-center gap-2 rounded-lg px-3 py-2 text-start text-sm",
-                  view.kind === "folder" && view.id === folder.id ? "bg-primary-subtle text-primary" : "hover:bg-surface-muted",
+                  view.kind === "folder" && view.id === folder.id
+                    ? "bg-primary-subtle text-primary"
+                    : "hover:bg-surface-muted",
                 )}
               >
                 <Folder className="size-4 shrink-0" aria-hidden />
@@ -280,7 +295,8 @@ export function LibraryPage() {
                 onClick={() =>
                   actions.deleteFolder.mutate(folder.id, {
                     onSuccess: () => {
-                      if (view.kind === "folder" && view.id === folder.id) setView({ kind: "folder", id: null });
+                      if (view.kind === "folder" && view.id === folder.id)
+                        setView({ kind: "folder", id: null });
                     },
                     onError: toastError,
                   })
@@ -333,7 +349,10 @@ export function LibraryPage() {
           <CloudConnections />
         </div>
         {quota.data ? (
-          <div className="flex flex-col gap-1.5 rounded-xl border border-border p-3 text-xs" data-library-quota>
+          <div
+            className="flex flex-col gap-1.5 rounded-xl border border-border p-3 text-xs"
+            data-library-quota
+          >
             <div className="flex justify-between">
               <span className="font-medium">{t("storage")}</span>
               <span className="text-muted tabular-nums" dir="ltr">
@@ -349,7 +368,10 @@ export function LibraryPage() {
       <section className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative min-w-48 flex-1">
-            <Search className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
+            <Search
+              className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted"
+              aria-hidden
+            />
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
@@ -382,7 +404,12 @@ export function LibraryPage() {
                 }}
                 data-library-upload
               />
-              <Button variant="primary" disabled={readOnly} onClick={() => picker.current?.click()} loading={actions.upload.isPending}>
+              <Button
+                variant="primary"
+                disabled={readOnly}
+                onClick={() => picker.current?.click()}
+                loading={actions.upload.isPending}
+              >
                 <Upload aria-hidden />
                 {t("upload")}
               </Button>
@@ -399,7 +426,9 @@ export function LibraryPage() {
                 onClick={() => setTag(tag === entry ? "" : entry)}
                 className={cn(
                   "rounded-full border px-2.5 py-0.5 text-xs",
-                  tag === entry ? "border-primary bg-primary-subtle text-primary" : "border-border text-muted",
+                  tag === entry
+                    ? "border-primary bg-primary-subtle text-primary"
+                    : "border-border text-muted",
                 )}
               >
                 {entry}

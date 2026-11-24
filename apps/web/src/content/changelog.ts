@@ -29,7 +29,8 @@ export const RELEASES: Release[] = [
     date: "2026-11-23",
     status: "shipped",
     title: "Workspace and platform",
-    summary: "Everything around the tools: files, teams, automation and a safer, deployable service.",
+    summary:
+      "Everything around the tools: files, teams, automation and a safer, deployable service.",
     highlights: [
       "My files with folders, tags, search and a 30-day trash",
       "Teams with roles, shared libraries and shared workflows",

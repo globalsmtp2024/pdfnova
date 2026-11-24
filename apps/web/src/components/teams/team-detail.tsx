@@ -77,9 +77,14 @@ export function TeamDetailView({ id }: { id: string }) {
             const isMe = member.user_id === myId;
             const editable = can("members.manage") && member.role !== "owner" && !isMe;
             return (
-              <li key={member.user_id} className="flex flex-wrap items-center justify-between gap-2 p-3">
+              <li
+                key={member.user_id}
+                className="flex flex-wrap items-center justify-between gap-2 p-3"
+              >
                 <span className="flex min-w-0 flex-col">
-                  <span className="truncate font-medium">{member.display_name || member.email}</span>
+                  <span className="truncate font-medium">
+                    {member.display_name || member.email}
+                  </span>
                   <span className="truncate text-xs text-muted" dir="ltr">
                     {member.email}
                   </span>
@@ -106,7 +111,7 @@ export function TeamDetailView({ id }: { id: string }) {
                   ) : (
                     <Badge tone="neutral">{t(`role.${member.role}`)}</Badge>
                   )}
-                  {(editable || (isMe && member.role !== "owner")) ? (
+                  {editable || (isMe && member.role !== "owner") ? (
                     <Button
                       size="sm"
                       variant="ghost"
@@ -173,7 +178,12 @@ export function TeamDetailView({ id }: { id: string }) {
                 ))}
               </select>
             </label>
-            <Button type="submit" variant="primary" loading={mutations.invite.isPending} data-team-invite>
+            <Button
+              type="submit"
+              variant="primary"
+              loading={mutations.invite.isPending}
+              data-team-invite
+            >
               <Mail aria-hidden />
               {t("sendInvite")}
             </Button>
@@ -188,7 +198,9 @@ export function TeamDetailView({ id }: { id: string }) {
                   <button
                     type="button"
                     className="text-danger-strong underline"
-                    onClick={() => mutations.revokeInvite.mutate(invite.id, { onError: toastError })}
+                    onClick={() =>
+                      mutations.revokeInvite.mutate(invite.id, { onError: toastError })
+                    }
                   >
                     {t("revoke")}
                   </button>
@@ -221,7 +233,9 @@ export function TeamDetailView({ id }: { id: string }) {
                       type="button"
                       aria-label={t("delete")}
                       className="text-muted hover:text-danger-strong"
-                      onClick={() => mutations.deleteWorkflow.mutate(workflow.id, { onError: toastError })}
+                      onClick={() =>
+                        mutations.deleteWorkflow.mutate(workflow.id, { onError: toastError })
+                      }
                     >
                       <Trash2 className="size-4" aria-hidden />
                     </button>

@@ -467,8 +467,7 @@ export const CATEGORY_FAQ: Record<ToolCategoryId, { question: string; answer: st
     },
     {
       question: "Are the image tools available?",
-      answer:
-        "Yes, they are part of the conversion suite and are listed on the tools page.",
+      answer: "Yes, they are part of the conversion suite and are listed on the tools page.",
     },
   ],
 };

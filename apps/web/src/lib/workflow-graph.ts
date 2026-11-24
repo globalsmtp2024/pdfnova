@@ -58,7 +58,10 @@ export function fanOutTooWide(edges: GraphEdge[]): boolean {
   return [...counts.values()].some((count) => count > MAX_FANOUT);
 }
 
-export function layout(nodes: GraphNode[], edges: GraphEdge[]): Record<string, { x: number; y: number }> {
+export function layout(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+): Record<string, { x: number; y: number }> {
   const depth = new Map<string, number>();
   const parents = new Map<string, string[]>(nodes.map((node) => [node.id, []]));
   for (const edge of edges) parents.get(edge.target)?.push(edge.source);
@@ -66,7 +69,9 @@ export function layout(nodes: GraphNode[], edges: GraphEdge[]): Record<string, {
     if (depth.has(id)) return depth.get(id) as number;
     if (guard > nodes.length) return 0;
     const sources = parents.get(id) ?? [];
-    const value = sources.length ? Math.max(...sources.map((source) => resolveDepth(source, guard + 1))) + 1 : 1;
+    const value = sources.length
+      ? Math.max(...sources.map((source) => resolveDepth(source, guard + 1))) + 1
+      : 1;
     depth.set(id, value);
     return value;
   };

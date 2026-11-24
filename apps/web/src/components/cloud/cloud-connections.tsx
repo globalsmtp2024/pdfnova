@@ -22,7 +22,9 @@ export function CloudConnections() {
           <span className="flex items-center gap-2 text-sm font-medium">
             <Cloud className="size-4 text-primary" aria-hidden />
             {provider.label}
-            {provider.connected ? <Badge tone="success">{provider.account || t("connected")}</Badge> : null}
+            {provider.connected ? (
+              <Badge tone="success">{provider.account || t("connected")}</Badge>
+            ) : null}
           </span>
           {provider.connected ? (
             <Button

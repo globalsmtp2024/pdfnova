@@ -71,24 +71,37 @@ export type AnnouncementSettings = {
 const ROOT = ["admin"] as const;
 
 export const useHealth = () =>
-  useQuery({ queryKey: [...ROOT, "health"], queryFn: () => apiJson<HealthReport>("/api/v1/admin/health"), refetchInterval: 30000 });
+  useQuery({
+    queryKey: [...ROOT, "health"],
+    queryFn: () => apiJson<HealthReport>("/api/v1/admin/health"),
+    refetchInterval: 30000,
+  });
 export const useJobMetrics = (days: number) =>
-  useQuery({ queryKey: [...ROOT, "jobs", days], queryFn: () => apiJson<JobMetrics>(`/api/v1/admin/jobs?days=${days}`) });
+  useQuery({
+    queryKey: [...ROOT, "jobs", days],
+    queryFn: () => apiJson<JobMetrics>(`/api/v1/admin/jobs?days=${days}`),
+  });
 export const useFailures = (tool: string, code: string) =>
   useQuery({
     queryKey: [...ROOT, "failures", tool, code],
     queryFn: () =>
-      apiJson<Failure[]>(`/api/v1/admin/failures?${new URLSearchParams({ tool, code }).toString()}`),
+      apiJson<Failure[]>(
+        `/api/v1/admin/failures?${new URLSearchParams({ tool, code }).toString()}`,
+      ),
   });
 export const useAdminUsers = (q: string) =>
   useQuery({
     queryKey: [...ROOT, "users", q],
-    queryFn: () => apiJson<AdminUser[]>(`/api/v1/admin/users?${new URLSearchParams({ q }).toString()}`),
+    queryFn: () =>
+      apiJson<AdminUser[]>(`/api/v1/admin/users?${new URLSearchParams({ q }).toString()}`),
   });
 export const useFlags = () =>
   useQuery({ queryKey: [...ROOT, "flags"], queryFn: () => apiJson<Flag[]>("/api/v1/admin/flags") });
 export const useFairUse = () =>
-  useQuery({ queryKey: [...ROOT, "fair-use"], queryFn: () => apiJson<FairUseValue[]>("/api/v1/admin/fair-use") });
+  useQuery({
+    queryKey: [...ROOT, "fair-use"],
+    queryFn: () => apiJson<FairUseValue[]>("/api/v1/admin/fair-use"),
+  });
 export const useAbuse = (status: string) =>
   useQuery({
     queryKey: [...ROOT, "abuse", status],
@@ -105,13 +118,22 @@ export function useAdminMutations() {
   const refresh = () => queryClient.invalidateQueries({ queryKey: ROOT });
   return {
     patchUser: useMutation({
-      mutationFn: (input: { id: string; body: Partial<Pick<AdminUser, "is_active" | "is_admin" | "retention_extended">> }) =>
-        apiJson<AdminUser>(`/api/v1/admin/users/${input.id}`, { method: "PATCH", json: input.body }),
+      mutationFn: (input: {
+        id: string;
+        body: Partial<Pick<AdminUser, "is_active" | "is_admin" | "retention_extended">>;
+      }) =>
+        apiJson<AdminUser>(`/api/v1/admin/users/${input.id}`, {
+          method: "PATCH",
+          json: input.body,
+        }),
       onSuccess: refresh,
     }),
     setFlag: useMutation({
       mutationFn: (input: { key: string; enabled: boolean }) =>
-        apiJson(`/api/v1/admin/flags/${input.key}`, { method: "PUT", json: { enabled: input.enabled } }),
+        apiJson(`/api/v1/admin/flags/${input.key}`, {
+          method: "PUT",
+          json: { enabled: input.enabled },
+        }),
       onSuccess: () => {
         void refresh();
         void queryClient.invalidateQueries({ queryKey: ["flags"] });

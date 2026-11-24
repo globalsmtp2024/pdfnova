@@ -26,7 +26,15 @@ import {
 import { cn, formatBytes } from "@/lib/utils";
 
 type Operation = "merge" | "split" | "rotate" | "extract" | "reorder" | "images" | "metadata";
-const OPERATIONS: Operation[] = ["merge", "split", "rotate", "extract", "reorder", "images", "metadata"];
+const OPERATIONS: Operation[] = [
+  "merge",
+  "split",
+  "rotate",
+  "extract",
+  "reorder",
+  "images",
+  "metadata",
+];
 const MAX_BYTES = 200 * 1024 * 1024;
 const EMPTY_METADATA: PdfMetadata = {
   title: "",
@@ -105,7 +113,9 @@ export function PrivateMode() {
       else if (operation === "reorder") outputs = await reorderPages(first, pages);
       else outputs = await writeMetadata(first, metadata);
       const made = outputs.map((output) => {
-        const url = URL.createObjectURL(new Blob([output.bytes as BlobPart], { type: "application/pdf" }));
+        const url = URL.createObjectURL(
+          new Blob([output.bytes as BlobPart], { type: "application/pdf" }),
+        );
         urls.current.push(url);
         return { ...output, url };
       });
@@ -121,7 +131,9 @@ export function PrivateMode() {
     const { zipSync } = await import("fflate");
     const entries: Record<string, Uint8Array> = {};
     for (const result of results) entries[result.name] = result.bytes;
-    const blob = new Blob([zipSync(entries, { level: 0 }) as BlobPart], { type: "application/zip" });
+    const blob = new Blob([zipSync(entries, { level: 0 }) as BlobPart], {
+      type: "application/zip",
+    });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -132,7 +144,9 @@ export function PrivateMode() {
 
   const needsPages = operation === "rotate" || operation === "extract" || operation === "reorder";
   const ready =
-    files.length > 0 && (operation !== "merge" || files.length >= 2) && !busy &&
+    files.length > 0 &&
+    (operation !== "merge" || files.length >= 2) &&
+    !busy &&
     (operation !== "split" || splitValue.trim() !== "");
 
   return (
@@ -153,7 +167,9 @@ export function PrivateMode() {
             onClick={() => choose(entry)}
             className={cn(
               "rounded-full border px-3 py-1.5 text-sm",
-              operation === entry ? "border-primary bg-primary-subtle text-primary" : "border-border hover:border-primary/50",
+              operation === entry
+                ? "border-primary bg-primary-subtle text-primary"
+                : "border-border hover:border-primary/50",
             )}
           >
             {t(`op.${entry}`)}
@@ -175,7 +191,10 @@ export function PrivateMode() {
           {files.length ? (
             <ul className="flex flex-col divide-y divide-border rounded-(--radius-card) border border-border bg-surface text-sm">
               {files.map((file, index) => (
-                <li key={`${file.name}-${index}`} className="flex items-center justify-between gap-2 p-2">
+                <li
+                  key={`${file.name}-${index}`}
+                  className="flex items-center justify-between gap-2 p-2"
+                >
                   <span className="truncate">{file.name}</span>
                   <span className="text-xs text-muted tabular-nums">{formatBytes(file.size)}</span>
                 </li>
@@ -188,7 +207,10 @@ export function PrivateMode() {
             </p>
           ) : null}
           {results.length ? (
-            <div className="flex flex-col gap-2 rounded-(--radius-card) border border-border bg-surface p-4" data-private-results>
+            <div
+              className="flex flex-col gap-2 rounded-(--radius-card) border border-border bg-surface p-4"
+              data-private-results
+            >
               <h2 className="font-display text-lg font-semibold">{t("done")}</h2>
               {results.map((result) => (
                 <a
@@ -220,7 +242,13 @@ export function PrivateMode() {
           {needsPages ? (
             <label className="flex flex-col gap-1.5 text-sm font-medium">
               {operation === "reorder" ? t("newOrder") : t("pages")}
-              <Input value={pages} onChange={(event) => setPages(event.target.value)} placeholder={operation === "reorder" ? "3,1,2" : "1-3, 5, last"} dir="ltr" data-private-pages />
+              <Input
+                value={pages}
+                onChange={(event) => setPages(event.target.value)}
+                placeholder={operation === "reorder" ? "3,1,2" : "1-3, 5, last"}
+                dir="ltr"
+                data-private-pages
+              />
             </label>
           ) : null}
           {operation === "rotate" ? (
@@ -254,7 +282,11 @@ export function PrivateMode() {
               {splitMode !== "each" ? (
                 <label className="flex flex-col gap-1.5 text-sm font-medium">
                   {splitMode === "every" ? t("everyN") : t("rangesList")}
-                  <Input value={splitValue} onChange={(event) => setSplitValue(event.target.value)} dir="ltr" />
+                  <Input
+                    value={splitValue}
+                    onChange={(event) => setSplitValue(event.target.value)}
+                    dir="ltr"
+                  />
                 </label>
               ) : null}
             </>
@@ -275,7 +307,15 @@ export function PrivateMode() {
               </label>
               <label className="flex flex-col gap-1.5 text-sm font-medium">
                 {t("margin")}
-                <Input type="number" min={0} max={100} value={margin} onChange={(event) => setMargin(Math.min(Math.max(Number(event.target.value) || 0, 0), 100))} />
+                <Input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={margin}
+                  onChange={(event) =>
+                    setMargin(Math.min(Math.max(Number(event.target.value) || 0, 0), 100))
+                  }
+                />
               </label>
             </>
           ) : null}
@@ -293,7 +333,14 @@ export function PrivateMode() {
               ))}
             </>
           ) : null}
-          <Button type="button" variant="primary" disabled={!ready} loading={busy} onClick={() => void run()} data-private-run>
+          <Button
+            type="button"
+            variant="primary"
+            disabled={!ready}
+            loading={busy}
+            onClick={() => void run()}
+            data-private-run
+          >
             {t("run")}
           </Button>
         </aside>

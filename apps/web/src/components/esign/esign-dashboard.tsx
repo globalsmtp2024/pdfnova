@@ -12,14 +12,15 @@ import { useSignRequests } from "@/lib/esign";
 import { useSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
-export const STATUS_TONE: Record<string, "success" | "danger" | "primary" | "neutral" | "warning"> = {
-  completed: "success",
-  declined: "danger",
-  sent: "primary",
-  draft: "warning",
-  cancelled: "neutral",
-  expired: "neutral",
-};
+export const STATUS_TONE: Record<string, "success" | "danger" | "primary" | "neutral" | "warning"> =
+  {
+    completed: "success",
+    declined: "danger",
+    sent: "primary",
+    draft: "warning",
+    cancelled: "neutral",
+    expired: "neutral",
+  };
 
 export function EsignDashboard() {
   const t = useTranslations("esign");
@@ -89,11 +90,7 @@ export function EsignDashboard() {
           ))}
         </ul>
       ) : (
-        <EmptyState
-          icon={PenLine}
-          title={t("emptyTitle")}
-          body={t("emptyBody")}
-        />
+        <EmptyState icon={PenLine} title={t("emptyTitle")} body={t("emptyBody")} />
       )}
     </div>
   );

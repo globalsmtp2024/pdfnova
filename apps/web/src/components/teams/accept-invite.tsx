@@ -35,7 +35,10 @@ export function AcceptInvite({ token }: { token: string }) {
           <CircleCheck className="size-5 text-success-strong" aria-hidden />
           {t("joined", { name: accept.data.name })}
         </p>
-        <Link href={`/dashboard/teams/${accept.data.id}`} className={cn(buttonVariants({ variant: "primary" }))}>
+        <Link
+          href={`/dashboard/teams/${accept.data.id}`}
+          className={cn(buttonVariants({ variant: "primary" }))}
+        >
           {t("openTeam")}
         </Link>
       </div>

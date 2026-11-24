@@ -53,7 +53,8 @@ export function useTeamMutations(id: string | null) {
   const refresh = () => queryClient.invalidateQueries({ queryKey: ROOT });
   return {
     create: useMutation({
-      mutationFn: (name: string) => apiJson<Team>("/api/v1/teams", { method: "POST", json: { name } }),
+      mutationFn: (name: string) =>
+        apiJson<Team>("/api/v1/teams", { method: "POST", json: { name } }),
       onSuccess: refresh,
     }),
     rename: useMutation({

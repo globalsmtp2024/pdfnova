@@ -12,7 +12,11 @@ export type PageView = {
   scale: number;
 };
 
-export type PdfDocumentHandle = { numPages: number; getPage: (index: number) => Promise<unknown>; destroy: () => void };
+export type PdfDocumentHandle = {
+  numPages: number;
+  getPage: (index: number) => Promise<unknown>;
+  destroy: () => void;
+};
 
 type PdfViewport = { width: number; height: number };
 type PdfPage = {
@@ -124,7 +128,9 @@ export function PdfPageCanvas({
     <div ref={wrapper} className="flex w-full justify-center">
       <div
         className="relative bg-white shadow-sm"
-        style={view ? { width: view.width, height: view.height } : { width: "100%", minHeight: 320 }}
+        style={
+          view ? { width: view.width, height: view.height } : { width: "100%", minHeight: 320 }
+        }
       >
         <canvas ref={canvas} className="absolute inset-0 size-full" aria-hidden />
         {view && children ? children(view) : null}

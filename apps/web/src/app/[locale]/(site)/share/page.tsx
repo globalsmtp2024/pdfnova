@@ -4,7 +4,9 @@ import { getTranslations } from "next-intl/server";
 import { ShareTarget } from "@/components/pwa/share-target";
 import { initPage } from "@/lib/page";
 
-export async function generateMetadata({ params }: PageProps<"/[locale]/share">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/share">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "share" });
   return { title: t("title"), robots: { index: false } };

@@ -24,6 +24,9 @@ const NAMES = {
   "remove-annotations": [["Remove annotations", "Strip comments, highlights and stamps."], ["تبصرے ہٹائیں", "تبصرے، ہائی لائٹس اور اسٹیمپ ہٹا دیں۔"]],
   "remove-blank-pages": [["Remove blank pages", "Detect and delete empty pages automatically."], ["خالی صفحات ہٹائیں", "خالی صفحات خودکار طور پر ڈھونڈ کر حذف کریں۔"]],
   workflow: [["Workflow runner", "Chain several PDF tools into one run."], ["ورک فلو رنر", "کئی PDF ٹولز کو ایک ہی کام میں ترتیب سے چلائیں۔"]],
+  "pdf-to-word-ocr": [["PDF to Word (OCR)", "Read scanned pages with OCR, then convert to Word."], ["PDF سے Word (OCR)", "اسکین شدہ صفحات کو OCR سے پڑھیں، پھر Word میں تبدیل کریں۔"]],
+  "pdf-to-powerpoint-ocr": [["PDF to PowerPoint (OCR)", "Read scanned pages with OCR, then convert to slides."], ["PDF سے PowerPoint (OCR)", "اسکین شدہ صفحات کو OCR سے پڑھیں، پھر سلائیڈز میں تبدیل کریں۔"]],
+  "pdf-to-excel-ocr": [["PDF to Excel (OCR)", "Read scanned tables with OCR, then convert to Excel."], ["PDF سے Excel (OCR)", "اسکین شدہ جدولوں کو OCR سے پڑھیں، پھر Excel میں تبدیل کریں۔"]],
   "reverse-pages": [["Reverse pages", "Flip the page order of a PDF."], ["صفحات الٹ دیں", "PDF کے صفحات کی ترتیب الٹ دیں۔"]],
 };
 

@@ -1,4 +1,10 @@
-import { detectFileKind, findTool, suggestTools, type FileKind, type ToolDefinition } from "@/config/tools";
+import {
+  detectFileKind,
+  findTool,
+  suggestTools,
+  type FileKind,
+  type ToolDefinition,
+} from "@/config/tools";
 
 export type SuggestionFile = {
   name: string;

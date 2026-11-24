@@ -4,7 +4,10 @@ import { setRequestLocale } from "next-intl/server";
 
 import { EsignSign } from "@/components/esign/esign-sign";
 
-export const metadata: Metadata = { title: "Review and sign", robots: { index: false, follow: false } };
+export const metadata: Metadata = {
+  title: "Review and sign",
+  robots: { index: false, follow: false },
+};
 
 async function SignContent({ params }: { params: PageProps<"/[locale]/sign/[token]">["params"] }) {
   const { locale, token } = await params;

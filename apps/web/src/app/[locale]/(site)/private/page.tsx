@@ -4,7 +4,9 @@ import { getTranslations } from "next-intl/server";
 import { PrivateMode } from "@/components/private/private-mode";
 import { initPage, pageMetadata } from "@/lib/page";
 
-export async function generateMetadata({ params }: PageProps<"/[locale]/private">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/private">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "privateMode" });
   return pageMetadata(locale, "/private", t("title"), t("subtitle"));

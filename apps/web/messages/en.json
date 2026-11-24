@@ -1546,7 +1546,8 @@
     "language_de": "German",
     "language_es": "Spanish",
     "language_en": "English",
-    "language_ur": "Urdu"
+    "language_ur": "Urdu",
+    "language_hint": "Pick up to four languages. Only languages installed on the server are listed."
   },
   "tools": {
     "remove-annotations": {
@@ -1644,6 +1645,18 @@
     "ai-key-dates": {
       "name": "Key dates extractor",
       "description": "Find deadlines and export them as a calendar file."
+    },
+    "pdf-to-word-ocr": {
+      "name": "PDF to Word (OCR)",
+      "description": "Read scanned pages with OCR, then convert to Word."
+    },
+    "pdf-to-powerpoint-ocr": {
+      "name": "PDF to PowerPoint (OCR)",
+      "description": "Read scanned pages with OCR, then convert to slides."
+    },
+    "pdf-to-excel-ocr": {
+      "name": "PDF to Excel (OCR)",
+      "description": "Read scanned tables with OCR, then convert to Excel."
     }
   },
   "tool_sign": {

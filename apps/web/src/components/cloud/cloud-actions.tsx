@@ -37,7 +37,9 @@ export function CloudImportButtons({
           }}
         >
           <Cloud aria-hidden />
-          {provider.connected ? t("importFrom", { service: provider.label }) : t("connect", { service: provider.label })}
+          {provider.connected
+            ? t("importFrom", { service: provider.label })
+            : t("connect", { service: provider.label })}
         </Button>
       ))}
       {current ? (

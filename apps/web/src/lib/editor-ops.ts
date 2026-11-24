@@ -111,7 +111,17 @@ export type FindReplaceOp = Base & {
   background: string;
 };
 
-export type EditOp = ReplaceTextOp | FindReplaceOp | TextOp | ImageOp | ShapeOp | LineOp | HighlightOp | DrawOp | NoteOp | LinkOp;
+export type EditOp =
+  | ReplaceTextOp
+  | FindReplaceOp
+  | TextOp
+  | ImageOp
+  | ShapeOp
+  | LineOp
+  | HighlightOp
+  | DrawOp
+  | NoteOp
+  | LinkOp;
 
 export type History = { past: EditOp[][]; present: EditOp[]; future: EditOp[][] };
 

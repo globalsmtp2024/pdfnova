@@ -163,7 +163,15 @@ function buildOp(
           }
         : null;
     case "note":
-      return { id, page, type: "note", x: x0, y: y0, text: settings.text || "Note", color: "#FFEB3B" };
+      return {
+        id,
+        page,
+        type: "note",
+        x: x0,
+        y: y0,
+        text: settings.text || "Note",
+        color: "#FFEB3B",
+      };
     case "image": {
       if (!image) return null;
       const boxWidth = dragged ? width : 25;
@@ -222,9 +230,7 @@ function buildOp(
         ? { id, page, type: "highlight", x, y, width, height, color: "#FFEB3B", opacity: 0.45 }
         : null;
     case "link":
-      return dragged
-        ? { id, page, type: "link", x, y, width, height, url: settings.url }
-        : null;
+      return dragged ? { id, page, type: "link", x, y, width, height, url: settings.url } : null;
     case "draw":
       return creation.points.length > 1
         ? {
@@ -255,7 +261,8 @@ function OpView({
   interactive: boolean;
   onPointerDown: (event: PointerEvent, op: EditOp) => void;
 }) {
-  const px = (value: number, axis: "x" | "y") => (value / 100) * (axis === "x" ? view.width : view.height);
+  const px = (value: number, axis: "x" | "y") =>
+    (value / 100) * (axis === "x" ? view.width : view.height);
   const ring = selected ? "outline outline-2 outline-offset-2 outline-primary" : "";
   const events = {
     onPointerDown: interactive ? (event: PointerEvent) => onPointerDown(event, op) : undefined,
@@ -269,7 +276,7 @@ function OpView({
         <div
           {...events}
           dir="auto"
-          className={cn("absolute cursor-move overflow-hidden whitespace-pre font-sans", ring)}
+          className={cn("absolute cursor-move overflow-hidden font-sans whitespace-pre", ring)}
           style={{
             ...events.style,
             left: px(op.x, "x"),
@@ -291,7 +298,7 @@ function OpView({
         <div
           {...events}
           dir="auto"
-          className={cn("absolute cursor-move whitespace-pre font-sans", ring)}
+          className={cn("absolute cursor-move font-sans whitespace-pre", ring)}
           style={{
             ...events.style,
             left: px(op.x, "x"),
@@ -336,7 +343,13 @@ function OpView({
             "absolute flex cursor-move items-center justify-center rounded-sm border border-black/40 bg-yellow-300 text-black",
             ring,
           )}
-          style={{ ...events.style, left: px(op.x, "x"), top: px(op.y, "y"), width: 22, height: 22 }}
+          style={{
+            ...events.style,
+            left: px(op.x, "x"),
+            top: px(op.y, "y"),
+            width: 22,
+            height: 22,
+          }}
         >
           <StickyNote className="size-3.5" aria-hidden />
         </div>
@@ -345,7 +358,10 @@ function OpView({
       return (
         <div
           {...events}
-          className={cn("absolute cursor-move border border-dashed border-blue-600 bg-blue-500/10", ring)}
+          className={cn(
+            "absolute cursor-move border border-dashed border-blue-600 bg-blue-500/10",
+            ring,
+          )}
           style={{
             ...events.style,
             left: px(op.x, "x"),
@@ -429,7 +445,12 @@ function OpView({
           />
           {head ? <path d={head} fill={color} opacity={op.opacity} /> : null}
           {selected ? (
-            <path d={path} fill="none" stroke="var(--color-primary, #5B4BFF)" strokeDasharray="4 4" />
+            <path
+              d={path}
+              fill="none"
+              stroke="var(--color-primary, #5B4BFF)"
+              strokeDasharray="4 4"
+            />
           ) : null}
           {interactive ? (
             <path
@@ -451,7 +472,9 @@ export function useEditPdfPanel(files: LocalFile[]): ToolPanelView {
   const t = useTranslations("tool_edit_pdf");
   const file = files[0];
   const { document, failed } = usePdfDocument(file);
-  const [store, setStore] = useState<{ key?: string; history: History }>({ history: EMPTY_HISTORY });
+  const [store, setStore] = useState<{ key?: string; history: History }>({
+    history: EMPTY_HISTORY,
+  });
   const [tool, setTool] = useState<EditorTool>("select");
   const [pageIndex, setPageIndex] = useState(0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -706,11 +729,7 @@ export function useEditPdfPanel(files: LocalFile[]): ToolPanelView {
           {t("loadFailed")}
         </p>
       ) : (
-        <PdfPageCanvas
-          document={document}
-          pageIndex={pageIndex}
-          onView={setView}
-        >
+        <PdfPageCanvas document={document} pageIndex={pageIndex} onView={setView}>
           {(pageView) => (
             <div
               ref={overlay}
@@ -767,7 +786,7 @@ export function useEditPdfPanel(files: LocalFile[]): ToolPanelView {
             className={cn(
               "flex h-10 items-center justify-center rounded-lg border text-sm",
               tool === id
-                ? "border-primary bg-primary-subtle text-primary-strong"
+                ? "text-primary-strong border-primary bg-primary-subtle"
                 : "border-border hover:bg-surface-muted",
             )}
           >
@@ -860,7 +879,10 @@ export function useEditPdfPanel(files: LocalFile[]): ToolPanelView {
             step={0.5}
             value={settings.strokeWidth}
             onChange={(event) =>
-              setSettings({ ...settings, strokeWidth: clamp(Number(event.target.value) || 1, 0.5, 40) })
+              setSettings({
+                ...settings,
+                strokeWidth: clamp(Number(event.target.value) || 1, 0.5, 40),
+              })
             }
           />
         </label>
@@ -872,13 +894,19 @@ export function useEditPdfPanel(files: LocalFile[]): ToolPanelView {
             max={200}
             value={settings.fontSize}
             onChange={(event) =>
-              setSettings({ ...settings, fontSize: clamp(Number(event.target.value) || 12, 6, 200) })
+              setSettings({
+                ...settings,
+                fontSize: clamp(Number(event.target.value) || 12, 6, 200),
+              })
             }
           />
         </label>
       </div>
 
-      <fieldset className="flex flex-col gap-2 rounded-xl border border-border p-3" data-find-replace>
+      <fieldset
+        className="flex flex-col gap-2 rounded-xl border border-border p-3"
+        data-find-replace
+      >
         <legend className="px-1 text-sm font-medium">{t("findTitle")}</legend>
         <Input
           value={find}
@@ -934,26 +962,35 @@ export function useEditPdfPanel(files: LocalFile[]): ToolPanelView {
         >
           {t("addReplacement")}
         </Button>
-        {ops.filter((op) => op.type === "find_replace").map((op) =>
-          op.type === "find_replace" ? (
-            <div key={op.id} className="flex items-center justify-between gap-2 text-xs">
-              <span dir="auto">{t("replacementItem", { find: op.find, replace: op.replace })}</span>
-              <button
-                type="button"
-                className="text-danger-strong underline"
-                onClick={() => apply(ops.filter((entry) => entry.id !== op.id))}
-              >
-                {t("delete")}
-              </button>
-            </div>
-          ) : null,
-        )}
+        {ops
+          .filter((op) => op.type === "find_replace")
+          .map((op) =>
+            op.type === "find_replace" ? (
+              <div key={op.id} className="flex items-center justify-between gap-2 text-xs">
+                <span dir="auto">
+                  {t("replacementItem", { find: op.find, replace: op.replace })}
+                </span>
+                <button
+                  type="button"
+                  className="text-danger-strong underline"
+                  onClick={() => apply(ops.filter((entry) => entry.id !== op.id))}
+                >
+                  {t("delete")}
+                </button>
+              </div>
+            ) : null,
+          )}
       </fieldset>
 
       {selected ? (
-        <fieldset className="flex flex-col gap-2 rounded-xl border border-border p-3" data-edit-selected>
+        <fieldset
+          className="flex flex-col gap-2 rounded-xl border border-border p-3"
+          data-edit-selected
+        >
           <legend className="px-1 text-sm font-medium">{t("selected")}</legend>
-          {selected.type === "text" || selected.type === "note" || selected.type === "replace_text" ? (
+          {selected.type === "text" ||
+          selected.type === "note" ||
+          selected.type === "replace_text" ? (
             <textarea
               value={selected.text}
               onChange={(event) => updateSelected({ text: event.target.value })}
@@ -1027,7 +1064,13 @@ export function useEditPdfPanel(files: LocalFile[]): ToolPanelView {
               aria-label={t("color")}
             />
           ) : null}
-          <Button type="button" variant="outline" size="sm" onClick={removeSelected} data-edit-delete>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={removeSelected}
+            data-edit-delete
+          >
             <Trash2 aria-hidden />
             {t("delete")}
           </Button>

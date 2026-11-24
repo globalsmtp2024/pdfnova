@@ -94,9 +94,16 @@ function SignaturePad({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal aria-label={t("padTitle")}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      role="dialog"
+      aria-modal
+      aria-label={t("padTitle")}
+    >
       <div className="flex w-full max-w-lg flex-col gap-4 rounded-(--radius-card) bg-surface p-5 shadow-lifted">
-        <h2 className="font-display text-lg font-semibold">{kind === "initials" ? t("padInitials") : t("padTitle")}</h2>
+        <h2 className="font-display text-lg font-semibold">
+          {kind === "initials" ? t("padInitials") : t("padTitle")}
+        </h2>
         <div className="flex gap-2">
           {(["draw", "type"] as const).map((entry) => (
             <Button
@@ -123,7 +130,10 @@ function SignaturePad({
           ref={canvas}
           width={PAD_WIDTH}
           height={PAD_HEIGHT}
-          className={cn("w-full touch-none rounded-lg border border-border bg-white", mode === "type" && "hidden")}
+          className={cn(
+            "w-full touch-none rounded-lg border border-border bg-white",
+            mode === "type" && "hidden",
+          )}
           onPointerDown={start}
           onPointerMove={move}
           onPointerUp={stop}
@@ -160,7 +170,10 @@ export function EsignSign({ token }: { token: string }) {
   const format = useFormatter();
   const view = useSignerView(token);
   const documentQuery = useSignerDocument(token, Boolean(view.data));
-  const local = useMemo(() => (documentQuery.data ? asLocalFile(documentQuery.data) : undefined), [documentQuery.data]);
+  const local = useMemo(
+    () => (documentQuery.data ? asLocalFile(documentQuery.data) : undefined),
+    [documentQuery.data],
+  );
   const { document } = usePdfDocument(local);
   const submit = useSubmitSignature(token);
   const decline = useDeclineSignature(token);
@@ -183,13 +196,24 @@ export function EsignSign({ token }: { token: string }) {
   if (outcome) {
     return (
       <div className="flex flex-col items-center gap-3 py-12 text-center" data-esign-done>
-        <span className={cn("flex size-14 items-center justify-center rounded-full", outcome === "signed" ? "bg-success-subtle text-success-strong" : "bg-surface-muted")}>
-          {outcome === "signed" ? <Check className="size-7" aria-hidden /> : <CircleX className="size-7" aria-hidden />}
+        <span
+          className={cn(
+            "flex size-14 items-center justify-center rounded-full",
+            outcome === "signed" ? "bg-success-subtle text-success-strong" : "bg-surface-muted",
+          )}
+        >
+          {outcome === "signed" ? (
+            <Check className="size-7" aria-hidden />
+          ) : (
+            <CircleX className="size-7" aria-hidden />
+          )}
         </span>
         <h1 className="font-display text-2xl font-semibold">
           {outcome === "signed" ? t("signedTitle") : t("declinedTitle")}
         </h1>
-        <p className="max-w-md text-muted">{outcome === "signed" ? t("signedBody") : t("declinedBody")}</p>
+        <p className="max-w-md text-muted">
+          {outcome === "signed" ? t("signedBody") : t("declinedBody")}
+        </p>
       </div>
     );
   }
@@ -226,18 +250,34 @@ export function EsignSign({ token }: { token: string }) {
         <h1 className="font-display text-3xl font-semibold">{data.title}</h1>
         <p className="text-muted">
           {t("fromSender", { sender: data.sender })} ·{" "}
-          {t("expiresOn", { date: format.dateTime(new Date(data.expires_at), { dateStyle: "medium" }) })}
+          {t("expiresOn", {
+            date: format.dateTime(new Date(data.expires_at), { dateStyle: "medium" }),
+          })}
         </p>
         {data.message ? <p className="mt-2">{data.message}</p> : null}
       </div>
       <Callout tone="info">{t("signerHelp", { name: data.signer_name })}</Callout>
 
       <div className="flex items-center gap-2">
-        <Button type="button" size="sm" variant="outline" disabled={pageIndex === 0} onClick={() => setPageIndex(pageIndex - 1)}>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          disabled={pageIndex === 0}
+          onClick={() => setPageIndex(pageIndex - 1)}
+        >
           {t("previous")}
         </Button>
-        <span className="text-sm">{t("pageOf", { page: pageIndex + 1, count: data.page_count })}</span>
-        <Button type="button" size="sm" variant="outline" disabled={pageIndex + 1 >= data.page_count} onClick={() => setPageIndex(pageIndex + 1)}>
+        <span className="text-sm">
+          {t("pageOf", { page: pageIndex + 1, count: data.page_count })}
+        </span>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          disabled={pageIndex + 1 >= data.page_count}
+          onClick={() => setPageIndex(pageIndex + 1)}
+        >
           {t("next")}
         </Button>
       </div>
@@ -257,7 +297,9 @@ export function EsignSign({ token }: { token: string }) {
                   aria-label={t(`field.${field.kind}`)}
                   className={cn(
                     "absolute flex items-center justify-center overflow-hidden border-2 text-xs font-medium",
-                    filled ? "border-success bg-success/10 text-success-strong" : "border-primary bg-primary/10 text-primary",
+                    filled
+                      ? "border-success bg-success/10 text-success-strong"
+                      : "border-primary bg-primary/10 text-primary",
                   )}
                   style={{
                     left: (field.x / 100) * pageView.width,
@@ -273,7 +315,9 @@ export function EsignSign({ token }: { token: string }) {
                   ) : field.kind === "date" ? (
                     <span>{t("autoDate")}</span>
                   ) : field.kind === "checkbox" ? (
-                    value === "true" ? <Check className="size-3" aria-hidden /> : null
+                    value === "true" ? (
+                      <Check className="size-3" aria-hidden />
+                    ) : null
                   ) : (
                     <span className="flex items-center gap-1">
                       <PenLine className="size-3" aria-hidden />
@@ -288,7 +332,13 @@ export function EsignSign({ token }: { token: string }) {
       </PdfPageCanvas>
 
       <label className="flex items-start gap-2 text-sm">
-        <input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-1" data-esign-consent />
+        <input
+          type="checkbox"
+          checked={consent}
+          onChange={(event) => setConsent(event.target.checked)}
+          className="mt-1"
+          data-esign-consent
+        />
         {t("consent")}
       </label>
       <div className="flex flex-wrap gap-2">
@@ -305,7 +355,9 @@ export function EsignSign({ token }: { token: string }) {
         <Button type="button" variant="outline" onClick={() => setDeclining(true)}>
           {t("decline")}
         </Button>
-        {missing ? <span className="self-center text-sm text-muted">{t("completeFields")}</span> : null}
+        {missing ? (
+          <span className="self-center text-sm text-muted">{t("completeFields")}</span>
+        ) : null}
       </div>
 
       {declining ? (
@@ -326,7 +378,12 @@ export function EsignSign({ token }: { token: string }) {
               type="button"
               variant="danger"
               loading={decline.isPending}
-              onClick={() => decline.mutate(reason, { onSuccess: () => setOutcome("declined"), onError: toastError })}
+              onClick={() =>
+                decline.mutate(reason, {
+                  onSuccess: () => setOutcome("declined"),
+                  onError: toastError,
+                })
+              }
             >
               {t("confirmDecline")}
             </Button>

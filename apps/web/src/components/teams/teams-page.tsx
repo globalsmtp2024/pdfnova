@@ -60,7 +60,12 @@ export function TeamsPage() {
           maxLength={120}
           data-team-name
         />
-        <Button type="submit" variant="primary" loading={mutations.create.isPending} data-team-create>
+        <Button
+          type="submit"
+          variant="primary"
+          loading={mutations.create.isPending}
+          data-team-create
+        >
           <Plus aria-hidden />
           {t("create")}
         </Button>
@@ -81,7 +86,9 @@ export function TeamsPage() {
                     {t("memberCount", { count: team.member_count })}
                   </span>
                 </span>
-                <Badge tone={team.role === "owner" ? "primary" : "neutral"}>{t(`role.${team.role}`)}</Badge>
+                <Badge tone={team.role === "owner" ? "primary" : "neutral"}>
+                  {t(`role.${team.role}`)}
+                </Badge>
               </Link>
             </li>
           ))}

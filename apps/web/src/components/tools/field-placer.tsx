@@ -112,7 +112,12 @@ export function FieldPlacer<T extends PlacedBox>({
       const dragged = Math.abs(x1 - x0) > MIN_DRAG && Math.abs(y1 - y0) > MIN_DRAG;
       const size = defaultSize(placing);
       const box = dragged
-        ? { x: Math.min(x0, x1), y: Math.min(y0, y1), width: Math.abs(x1 - x0), height: Math.abs(y1 - y0) }
+        ? {
+            x: Math.min(x0, x1),
+            y: Math.min(y0, y1),
+            width: Math.abs(x1 - x0),
+            height: Math.abs(y1 - y0),
+          }
         : {
             x: clamp(x0, 0, 100 - size.width),
             y: clamp(y0, 0, 100 - size.height),

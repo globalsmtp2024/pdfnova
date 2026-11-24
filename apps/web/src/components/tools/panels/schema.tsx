@@ -1,12 +1,14 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useQuery } from "@tanstack/react-query";
+import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState, type ChangeEvent } from "react";
 
 import { ToggleRow } from "@/components/tools/option-panels";
 import type { ToolPanelView } from "@/components/tools/panels/registry";
 import type { LocalFile } from "@/components/tools/use-tool-session";
 import { Input } from "@/components/ui/input";
+import { apiJson } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 type JsonSchema = {
@@ -15,6 +17,7 @@ type JsonSchema = {
   default?: unknown;
   title?: string;
   maxLength?: number;
+  pattern?: string;
   minimum?: number;
   maximum?: number;
   items?: JsonSchema;
@@ -26,6 +29,7 @@ type JsonSchema = {
 };
 
 type FieldKind =
+  | "ocr-language"
   | "boolean"
   | "enum"
   | "multi"
@@ -63,6 +67,7 @@ function resolve(schema: JsonSchema, root: JsonSchema): JsonSchema {
 
 function kindOf(name: string, schema: JsonSchema): FieldKind {
   if (IMAGE_FIELDS.has(name)) return "image";
+  if (name === "language" && schema.pattern) return "ocr-language";
   if (schema.enum) return "enum";
   const type = Array.isArray(schema.type) ? schema.type[0] : schema.type;
   if (type === "boolean") return "boolean";
@@ -107,6 +112,21 @@ export function useSchemaPanel(
       })
       .filter((field) => field.kind !== "skip");
   }, [root]);
+  const locale = useLocale();
+  const needsLanguages = fields.some((field) => field.kind === "ocr-language");
+  const languages = useQuery({
+    queryKey: ["ocr-languages"],
+    queryFn: () => apiJson<{ languages: string[] }>("/api/v1/ocr/languages"),
+    enabled: needsLanguages,
+    staleTime: 10 * 60_000,
+  });
+  const languageName = (code: string) => {
+    try {
+      return new Intl.DisplayNames([locale], { type: "language" }).of(code.split("_")[0]) ?? code;
+    } catch {
+      return code;
+    }
+  };
   const [values, setValues] = useState<FieldState>({});
   const [imageError, setImageError] = useState<string | null>(null);
   const required = new Set(root.required ?? []);
@@ -205,6 +225,40 @@ export function useSchemaPanel(
           {label(name)}
           {required.has(name) ? <span aria-hidden> *</span> : null}
         </label>
+        {kind === "ocr-language" ? (
+          <fieldset id={id} className="flex flex-wrap gap-2" data-ocr-languages>
+            {(languages.data?.languages.length ? languages.data.languages : ["eng", "urd"]).map(
+              (code) => {
+                const chosen = String(current(name, fallback) ?? "")
+                  .split("+")
+                  .filter(Boolean);
+                const active = chosen.includes(code);
+                return (
+                  <label
+                    key={code}
+                    className={cn(
+                      "flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium",
+                      active ? "border-primary bg-primary-subtle" : "border-border text-muted",
+                    )}
+                  >
+                    <input
+                      type="checkbox"
+                      className="sr-only"
+                      checked={active}
+                      onChange={() => {
+                        const next = active
+                          ? chosen.filter((entry) => entry !== code)
+                          : [...chosen, code].slice(0, 4);
+                        set(name, (next.length ? next : [code]).join("+"));
+                      }}
+                    />
+                    {languageName(code)}
+                  </label>
+                );
+              },
+            )}
+          </fieldset>
+        ) : null}
         {kind === "enum" ? (
           <select
             id={id}

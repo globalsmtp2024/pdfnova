@@ -15,7 +15,8 @@ export async function loadPdf(file: File): Promise<PDFDocument> {
   try {
     return await PDFDocument.load(data, { ignoreEncryption: false, updateMetadata: false });
   } catch (error) {
-    if (error instanceof Error && /encrypt/i.test(error.message)) throw new PrivateModeError("encrypted");
+    if (error instanceof Error && /encrypt/i.test(error.message))
+      throw new PrivateModeError("encrypted");
     throw new PrivateModeError("unreadable");
   }
 }
@@ -57,7 +58,9 @@ export async function splitPdf(file: File, mode: SplitMode, value: string): Prom
     const size = Math.max(Number.parseInt(value, 10) || 0, 1);
     groups = [];
     for (let start = 0; start < count; start += size) {
-      groups.push(Array.from({ length: Math.min(size, count - start) }, (_, offset) => start + offset));
+      groups.push(
+        Array.from({ length: Math.min(size, count - start) }, (_, offset) => start + offset),
+      );
     }
   } else {
     groups = value
@@ -71,12 +74,18 @@ export async function splitPdf(file: File, mode: SplitMode, value: string): Prom
   for (const [index, group] of groups.entries()) {
     const part = await PDFDocument.create();
     for (const page of await part.copyPages(source, group)) part.addPage(page);
-    outputs.push(await save(part, `${stem(file.name)}-part-${String(index + 1).padStart(2, "0")}.pdf`));
+    outputs.push(
+      await save(part, `${stem(file.name)}-part-${String(index + 1).padStart(2, "0")}.pdf`),
+    );
   }
   return outputs;
 }
 
-export async function rotatePdf(file: File, expression: string, angle: 90 | 180 | 270): Promise<PdfOutput[]> {
+export async function rotatePdf(
+  file: File,
+  expression: string,
+  angle: 90 | 180 | 270,
+): Promise<PdfOutput[]> {
   const document = await loadPdf(file);
   const targets = pagesOf(expression, document.getPageCount());
   for (const index of new Set(targets)) {
@@ -146,7 +155,10 @@ export async function imagesToPdf(
       [width, height] = image.width > image.height ? [longSide, shortSide] : [shortSide, longSide];
     }
     const page = result.addPage([width, height]);
-    const scale = Math.min((width - 2 * marginPoints) / image.width, (height - 2 * marginPoints) / image.height);
+    const scale = Math.min(
+      (width - 2 * marginPoints) / image.width,
+      (height - 2 * marginPoints) / image.height,
+    );
     const drawWidth = image.width * scale;
     const drawHeight = image.height * scale;
     page.drawImage(image, {
@@ -185,7 +197,12 @@ export async function writeMetadata(file: File, metadata: PdfMetadata): Promise<
   document.setTitle(metadata.title);
   document.setAuthor(metadata.author);
   document.setSubject(metadata.subject);
-  document.setKeywords(metadata.keywords.split(",").map((keyword) => keyword.trim()).filter(Boolean));
+  document.setKeywords(
+    metadata.keywords
+      .split(",")
+      .map((keyword) => keyword.trim())
+      .filter(Boolean),
+  );
   document.setCreator(metadata.creator);
   document.setProducer(metadata.producer);
   return [await save(document, `${stem(file.name)}-metadata.pdf`)];

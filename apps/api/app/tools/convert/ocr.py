@@ -1,8 +1,8 @@
 import subprocess
 import tempfile
+from functools import lru_cache
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Literal
 
 import pikepdf
 import pypdfium2 as pdfium
@@ -32,10 +32,36 @@ PAGE_TIMEOUT_SECONDS = 120
 MAX_OCR_PIXELS = 36_000_000
 
 
+LANGUAGE_PATTERN = r"^[a-z]{3}(_[A-Za-z]+)?(\+[a-z]{3}(_[A-Za-z]+)?){0,3}$"
+
+
 class OcrOptions(ToolOptions):
-    language: Literal["eng", "urd", "eng+urd"] = "eng"
+    language: str = Field(default="eng", pattern=LANGUAGE_PATTERN, max_length=60)
     dpi: int = Field(default=300, ge=150, le=400)
     pages: str | None = Field(default=None, max_length=2000)
+
+
+@lru_cache(maxsize=1)
+def installed_languages() -> tuple[str, ...]:
+    binary = find_binary("TESSERACT_BINARY", TESSERACT_NAMES, WINDOWS_TESSERACT)
+    if binary is None:
+        return ()
+    try:
+        result = subprocess.run([binary, "--list-langs"], capture_output=True, text=True, timeout=20, check=True)
+    except (subprocess.SubprocessError, OSError):
+        return ()
+    names = [line.strip() for line in result.stdout.splitlines()[1:] if line.strip()]
+    return tuple(sorted(name for name in names if name != "osd"))
+
+
+def check_language(language: str) -> None:
+    available = installed_languages()
+    unknown = [code for code in language.split("+") if code not in available]
+    if unknown and available:
+        raise ToolFailedError(
+            f"The language {unknown[0]} is not installed. Installed: {', '.join(available)}.",
+            code="ocr_language_missing",
+        )
 
 
 def recognise(binary: str, image: Path, base: Path, language: str) -> Path:
@@ -76,6 +102,7 @@ class OcrPdfTool(Tool[OcrOptions]):
         binary = find_binary("TESSERACT_BINARY", TESSERACT_NAMES, WINDOWS_TESSERACT)
         if binary is None:
             raise missing("Text recognition", "")
+        check_language(options.language)
 
         def handle(item: InputFile, _: int) -> list[OutputFile]:
             work = Path(tempfile.mkdtemp(prefix="ocr-", dir=ctx.scratch_dir))

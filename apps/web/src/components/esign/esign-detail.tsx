@@ -37,10 +37,7 @@ export function EsignDetail({ id }: { id: string }) {
   return (
     <div className="flex flex-col gap-6" data-esign-detail>
       <Breadcrumbs
-        items={[
-          { label: t("title"), href: "/dashboard/signatures" },
-          { label: data.title },
-        ]}
+        items={[{ label: t("title"), href: "/dashboard/signatures" }, { label: data.title }]}
       />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -71,7 +68,9 @@ export function EsignDetail({ id }: { id: string }) {
             </>
           ) : null}
           <a
-            className={cn(buttonVariants({ variant: data.status === "completed" ? "primary" : "outline" }))}
+            className={cn(
+              buttonVariants({ variant: data.status === "completed" ? "primary" : "outline" }),
+            )}
             href={`/api/v1/esign/requests/${data.id}/document?version=${data.status === "completed" ? "signed" : "original"}`}
           >
             <Download aria-hidden />
@@ -85,7 +84,10 @@ export function EsignDetail({ id }: { id: string }) {
         <h2 className="font-display text-xl font-semibold">{t("signersTitle")}</h2>
         <ul className="divide-y divide-border rounded-(--radius-card) border border-border bg-surface">
           {data.recipients.map((recipient) => (
-            <li key={recipient.id} className="flex flex-wrap items-center justify-between gap-2 p-4">
+            <li
+              key={recipient.id}
+              className="flex flex-wrap items-center justify-between gap-2 p-4"
+            >
               <span className="flex flex-col">
                 <span className="font-medium">{recipient.name}</span>
                 <span className="text-xs text-muted" dir="ltr">
@@ -97,9 +99,21 @@ export function EsignDetail({ id }: { id: string }) {
               </span>
               <span className="flex items-center gap-3 text-sm">
                 <span className="text-muted">
-                  {recipient.signed_at ? when(recipient.signed_at) : recipient.viewed_at ? t("viewedAt", { time: when(recipient.viewed_at) }) : ""}
+                  {recipient.signed_at
+                    ? when(recipient.signed_at)
+                    : recipient.viewed_at
+                      ? t("viewedAt", { time: when(recipient.viewed_at) })
+                      : ""}
                 </span>
-                <Badge tone={recipient.status === "signed" ? "success" : recipient.status === "declined" ? "danger" : "neutral"}>
+                <Badge
+                  tone={
+                    recipient.status === "signed"
+                      ? "success"
+                      : recipient.status === "declined"
+                        ? "danger"
+                        : "neutral"
+                  }
+                >
                   {t(`recipient.${recipient.status}`)}
                 </Badge>
               </span>
@@ -111,20 +125,32 @@ export function EsignDetail({ id }: { id: string }) {
       <section className="flex flex-col gap-3 rounded-(--radius-card) border border-border bg-surface p-5 print:border-0">
         <div className="flex items-center justify-between gap-2">
           <h2 className="font-display text-xl font-semibold">{t("certificateTitle")}</h2>
-          <Button type="button" variant="ghost" size="sm" className="print:hidden" onClick={() => window.print()}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="print:hidden"
+            onClick={() => window.print()}
+          >
             <Printer aria-hidden />
             {t("print")}
           </Button>
         </div>
         <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
           <dt className="text-muted">{t("requestId")}</dt>
-          <dd className="font-mono text-xs break-all" dir="ltr">{data.id}</dd>
+          <dd className="font-mono text-xs break-all" dir="ltr">
+            {data.id}
+          </dd>
           <dt className="text-muted">{t("originalHash")}</dt>
-          <dd className="font-mono text-xs break-all" dir="ltr">{data.original_sha256}</dd>
+          <dd className="font-mono text-xs break-all" dir="ltr">
+            {data.original_sha256}
+          </dd>
           {data.signed_sha256 ? (
             <>
               <dt className="text-muted">{t("signedHash")}</dt>
-              <dd className="font-mono text-xs break-all" dir="ltr">{data.signed_sha256}</dd>
+              <dd className="font-mono text-xs break-all" dir="ltr">
+                {data.signed_sha256}
+              </dd>
             </>
           ) : null}
           <dt className="text-muted">{t("completedAt")}</dt>
@@ -136,7 +162,9 @@ export function EsignDetail({ id }: { id: string }) {
             <li key={index} className="flex flex-wrap gap-x-3">
               <span className="text-muted tabular-nums">{when(event.at)}</span>
               <span>{t(`event.${event.event}`)}</span>
-              {event.recipient_name ? <span className="text-muted">{event.recipient_name}</span> : null}
+              {event.recipient_name ? (
+                <span className="text-muted">{event.recipient_name}</span>
+              ) : null}
             </li>
           ))}
         </ol>

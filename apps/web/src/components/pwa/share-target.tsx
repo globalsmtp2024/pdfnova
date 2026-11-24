@@ -43,7 +43,9 @@ async function readShared(): Promise<File[]> {
     const response = await cache.match(request);
     if (!response) continue;
     const name = decodeURIComponent(response.headers.get("X-Filename") ?? "shared-file");
-    files.push(new File([await response.blob()], name, { type: response.headers.get("Content-Type") ?? "" }));
+    files.push(
+      new File([await response.blob()], name, { type: response.headers.get("Content-Type") ?? "" }),
+    );
     await cache.delete(request);
   }
   return files;
@@ -52,7 +54,10 @@ async function readShared(): Promise<File[]> {
 export function ShareTarget() {
   const t = useTranslations("share");
   const toolT = useTranslations("tools");
-  const [state, setState] = useState<{ files: File[]; loaded: boolean }>({ files: [], loaded: false });
+  const [state, setState] = useState<{ files: File[]; loaded: boolean }>({
+    files: [],
+    loaded: false,
+  });
   const setPending = usePendingFiles((store) => store.setFiles);
 
   useEffect(() => {

@@ -12,12 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast, toastError } from "@/components/ui/toaster";
 import { Link } from "@/i18n/navigation";
 import { useSession } from "@/lib/session";
-import {
-  useDeliveries,
-  useWebhookEvents,
-  useWebhookMutations,
-  useWebhooks,
-} from "@/lib/webhooks";
+import { useDeliveries, useWebhookEvents, useWebhookMutations, useWebhooks } from "@/lib/webhooks";
 import { cn } from "@/lib/utils";
 
 function DeliveryLog({ id }: { id: string }) {
@@ -37,7 +32,11 @@ function DeliveryLog({ id }: { id: string }) {
             </code>
             <Badge
               tone={
-                delivery.status === "delivered" ? "success" : delivery.status === "failed" ? "danger" : "warning"
+                delivery.status === "delivered"
+                  ? "success"
+                  : delivery.status === "failed"
+                    ? "danger"
+                    : "warning"
               }
             >
               {t(`status.${delivery.status}`)}
@@ -49,12 +48,17 @@ function DeliveryLog({ id }: { id: string }) {
           </span>
           <span className="flex items-center gap-2 text-xs text-muted">
             {delivery.last_error ?? ""}
-            {format.dateTime(new Date(delivery.created_at), { dateStyle: "short", timeStyle: "medium" })}
+            {format.dateTime(new Date(delivery.created_at), {
+              dateStyle: "short",
+              timeStyle: "medium",
+            })}
             {delivery.status !== "delivered" ? (
               <button
                 type="button"
                 className="text-primary underline"
-                onClick={() => mutations.retry.mutate({ id, deliveryId: delivery.id }, { onError: toastError })}
+                onClick={() =>
+                  mutations.retry.mutate({ id, deliveryId: delivery.id }, { onError: toastError })
+                }
               >
                 {t("retry")}
               </button>
@@ -101,7 +105,11 @@ export function WebhooksPage() {
         <Callout tone="warning" title={t("secretTitle")}>
           <p className="text-sm">{t("secretBody")}</p>
           <div className="mt-2 flex items-center gap-2">
-            <code className="min-w-0 flex-1 truncate rounded-md bg-surface px-2 py-1 font-mono text-xs" dir="ltr" data-webhook-secret>
+            <code
+              className="min-w-0 flex-1 truncate rounded-md bg-surface px-2 py-1 font-mono text-xs"
+              dir="ltr"
+              data-webhook-secret
+            >
               {secret}
             </code>
             <Button
@@ -139,11 +147,20 @@ export function WebhooksPage() {
         <h2 className="font-display text-lg font-semibold">{t("addTitle")}</h2>
         <label className="flex flex-col gap-1 text-sm font-medium">
           {t("url")}
-          <Input value={url} onChange={(event) => setUrl(event.target.value)} dir="ltr" data-webhook-url />
+          <Input
+            value={url}
+            onChange={(event) => setUrl(event.target.value)}
+            dir="ltr"
+            data-webhook-url
+          />
         </label>
         <label className="flex flex-col gap-1 text-sm font-medium">
           {t("description")}
-          <Input value={description} onChange={(event) => setDescription(event.target.value)} maxLength={200} />
+          <Input
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            maxLength={200}
+          />
         </label>
         <fieldset className="flex flex-wrap gap-x-4 gap-y-1">
           <legend className="mb-1 text-sm font-medium">{t("events")}</legend>
@@ -154,7 +171,9 @@ export function WebhooksPage() {
                 checked={selected.includes(event)}
                 onChange={(change) =>
                   setSelected(
-                    change.target.checked ? [...selected, event] : selected.filter((entry) => entry !== event),
+                    change.target.checked
+                      ? [...selected, event]
+                      : selected.filter((entry) => entry !== event),
                   )
                 }
               />
@@ -179,18 +198,24 @@ export function WebhooksPage() {
       ) : hooks.data && hooks.data.length ? (
         <ul className="flex flex-col gap-4">
           {hooks.data.map((hook) => (
-            <li key={hook.id} className="flex flex-col gap-3 rounded-(--radius-card) border border-border bg-surface p-4">
+            <li
+              key={hook.id}
+              className="flex flex-col gap-3 rounded-(--radius-card) border border-border bg-surface p-4"
+            >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate font-mono text-sm" dir="ltr">
                     {hook.url}
                   </span>
                   <span className="text-xs text-muted">
-                    {hook.description || hook.events.join(", ")} · {t("secretEnding", { last4: hook.secret_last4 })}
+                    {hook.description || hook.events.join(", ")} ·{" "}
+                    {t("secretEnding", { last4: hook.secret_last4 })}
                   </span>
                 </span>
                 <span className="flex items-center gap-2">
-                  <Badge tone={hook.active ? "success" : "neutral"}>{hook.active ? t("active") : t("paused")}</Badge>
+                  <Badge tone={hook.active ? "success" : "neutral"}>
+                    {hook.active ? t("active") : t("paused")}
+                  </Badge>
                   <Button
                     size="sm"
                     variant="outline"
@@ -207,7 +232,12 @@ export function WebhooksPage() {
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => mutations.toggle.mutate({ id: hook.id, active: !hook.active }, { onError: toastError })}
+                    onClick={() =>
+                      mutations.toggle.mutate(
+                        { id: hook.id, active: !hook.active },
+                        { onError: toastError },
+                      )
+                    }
                   >
                     {hook.active ? t("pause") : t("resume")}
                   </Button>

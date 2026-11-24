@@ -91,9 +91,7 @@ export default async function WorkflowsPage({ params }: PageProps<"/[locale]/wor
           title={t("workflowsPage.builderTitle")}
           subtitle={t("workflowsPage.builderBody")}
         />
-        <div
-          className="relative mt-8 overflow-hidden rounded-(--radius-card) border border-border bg-background bg-grid p-6 shadow-lifted sm:p-10"
-        >
+        <div className="relative mt-8 overflow-hidden rounded-(--radius-card) border border-border bg-background bg-grid p-6 shadow-lifted sm:p-10">
           <div className="pointer-events-none flex flex-col items-center gap-4 opacity-90 select-none md:flex-row md:justify-center">
             {preview.steps.map((step, index) => (
               <div key={step.tool} className="flex items-center gap-4 max-md:flex-col">

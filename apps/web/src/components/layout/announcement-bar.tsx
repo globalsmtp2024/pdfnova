@@ -53,7 +53,10 @@ export function AnnouncementBar() {
   const fromServer = remote.data?.enabled
     ? {
         id: `server-${remote.data.version ?? 0}`,
-        message: (locale === "ur" ? remote.data.message?.ur : remote.data.message?.en) || remote.data.message?.en || "",
+        message:
+          (locale === "ur" ? remote.data.message?.ur : remote.data.message?.en) ||
+          remote.data.message?.en ||
+          "",
         href: remote.data.href || undefined,
       }
     : null;

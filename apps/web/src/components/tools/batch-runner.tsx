@@ -1,6 +1,14 @@
 "use client";
 
-import { Archive, CircleAlert, CircleCheck, Download, LoaderCircle, RotateCcw, Trash2 } from "lucide-react";
+import {
+  Archive,
+  CircleAlert,
+  CircleCheck,
+  Download,
+  LoaderCircle,
+  RotateCcw,
+  Trash2,
+} from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
@@ -20,7 +28,8 @@ const MAX_FILE_BYTES = 100 * 1024 * 1024;
 function StatusIcon({ status }: { status: BatchItem["status"] }) {
   if (status === "done") return <CircleCheck className="size-4 text-success-strong" aria-hidden />;
   if (status === "failed") return <CircleAlert className="size-4 text-danger-strong" aria-hidden />;
-  if (status === "queued") return <span className="size-4 rounded-full border border-border-strong" aria-hidden />;
+  if (status === "queued")
+    return <span className="size-4 rounded-full border border-border-strong" aria-hidden />;
   return <LoaderCircle className="size-4 animate-spin text-primary" aria-hidden />;
 }
 
@@ -48,7 +57,10 @@ export function BatchRunner() {
   let options: Record<string, unknown> | null = {};
   try {
     const parsed: unknown = JSON.parse(optionsText || "{}");
-    options = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : null;
+    options =
+      parsed && typeof parsed === "object" && !Array.isArray(parsed)
+        ? (parsed as Record<string, unknown>)
+        : null;
   } catch {
     options = null;
   }
@@ -56,9 +68,10 @@ export function BatchRunner() {
   const done = runner.items.filter((item) => item.status === "done").length;
   const failed = runner.items.filter((item) => item.status === "failed").length;
   const waiting = runner.items.filter((item) => item.status === "queued").length;
-  const canRun = Boolean(tool) && options !== null && (waiting > 0 || failed > 0) && !runner.running;
+  const canRun =
+    Boolean(tool) && options !== null && (waiting > 0 || failed > 0) && !runner.running;
   const properties = Object.entries(
-    ((tool?.options_schema?.properties ?? {}) as Record<string, { type?: string }>),
+    (tool?.options_schema?.properties ?? {}) as Record<string, { type?: string }>,
   );
 
   const downloadAll = async () => {
@@ -99,10 +112,16 @@ export function BatchRunner() {
             </p>
             <ul className="flex flex-col divide-y divide-border rounded-(--radius-card) border border-border bg-surface">
               {runner.items.map((item) => (
-                <li key={item.key} className="flex flex-col gap-2 p-3" data-batch-item={item.status}>
+                <li
+                  key={item.key}
+                  className="flex flex-col gap-2 p-3"
+                  data-batch-item={item.status}
+                >
                   <div className="flex items-center gap-2">
                     <StatusIcon status={item.status} />
-                    <span className="min-w-0 flex-1 truncate text-sm font-medium">{item.file.name}</span>
+                    <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                      {item.file.name}
+                    </span>
                     <span className="text-xs text-muted tabular-nums">
                       {format.number(Math.round(item.file.size / 1024))} KB
                     </span>
@@ -194,7 +213,9 @@ export function BatchRunner() {
         {options === null ? <p className="text-xs text-danger-strong">{t("badJson")}</p> : null}
         {properties.length ? (
           <p className="text-xs text-muted" dir="ltr">
-            {properties.map(([key, schema]) => `${key}${schema.type ? ` (${schema.type})` : ""}`).join(", ")}
+            {properties
+              .map(([key, schema]) => `${key}${schema.type ? ` (${schema.type})` : ""}`)
+              .join(", ")}
           </p>
         ) : null}
         <div className="flex flex-col gap-2">
@@ -223,11 +244,22 @@ export function BatchRunner() {
             <RotateCcw aria-hidden />
             {t("retryFailed", { count: failed })}
           </Button>
-          <Button type="button" variant="outline" disabled={!done || zipping} loading={zipping} onClick={() => void downloadAll()}>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={!done || zipping}
+            loading={zipping}
+            onClick={() => void downloadAll()}
+          >
             <Archive aria-hidden />
             {t("downloadAll")}
           </Button>
-          <Button type="button" variant="ghost" disabled={runner.running || !runner.items.length} onClick={runner.clear}>
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={runner.running || !runner.items.length}
+            onClick={runner.clear}
+          >
             {t("clear")}
           </Button>
         </div>

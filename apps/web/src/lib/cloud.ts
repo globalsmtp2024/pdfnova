@@ -4,7 +4,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiFetch, apiJson } from "@/lib/api";
 
-export type CloudProviderInfo = { name: string; label: string; connected: boolean; account: string };
+export type CloudProviderInfo = {
+  name: string;
+  label: string;
+  connected: boolean;
+  account: string;
+};
 export type CloudEntry = {
   id: string;
   name: string;

@@ -25,7 +25,15 @@ import {
 import { useSession } from "@/lib/session";
 import { cn, formatBytes } from "@/lib/utils";
 
-const TABS = ["overview", "failures", "users", "flags", "fairUse", "abuse", "announcement"] as const;
+const TABS = [
+  "overview",
+  "failures",
+  "users",
+  "flags",
+  "fairUse",
+  "abuse",
+  "announcement",
+] as const;
 type Tab = (typeof TABS)[number];
 
 function Overview() {
@@ -40,7 +48,10 @@ function Overview() {
     [t("storage"), report.checks.storage.ok],
     [t("disk"), report.checks.disk.ok],
     [t("queue", { backend: report.checks.queue.backend }), report.checks.queue.ok],
-    ...Object.entries(report.checks.binaries).map(([name, value]): [string, boolean] => [name, value.ok]),
+    ...Object.entries(report.checks.binaries).map(([name, value]): [string, boolean] => [
+      name,
+      value.ok,
+    ]),
   ];
   const maxTotal = Math.max(...(jobs.data?.days.map((day) => day.total) ?? [1]), 1);
   return (
@@ -70,16 +81,27 @@ function Overview() {
           ))}
         </ul>
         <p className="text-xs text-muted">
-          {t("diskFree", { free: formatBytes(report.checks.disk.free_bytes) })} · {t("uptime", { hours: Math.floor(report.uptime_seconds / 3600) })}
+          {t("diskFree", { free: formatBytes(report.checks.disk.free_bytes) })} ·{" "}
+          {t("uptime", { hours: Math.floor(report.uptime_seconds / 3600) })}
         </p>
       </section>
       <section className="flex flex-col gap-2">
         <h2 className="font-display text-lg font-semibold">{t("jobsPerDay")}</h2>
         <div className="flex h-28 items-end gap-1" role="img" aria-label={t("jobsPerDay")}>
           {(jobs.data?.days ?? []).map((day) => (
-            <div key={day.date} className="flex flex-1 flex-col justify-end" title={`${day.date}: ${day.total} / ${day.failed}`}>
-              <div className="rounded-t bg-danger/70" style={{ height: `${(day.failed / maxTotal) * 100}%` }} />
-              <div className="bg-primary/70" style={{ height: `${((day.total - day.failed) / maxTotal) * 100}%` }} />
+            <div
+              key={day.date}
+              className="flex flex-1 flex-col justify-end"
+              title={`${day.date}: ${day.total} / ${day.failed}`}
+            >
+              <div
+                className="rounded-t bg-danger/70"
+                style={{ height: `${(day.failed / maxTotal) * 100}%` }}
+              />
+              <div
+                className="bg-primary/70"
+                style={{ height: `${((day.total - day.failed) / maxTotal) * 100}%` }}
+              />
             </div>
           ))}
         </div>
@@ -121,8 +143,20 @@ function Failures() {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap gap-2">
-        <Input value={tool} onChange={(event) => setTool(event.target.value)} placeholder={t("filterTool")} aria-label={t("filterTool")} className="max-w-48" />
-        <Input value={code} onChange={(event) => setCode(event.target.value)} placeholder={t("filterCode")} aria-label={t("filterCode")} className="max-w-48" />
+        <Input
+          value={tool}
+          onChange={(event) => setTool(event.target.value)}
+          placeholder={t("filterTool")}
+          aria-label={t("filterTool")}
+          className="max-w-48"
+        />
+        <Input
+          value={code}
+          onChange={(event) => setCode(event.target.value)}
+          placeholder={t("filterCode")}
+          aria-label={t("filterCode")}
+          className="max-w-48"
+        />
       </div>
       <p className="text-xs text-muted">{t("failuresPrivacy")}</p>
       {failures.data?.length ? (
@@ -133,7 +167,11 @@ function Failures() {
                 <code className="font-mono text-xs">{failure.tool}</code>
                 <Badge tone="danger">{failure.error_code}</Badge>
                 <span className="text-xs text-muted">
-                  {format.dateTime(new Date(failure.created_at), { dateStyle: "short", timeStyle: "short" })} · {formatBytes(failure.input_bytes)}
+                  {format.dateTime(new Date(failure.created_at), {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  })}{" "}
+                  · {formatBytes(failure.input_bytes)}
                 </span>
               </span>
               <span className="text-muted">{failure.error_message}</span>
@@ -154,10 +192,20 @@ function Users() {
   const mutations = useAdminMutations();
   return (
     <div className="flex flex-col gap-3">
-      <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("searchUsers")} aria-label={t("searchUsers")} className="max-w-sm" />
+      <Input
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        placeholder={t("searchUsers")}
+        aria-label={t("searchUsers")}
+        className="max-w-sm"
+      />
       <ul className="flex flex-col divide-y divide-border rounded-(--radius-card) border border-border bg-surface text-sm">
         {(users.data ?? []).map((user) => (
-          <li key={user.id} className="flex flex-wrap items-center justify-between gap-2 p-3" data-admin-user>
+          <li
+            key={user.id}
+            className="flex flex-wrap items-center justify-between gap-2 p-3"
+            data-admin-user
+          >
             <span className="flex min-w-0 flex-col">
               <span className="truncate font-medium">{user.display_name || user.email}</span>
               <span className="truncate text-xs text-muted" dir="ltr">
@@ -165,17 +213,22 @@ function Users() {
               </span>
             </span>
             <span className="flex flex-wrap items-center gap-3">
-              {([
-                ["is_active", t("active")],
-                ["is_admin", t("admin")],
-                ["retention_extended", t("extendedRetention")],
-              ] as const).map(([field, label]) => (
+              {(
+                [
+                  ["is_active", t("active")],
+                  ["is_admin", t("admin")],
+                  ["retention_extended", t("extendedRetention")],
+                ] as const
+              ).map(([field, label]) => (
                 <label key={field} className="flex items-center gap-1.5 text-xs">
                   <input
                     type="checkbox"
                     checked={user[field]}
                     onChange={(event) =>
-                      mutations.patchUser.mutate({ id: user.id, body: { [field]: event.target.checked } }, { onError: toastError })
+                      mutations.patchUser.mutate(
+                        { id: user.id, body: { [field]: event.target.checked } },
+                        { onError: toastError },
+                      )
                     }
                   />
                   {label}
@@ -206,7 +259,10 @@ function Flags() {
               type="checkbox"
               checked={flag.enabled}
               onChange={(event) =>
-                mutations.setFlag.mutate({ key: flag.key, enabled: event.target.checked }, { onError: toastError })
+                mutations.setFlag.mutate(
+                  { key: flag.key, enabled: event.target.checked },
+                  { onError: toastError },
+                )
               }
               data-admin-flag={flag.key}
             />
@@ -245,11 +301,19 @@ function FairUseEditor() {
             type="number"
             min={1}
             value={edits[entry.key] ?? entry.value}
-            onChange={(event) => setEdits({ ...edits, [entry.key]: Math.max(Number(event.target.value) || 1, 1) })}
+            onChange={(event) =>
+              setEdits({ ...edits, [entry.key]: Math.max(Number(event.target.value) || 1, 1) })
+            }
           />
         </label>
       ))}
-      <Button type="submit" variant="primary" className="sm:col-span-2 sm:justify-self-start" disabled={!Object.keys(edits).length} loading={mutations.saveFairUse.isPending}>
+      <Button
+        type="submit"
+        variant="primary"
+        className="sm:col-span-2 sm:justify-self-start"
+        disabled={!Object.keys(edits).length}
+        loading={mutations.saveFairUse.isPending}
+      >
         {t("save")}
       </Button>
     </form>
@@ -271,7 +335,10 @@ function Abuse() {
             type="button"
             aria-pressed={status === entry}
             onClick={() => setStatus(entry)}
-            className={cn("rounded-full border px-3 py-1 text-sm", status === entry ? "border-primary bg-primary-subtle text-primary" : "border-border")}
+            className={cn(
+              "rounded-full border px-3 py-1 text-sm",
+              status === entry ? "border-primary bg-primary-subtle text-primary" : "border-border",
+            )}
           >
             {t(`abuseStatus.${entry}`)}
           </button>
@@ -284,15 +351,38 @@ function Abuse() {
               <span className="flex flex-wrap items-center gap-2">
                 <Badge>{item.kind}</Badge>
                 <code className="font-mono text-xs">{item.target}</code>
-                <span className="text-xs text-muted">{format.dateTime(new Date(item.created_at), { dateStyle: "short", timeStyle: "short" })}</span>
+                <span className="text-xs text-muted">
+                  {format.dateTime(new Date(item.created_at), {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  })}
+                </span>
               </span>
               <span>{item.reason}</span>
               {item.status === "open" ? (
                 <span className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => mutations.resolveAbuse.mutate({ id: item.id, status: "actioned", note: "" }, { onError: toastError })}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      mutations.resolveAbuse.mutate(
+                        { id: item.id, status: "actioned", note: "" },
+                        { onError: toastError },
+                      )
+                    }
+                  >
                     {t("markActioned")}
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => mutations.resolveAbuse.mutate({ id: item.id, status: "dismissed", note: "" }, { onError: toastError })}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() =>
+                      mutations.resolveAbuse.mutate(
+                        { id: item.id, status: "dismissed", note: "" },
+                        { onError: toastError },
+                      )
+                    }
+                  >
                     {t("dismiss")}
                   </Button>
                 </span>
@@ -330,22 +420,44 @@ function AnnouncementEditor() {
       }}
     >
       <label className="flex items-center gap-2 text-sm font-medium">
-        <input type="checkbox" checked={value.enabled} onChange={(event) => update({ enabled: event.target.checked })} />
+        <input
+          type="checkbox"
+          checked={value.enabled}
+          onChange={(event) => update({ enabled: event.target.checked })}
+        />
         {t("showBar")}
       </label>
       <label className="flex flex-col gap-1 text-sm font-medium">
         {t("messageEn")}
-        <Input value={value.message_en} maxLength={200} onChange={(event) => update({ message_en: event.target.value })} />
+        <Input
+          value={value.message_en}
+          maxLength={200}
+          onChange={(event) => update({ message_en: event.target.value })}
+        />
       </label>
       <label className="flex flex-col gap-1 text-sm font-medium">
         {t("messageUr")}
-        <Input value={value.message_ur} maxLength={200} dir="rtl" onChange={(event) => update({ message_ur: event.target.value })} />
+        <Input
+          value={value.message_ur}
+          maxLength={200}
+          dir="rtl"
+          onChange={(event) => update({ message_ur: event.target.value })}
+        />
       </label>
       <label className="flex flex-col gap-1 text-sm font-medium">
         {t("href")}
-        <Input value={value.href} dir="ltr" onChange={(event) => update({ href: event.target.value })} />
+        <Input
+          value={value.href}
+          dir="ltr"
+          onChange={(event) => update({ href: event.target.value })}
+        />
       </label>
-      <Button type="submit" variant="primary" className="self-start" loading={mutations.saveAnnouncement.isPending}>
+      <Button
+        type="submit"
+        variant="primary"
+        className="self-start"
+        loading={mutations.saveAnnouncement.isPending}
+      >
         {t("save")}
       </Button>
     </form>
@@ -372,7 +484,12 @@ export function AdminPage() {
             aria-selected={tab === entry}
             data-admin-tab={entry}
             onClick={() => setTab(entry)}
-            className={cn("rounded-full border px-3 py-1.5 text-sm", tab === entry ? "border-primary bg-primary-subtle text-primary" : "border-border hover:border-primary/50")}
+            className={cn(
+              "rounded-full border px-3 py-1.5 text-sm",
+              tab === entry
+                ? "border-primary bg-primary-subtle text-primary"
+                : "border-border hover:border-primary/50",
+            )}
           >
             {t(`tab.${entry}`)}
           </button>

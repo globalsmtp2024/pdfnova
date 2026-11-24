@@ -29,13 +29,22 @@ function Runs({ id }: { id: string }) {
       {runs.data.map((run) => (
         <li key={run.id} className="flex flex-wrap items-center justify-between gap-2 p-2">
           <span className="flex items-center gap-2">
-            <Badge tone={run.status === "succeeded" ? "success" : run.status === "failed" ? "danger" : "primary"}>
+            <Badge
+              tone={
+                run.status === "succeeded"
+                  ? "success"
+                  : run.status === "failed"
+                    ? "danger"
+                    : "primary"
+              }
+            >
               {t(`runStatus.${run.status}`)}
             </Badge>
             <span className="text-xs text-muted">{t("files", { count: run.files })}</span>
           </span>
           <span className="text-xs text-muted">
-            {run.message} · {format.dateTime(new Date(run.created_at), { dateStyle: "short", timeStyle: "short" })}
+            {run.message} ·{" "}
+            {format.dateTime(new Date(run.created_at), { dateStyle: "short", timeStyle: "short" })}
           </span>
         </li>
       ))}
@@ -112,7 +121,12 @@ export function SchedulesPage() {
         <h2 className="font-display text-lg font-semibold sm:col-span-2">{t("addTitle")}</h2>
         <label className="flex flex-col gap-1 text-sm font-medium">
           {t("name")}
-          <Input value={name} onChange={(event) => setName(event.target.value)} maxLength={120} data-schedule-name />
+          <Input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            maxLength={120}
+            data-schedule-name
+          />
         </label>
         <label className="flex flex-col gap-1 text-sm font-medium">
           {t("workflow")}
@@ -165,7 +179,9 @@ export function SchedulesPage() {
                 min={0}
                 max={23}
                 value={hour}
-                onChange={(event) => setHour(Math.min(Math.max(Number(event.target.value) || 0, 0), 23))}
+                onChange={(event) =>
+                  setHour(Math.min(Math.max(Number(event.target.value) || 0, 0), 23))
+                }
               />
             </label>
           </div>
@@ -200,7 +216,13 @@ export function SchedulesPage() {
             ))}
           </select>
         </label>
-        <Button type="submit" variant="primary" className="self-end sm:col-span-2 sm:justify-self-start" loading={mutations.create.isPending} data-schedule-create>
+        <Button
+          type="submit"
+          variant="primary"
+          className="self-end sm:col-span-2 sm:justify-self-start"
+          loading={mutations.create.isPending}
+          data-schedule-create
+        >
           {t("create")}
         </Button>
       </form>
@@ -210,24 +232,36 @@ export function SchedulesPage() {
       ) : schedules.data && schedules.data.length ? (
         <ul className="flex flex-col gap-4">
           {schedules.data.map((schedule) => (
-            <li key={schedule.id} className="flex flex-col gap-3 rounded-(--radius-card) border border-border bg-surface p-4">
+            <li
+              key={schedule.id}
+              className="flex flex-col gap-3 rounded-(--radius-card) border border-border bg-surface p-4"
+            >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="flex flex-col">
                   <span className="font-medium">{schedule.name}</span>
                   <span className="text-xs text-muted">
                     {t(schedule.frequency)}
-                    {schedule.frequency !== "hourly" ? ` · ${String(schedule.hour_utc).padStart(2, "0")}:00 UTC` : ""}
+                    {schedule.frequency !== "hourly"
+                      ? ` · ${String(schedule.hour_utc).padStart(2, "0")}:00 UTC`
+                      : ""}
                     {schedule.next_run_at
                       ? ` · ${t("nextRun", { time: format.dateTime(new Date(schedule.next_run_at), { dateStyle: "short", timeStyle: "short" }) })}`
                       : ` · ${t("paused")}`}
                   </span>
-                  {schedule.last_status ? <span className="text-xs text-muted">{schedule.last_status}</span> : null}
+                  {schedule.last_status ? (
+                    <span className="text-xs text-muted">{schedule.last_status}</span>
+                  ) : null}
                 </span>
                 <span className="flex items-center gap-2">
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => mutations.runNow.mutate(schedule.id, { onSuccess: () => toast.success(t("started")), onError: toastError })}
+                    onClick={() =>
+                      mutations.runNow.mutate(schedule.id, {
+                        onSuccess: () => toast.success(t("started")),
+                        onError: toastError,
+                      })
+                    }
                   >
                     <Play aria-hidden />
                     {t("runNow")}
@@ -257,12 +291,21 @@ export function SchedulesPage() {
                   >
                     {schedule.enabled ? t("pause") : t("resume")}
                   </Button>
-                  <Button size="sm" variant="ghost" aria-label={t("delete")} onClick={() => mutations.remove.mutate(schedule.id, { onError: toastError })}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    aria-label={t("delete")}
+                    onClick={() => mutations.remove.mutate(schedule.id, { onError: toastError })}
+                  >
                     <Trash2 aria-hidden />
                   </Button>
                 </span>
               </div>
-              <button type="button" className="self-start text-sm text-primary underline" onClick={() => setOpen(open === schedule.id ? null : schedule.id)}>
+              <button
+                type="button"
+                className="self-start text-sm text-primary underline"
+                onClick={() => setOpen(open === schedule.id ? null : schedule.id)}
+              >
                 {open === schedule.id ? t("hideRuns") : t("showRuns")}
               </button>
               {open === schedule.id ? <Runs id={schedule.id} /> : null}

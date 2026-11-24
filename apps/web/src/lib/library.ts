@@ -77,7 +77,10 @@ export function useLibraryMutations(teamId: string | null = null) {
     teamId,
     createFolder: useMutation({
       mutationFn: (input: { name: string; parent_id: string | null }) =>
-        apiJson<LibraryFolder>(scoped("/api/v1/library/folders", teamId), { method: "POST", json: input }),
+        apiJson<LibraryFolder>(scoped("/api/v1/library/folders", teamId), {
+          method: "POST",
+          json: input,
+        }),
       onSuccess: refresh,
     }),
     renameFolder: useMutation({
@@ -90,7 +93,9 @@ export function useLibraryMutations(teamId: string | null = null) {
     }),
     deleteFolder: useMutation({
       mutationFn: (id: string) =>
-        apiJson<{ trashed_files: number }>(scoped(`/api/v1/library/folders/${id}`, teamId), { method: "DELETE" }),
+        apiJson<{ trashed_files: number }>(scoped(`/api/v1/library/folders/${id}`, teamId), {
+          method: "DELETE",
+        }),
       onSuccess: refresh,
     }),
     updateFile: useMutation({
@@ -102,7 +107,10 @@ export function useLibraryMutations(teamId: string | null = null) {
         move?: boolean;
       }) => {
         const { id, ...body } = input;
-        return apiJson<LibraryFile>(scoped(`/api/v1/library/files/${id}`, teamId), { method: "PATCH", json: body });
+        return apiJson<LibraryFile>(scoped(`/api/v1/library/files/${id}`, teamId), {
+          method: "PATCH",
+          json: body,
+        });
       },
       onSuccess: refresh,
     }),
@@ -113,17 +121,22 @@ export function useLibraryMutations(teamId: string | null = null) {
     }),
     restoreFile: useMutation({
       mutationFn: (id: string) =>
-        apiJson<LibraryFile>(scoped(`/api/v1/library/files/${id}/restore`, teamId), { method: "POST" }),
+        apiJson<LibraryFile>(scoped(`/api/v1/library/files/${id}/restore`, teamId), {
+          method: "POST",
+        }),
       onSuccess: refresh,
     }),
     deleteForever: useMutation({
       mutationFn: async (id: string) => {
-        await apiFetch(scoped(`/api/v1/library/files/${id}/permanent`, teamId), { method: "DELETE" });
+        await apiFetch(scoped(`/api/v1/library/files/${id}/permanent`, teamId), {
+          method: "DELETE",
+        });
       },
       onSuccess: refresh,
     }),
     emptyTrash: useMutation({
-      mutationFn: () => apiJson<{ deleted: number }>(scoped("/api/v1/library/trash", teamId), { method: "DELETE" }),
+      mutationFn: () =>
+        apiJson<{ deleted: number }>(scoped("/api/v1/library/trash", teamId), { method: "DELETE" }),
       onSuccess: refresh,
     }),
     upload: useMutation({

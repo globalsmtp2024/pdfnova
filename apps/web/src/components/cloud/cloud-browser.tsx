@@ -45,13 +45,17 @@ export function CloudBrowser({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        title={mode === "file" ? t("pickFile", { service: label }) : t("pickFolder", { service: label })}
+        title={
+          mode === "file" ? t("pickFile", { service: label }) : t("pickFolder", { service: label })
+        }
         data-cloud-browser
       >
         <nav aria-label={t("location")} className="flex flex-wrap items-center gap-1 text-sm">
           {trail.map((crumb, index) => (
             <span key={`${crumb.id}-${index}`} className="flex items-center gap-1">
-              {index > 0 ? <ChevronRight className="size-3 text-muted rtl:rotate-180" aria-hidden /> : null}
+              {index > 0 ? (
+                <ChevronRight className="size-3 text-muted rtl:rotate-180" aria-hidden />
+              ) : null}
               <button
                 type="button"
                 className="text-primary underline"
@@ -63,7 +67,10 @@ export function CloudBrowser({
           ))}
         </nav>
         <div className="relative">
-          <Search className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
+          <Search
+            className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted"
+            aria-hidden
+          />
           <Input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -86,7 +93,9 @@ export function CloudBrowser({
                   <button
                     type="button"
                     className="flex w-full items-center gap-2 px-3 py-2 text-start text-sm hover:bg-surface-muted"
-                    onClick={() => (entry.is_folder ? enter(entry) : onPick({ id: entry.id, name: entry.name }))}
+                    onClick={() =>
+                      entry.is_folder ? enter(entry) : onPick({ id: entry.id, name: entry.name })
+                    }
                     disabled={busy}
                     data-cloud-entry={entry.name}
                   >
@@ -97,7 +106,9 @@ export function CloudBrowser({
                     )}
                     <span className="min-w-0 flex-1 truncate">{entry.name}</span>
                     {entry.size !== null ? (
-                      <span className="text-xs text-muted tabular-nums">{formatBytes(entry.size)}</span>
+                      <span className="text-xs text-muted tabular-nums">
+                        {formatBytes(entry.size)}
+                      </span>
                     ) : null}
                   </button>
                 </li>

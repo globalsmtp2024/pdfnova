@@ -180,8 +180,8 @@ export default async function ApiReferencePage({ params }: PageProps<"/[locale]/
             <Heading id="scopes">Key scopes</Heading>
             <p className="text-muted">
               Choose what a key may do when you create it. A key without a needed scope receives a
-              403 response. Keys can never change your account settings or create other keys.
-              Write scopes include the matching read scope.
+              403 response. Keys can never change your account settings or create other keys. Write
+              scopes include the matching read scope.
             </p>
             <CodeBlock
               samples={[

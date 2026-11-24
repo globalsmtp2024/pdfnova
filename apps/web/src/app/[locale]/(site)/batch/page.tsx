@@ -4,7 +4,9 @@ import { getTranslations } from "next-intl/server";
 import { BatchRunner } from "@/components/tools/batch-runner";
 import { initPage, pageMetadata } from "@/lib/page";
 
-export async function generateMetadata({ params }: PageProps<"/[locale]/batch">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]/batch">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "batch" });
   return pageMetadata(locale, "/batch", t("title"), t("subtitle"));

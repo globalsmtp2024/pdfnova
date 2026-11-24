@@ -1,6 +1,22 @@
 "use client";
 
-import { Activity, CalendarClock, Check, Copy, FileClock, FolderHeart, KeyRound, Layers, LogIn, PenLine, ShieldAlert, ShieldCheck, Users, Webhook, Workflow } from "lucide-react";
+import {
+  Activity,
+  CalendarClock,
+  Check,
+  Copy,
+  FileClock,
+  FolderHeart,
+  KeyRound,
+  Layers,
+  LogIn,
+  PenLine,
+  ShieldAlert,
+  ShieldCheck,
+  Users,
+  Webhook,
+  Workflow,
+} from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState, type FormEvent, type ReactNode } from "react";
 
@@ -168,7 +184,9 @@ function ApiKeysPanel() {
                 checked={scopes.includes(scope)}
                 onChange={(event) =>
                   setScopes(
-                    event.target.checked ? [...scopes, scope] : scopes.filter((entry) => entry !== scope),
+                    event.target.checked
+                      ? [...scopes, scope]
+                      : scopes.filter((entry) => entry !== scope),
                   )
                 }
               />

@@ -1,6 +1,15 @@
 "use client";
 
-import { CalendarDays, CheckSquare, PenLine, Plus, Signature, TextCursorInput, Trash2, Type } from "lucide-react";
+import {
+  CalendarDays,
+  CheckSquare,
+  PenLine,
+  Plus,
+  Signature,
+  TextCursorInput,
+  Trash2,
+  Type,
+} from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
@@ -16,7 +25,12 @@ import { asLocalFile, useCreateSignRequest } from "@/lib/esign";
 import { cn } from "@/lib/utils";
 
 type SignKind = "signature" | "initials" | "date" | "text" | "checkbox";
-type SignField = PlacedBox & { kind: SignKind; recipient: number; required: boolean; label: string };
+type SignField = PlacedBox & {
+  kind: SignKind;
+  recipient: number;
+  required: boolean;
+  label: string;
+};
 type Signer = { name: string; email: string };
 
 const PALETTE = ["#5B4BFF", "#E5484D", "#12A594", "#F5A524", "#8E4EC6", "#0091FF"];
@@ -89,7 +103,10 @@ export function EsignNew() {
           title,
           message,
           expires_days: days,
-          recipients: signers.map((signer) => ({ name: signer.name.trim(), email: signer.email.trim() })),
+          recipients: signers.map((signer) => ({
+            name: signer.name.trim(),
+            email: signer.email.trim(),
+          })),
           fields: fields.map((field) => ({
             recipient: field.recipient,
             kind: field.kind,
@@ -123,7 +140,9 @@ export function EsignNew() {
               aria-current={step === index + 1 ? "step" : undefined}
               className={cn(
                 "rounded-full px-3 py-1",
-                step === index + 1 ? "bg-primary text-primary-foreground" : "bg-surface-muted text-muted",
+                step === index + 1
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-surface-muted text-muted",
               )}
             >
               {index + 1}. {t(`step.${name}`)}
@@ -146,7 +165,11 @@ export function EsignNew() {
           {file ? <p className="text-sm text-muted">{file.name}</p> : null}
           <label className="flex flex-col gap-1.5 text-sm font-medium">
             {t("documentTitle")}
-            <Input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={200} />
+            <Input
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              maxLength={200}
+            />
           </label>
           <label className="flex flex-col gap-1.5 text-sm font-medium">
             {t("messageLabel")}
@@ -165,7 +188,9 @@ export function EsignNew() {
               min={1}
               max={60}
               value={days}
-              onChange={(event) => setDays(Math.min(Math.max(Number(event.target.value) || 14, 1), 60))}
+              onChange={(event) =>
+                setDays(Math.min(Math.max(Number(event.target.value) || 14, 1), 60))
+              }
             />
           </label>
         </section>
@@ -185,7 +210,11 @@ export function EsignNew() {
                 <Input
                   value={signer.name}
                   onChange={(event) =>
-                    setSigners(signers.map((entry, i) => (i === index ? { ...entry, name: event.target.value } : entry)))
+                    setSigners(
+                      signers.map((entry, i) =>
+                        i === index ? { ...entry, name: event.target.value } : entry,
+                      ),
+                    )
                   }
                   data-esign-signer-name
                 />
@@ -196,7 +225,11 @@ export function EsignNew() {
                   type="email"
                   value={signer.email}
                   onChange={(event) =>
-                    setSigners(signers.map((entry, i) => (i === index ? { ...entry, email: event.target.value } : entry)))
+                    setSigners(
+                      signers.map((entry, i) =>
+                        i === index ? { ...entry, email: event.target.value } : entry,
+                      ),
+                    )
                   }
                   data-esign-signer-email
                 />
@@ -212,7 +245,11 @@ export function EsignNew() {
                     setFields(
                       fields
                         .filter((field) => field.recipient !== index)
-                        .map((field) => (field.recipient > index ? { ...field, recipient: field.recipient - 1 } : field)),
+                        .map((field) =>
+                          field.recipient > index
+                            ? { ...field, recipient: field.recipient - 1 }
+                            : field,
+                        ),
                     );
                     setActive(0);
                   }}
@@ -268,7 +305,8 @@ export function EsignNew() {
               colorFor={(field) => PALETTE[field.recipient % PALETTE.length]}
               renderLabel={(field) => (
                 <span className="truncate">
-                  {t(`field.${field.kind}`)} · {signers[field.recipient]?.name || field.recipient + 1}
+                  {t(`field.${field.kind}`)} ·{" "}
+                  {signers[field.recipient]?.name || field.recipient + 1}
                 </span>
               )}
             />
@@ -287,7 +325,10 @@ export function EsignNew() {
                     active === index ? "border-primary bg-primary-subtle" : "border-border",
                   )}
                 >
-                  <span className="size-3 rounded-full" style={{ background: PALETTE[index % PALETTE.length] }} />
+                  <span
+                    className="size-3 rounded-full"
+                    style={{ background: PALETTE[index % PALETTE.length] }}
+                  />
                   {signer.name || signer.email || index + 1}
                 </button>
               ))}
@@ -304,7 +345,9 @@ export function EsignNew() {
                   onClick={() => setKind(id)}
                   className={cn(
                     "flex h-10 items-center justify-center rounded-lg border",
-                    kind === id ? "border-primary bg-primary-subtle" : "border-border hover:bg-surface-muted",
+                    kind === id
+                      ? "border-primary bg-primary-subtle"
+                      : "border-border hover:bg-surface-muted",
                   )}
                 >
                   <Icon className="size-4" aria-hidden />
@@ -319,7 +362,13 @@ export function EsignNew() {
                     type="checkbox"
                     checked={selected.required}
                     onChange={(event) =>
-                      setFields(fields.map((field) => (field.id === selected.id ? { ...field, required: event.target.checked } : field)))
+                      setFields(
+                        fields.map((field) =>
+                          field.id === selected.id
+                            ? { ...field, required: event.target.checked }
+                            : field,
+                        ),
+                      )
                     }
                   />
                   {t("required")}
@@ -338,7 +387,9 @@ export function EsignNew() {
                 </Button>
               </div>
             ) : null}
-            {!everyoneHasField ? <p className="text-sm text-warning-strong">{t("fieldsProblem")}</p> : null}
+            {!everyoneHasField ? (
+              <p className="text-sm text-warning-strong">{t("fieldsProblem")}</p>
+            ) : null}
           </div>
         </section>
       ) : null}

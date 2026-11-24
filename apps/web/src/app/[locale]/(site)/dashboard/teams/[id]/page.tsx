@@ -6,7 +6,11 @@ import { TeamDetailView } from "@/components/teams/team-detail";
 
 export const metadata: Metadata = { title: "Team", robots: { index: false } };
 
-async function TeamContent({ params }: { params: PageProps<"/[locale]/dashboard/teams/[id]">["params"] }) {
+async function TeamContent({
+  params,
+}: {
+  params: PageProps<"/[locale]/dashboard/teams/[id]">["params"];
+}) {
   const { locale, id } = await params;
   setRequestLocale(locale);
   return <TeamDetailView id={id} />;

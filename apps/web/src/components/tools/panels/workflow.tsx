@@ -116,23 +116,25 @@ export function useWorkflowPanel(files: LocalFile[]): ToolPanelView {
     seed ? layout(seed.nodes, seed.edges) : {},
   );
   const [optionText, setOptionText] = useState<Record<string, string>>(() =>
-    seed ? Object.fromEntries(seed.nodes.map((node) => [node.id, JSON.stringify(node.options, null, 2)])) : {},
+    seed
+      ? Object.fromEntries(
+          seed.nodes.map((node) => [node.id, JSON.stringify(node.options, null, 2)]),
+        )
+      : {},
   );
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [saved, setSaved] = useState<SavedWorkflow[]>([]);
   const [saveName, setSaveName] = useState("");
 
   const loadGraph = useCallback(
-    (
-      graphNodes: GraphNode[],
-      graphEdges: GraphEdge[],
-      stored?: Record<string, Position2D>,
-    ) => {
+    (graphNodes: GraphNode[], graphEdges: GraphEdge[], stored?: Record<string, Position2D>) => {
       setNodes(graphNodes);
       setEdges(graphEdges);
       setPositions(stored ?? layout(graphNodes, graphEdges));
       setOptionText(
-        Object.fromEntries(graphNodes.map((node) => [node.id, JSON.stringify(node.options, null, 2)])),
+        Object.fromEntries(
+          graphNodes.map((node) => [node.id, JSON.stringify(node.options, null, 2)]),
+        ),
       );
       setSelectedId(null);
     },
@@ -213,7 +215,9 @@ export function useWorkflowPanel(files: LocalFile[]): ToolPanelView {
 
   const connect = (connection: Connection) => {
     if (!connection.source || !connection.target || connection.source === INPUT_ID) return;
-    if (edges.some((edge) => edge.source === connection.source && edge.target === connection.target))
+    if (
+      edges.some((edge) => edge.source === connection.source && edge.target === connection.target)
+    )
       return;
     setEdges([...edges, { source: connection.source, target: connection.target }]);
   };
@@ -375,7 +379,10 @@ export function useWorkflowPanel(files: LocalFile[]): ToolPanelView {
       </section>
 
       {selected ? (
-        <fieldset className="flex flex-col gap-2 rounded-xl border border-border p-3" data-workflow-selected>
+        <fieldset
+          className="flex flex-col gap-2 rounded-xl border border-border p-3"
+          data-workflow-selected
+        >
           <legend className="px-1 text-sm font-medium">{titleOf(selected.tool)}</legend>
           <label className="flex flex-col gap-1 text-sm font-medium">
             {t("optionsJson")}
@@ -472,7 +479,11 @@ export function useWorkflowPanel(files: LocalFile[]): ToolPanelView {
                     teamMutations.saveWorkflow.mutate(
                       {
                         name: saveName.trim(),
-                        nodes: payload.nodes.map(({ id, tool, options }) => ({ id, tool, options })),
+                        nodes: payload.nodes.map(({ id, tool, options }) => ({
+                          id,
+                          tool,
+                          options,
+                        })),
                         edges,
                       },
                       {
@@ -505,7 +516,13 @@ export function useWorkflowPanel(files: LocalFile[]): ToolPanelView {
             aria-label={t("saveName")}
             maxLength={60}
           />
-          <Button type="button" size="sm" variant="outline" onClick={saveCurrent} disabled={!saveName.trim() || !nodes.length}>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={saveCurrent}
+            disabled={!saveName.trim() || !nodes.length}
+          >
             <Save aria-hidden />
             {t("save")}
           </Button>
@@ -544,7 +561,10 @@ export function useWorkflowPanel(files: LocalFile[]): ToolPanelView {
     problem,
     summary:
       nodes.length && !problem && files.length
-        ? t("summary", { steps: nodes.length, outputs: nodes.filter((node) => !edges.some((edge) => edge.source === node.id)).length })
+        ? t("summary", {
+            steps: nodes.length,
+            outputs: nodes.filter((node) => !edges.some((edge) => edge.source === node.id)).length,
+          })
         : null,
   };
 }

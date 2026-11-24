@@ -71,7 +71,11 @@ export function useCreateFormPanel(files: LocalFile[]): ToolPanelView {
     setFields(fields.map((field) => (field.id === selected.id ? { ...field, ...patch } : field)));
   };
 
-  const create = (kind: string, page: number, box: { x: number; y: number; width: number; height: number }) => {
+  const create = (
+    kind: string,
+    page: number,
+    box: { x: number; y: number; width: number; height: number },
+  ) => {
     const type = kind as FormKind;
     const count = fields.filter((field) => field.kind === type).length + 1;
     const taken = new Set(fields.map((field) => field.name));
@@ -146,7 +150,9 @@ export function useCreateFormPanel(files: LocalFile[]): ToolPanelView {
           onClick={() => setPlacing(null)}
           className={cn(
             "flex h-10 items-center justify-center rounded-lg border",
-            placing === null ? "border-primary bg-primary-subtle" : "border-border hover:bg-surface-muted",
+            placing === null
+              ? "border-primary bg-primary-subtle"
+              : "border-border hover:bg-surface-muted",
           )}
         >
           <MousePointer2 className="size-4" aria-hidden />
@@ -165,7 +171,9 @@ export function useCreateFormPanel(files: LocalFile[]): ToolPanelView {
             }}
             className={cn(
               "flex h-10 items-center justify-center rounded-lg border",
-              placing === id ? "border-primary bg-primary-subtle" : "border-border hover:bg-surface-muted",
+              placing === id
+                ? "border-primary bg-primary-subtle"
+                : "border-border hover:bg-surface-muted",
             )}
           >
             <Icon className="size-4" aria-hidden />
@@ -211,12 +219,18 @@ export function useCreateFormPanel(files: LocalFile[]): ToolPanelView {
           {selected.kind === "text" || selected.kind === "multiline" ? (
             <label className="flex flex-col gap-1 text-sm font-medium">
               {t("defaultValue")}
-              <Input value={selected.value} onChange={(event) => update({ value: event.target.value })} />
+              <Input
+                value={selected.value}
+                onChange={(event) => update({ value: event.target.value })}
+              />
             </label>
           ) : null}
           <label className="flex flex-col gap-1 text-sm font-medium">
             {t("tooltip")}
-            <Input value={selected.tooltip} onChange={(event) => update({ tooltip: event.target.value })} />
+            <Input
+              value={selected.tooltip}
+              onChange={(event) => update({ tooltip: event.target.value })}
+            />
           </label>
           <label className="flex items-center gap-2 text-sm">
             <input

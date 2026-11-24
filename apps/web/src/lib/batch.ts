@@ -69,7 +69,9 @@ export function useBatchRunner() {
   const cancelled = useRef(false);
 
   const patch = useCallback((key: string, changes: Partial<BatchItem>) => {
-    setItems((current) => current.map((item) => (item.key === key ? { ...item, ...changes } : item)));
+    setItems((current) =>
+      current.map((item) => (item.key === key ? { ...item, ...changes } : item)),
+    );
   }, []);
 
   const add = useCallback((files: File[]) => {
@@ -89,7 +91,8 @@ export function useBatchRunner() {
         const task = await createTask(tool, crypto.randomUUID());
         patch(item.key, { taskId: task.id });
         const upload = await uploadFile(task.id, item.file, {
-          onProgress: (sent, total) => patch(item.key, { progress: total ? (sent / total) * 0.3 : 0 }),
+          onProgress: (sent, total) =>
+            patch(item.key, { progress: total ? (sent / total) * 0.3 : 0 }),
         });
         patch(item.key, { status: "processing", progress: 0.3 });
         await startTask(task.id, options, [upload.id]);
@@ -112,7 +115,12 @@ export function useBatchRunner() {
   );
 
   const runKeys = useCallback(
-    async (keys: string[], tool: string, options: Record<string, unknown>, snapshot: BatchItem[]) => {
+    async (
+      keys: string[],
+      tool: string,
+      options: Record<string, unknown>,
+      snapshot: BatchItem[],
+    ) => {
       cancelled.current = false;
       setRunning(true);
       const queue = snapshot.filter((item) => keys.includes(item.key));
@@ -132,7 +140,9 @@ export function useBatchRunner() {
 
   const start = (tool: string, options: Record<string, unknown>) =>
     runKeys(
-      items.filter((item) => item.status === "queued" || item.status === "failed").map((item) => item.key),
+      items
+        .filter((item) => item.status === "queued" || item.status === "failed")
+        .map((item) => item.key),
       tool,
       options,
       items,
@@ -176,7 +186,10 @@ export async function zipOutputs(items: BatchItem[]): Promise<Blob> {
     }
   }
   const zipped = zipSync(files, { level: 0 });
-  return new Blob([zipped.buffer.slice(zipped.byteOffset, zipped.byteOffset + zipped.byteLength) as ArrayBuffer], {
-    type: "application/zip",
-  });
+  return new Blob(
+    [zipped.buffer.slice(zipped.byteOffset, zipped.byteOffset + zipped.byteLength) as ArrayBuffer],
+    {
+      type: "application/zip",
+    },
+  );
 }
