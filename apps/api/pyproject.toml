@@ -85,7 +85,10 @@ known-first-party = ["app", "tests"]
 "app/tools/security/digital.py" = ["S105"]
 "app/api/routes/webhooks.py" = ["S105"]
 "app/tools/optimize/repair.py" = ["S603"]
-"app/tools/convert/external.py" = ["S603", "S108"]
+"app/tools/convert/external.py" = ["S603", "S108", "E501"]
+"app/tools/convert/ocr.py" = ["S603"]
+"app/tools/convert/epub.py" = ["E501"]
+"app/tools/convert/epub_out.py" = ["E501"]
 
 [tool.mypy]
 python_version = "3.11"

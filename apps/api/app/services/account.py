@@ -40,7 +40,9 @@ class AccountService:
             raise AppError(str(exc), hint="Example: https://my-server.example.com/v1") from exc
         chosen = (model or "").strip()
         if not chosen or len(chosen) > 120 or any(char.isspace() for char in chosen):
-            raise AppError("Enter the model name your server expects.", hint="Example: llama3.1 or gpt-4o-mini")
+            raise AppError(
+                "Enter the model name your server expects.", hint="Example: llama3.1 or gpt-4o-mini"
+            )
         return url, chosen
 
     async def set_ai_key(
@@ -58,7 +60,10 @@ class AccountService:
         cleaned = api_key.strip()
         if provider == "custom":
             if cleaned and (len(cleaned) < 4 or any(char.isspace() for char in cleaned)):
-                raise AppError("This does not look like a valid API key.", hint="Leave it empty for servers without a key.")
+                raise AppError(
+                    "This does not look like a valid API key.",
+                    hint="Leave it empty for servers without a key.",
+                )
             user.ai_base_url, user.ai_model = await self._custom_endpoint(base_url, model)
         else:
             if len(cleaned) < 16 or any(char.isspace() for char in cleaned):

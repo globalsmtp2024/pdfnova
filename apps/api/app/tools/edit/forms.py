@@ -156,7 +156,7 @@ def on_state(field: Any) -> Name:
     for kid in kids:
         appearance = kid.get("/AP")
         if appearance is not None and "/N" in appearance:
-            for key in appearance.N.keys():
+            for key in appearance.N:
                 if str(key) != "/Off":
                     return Name(str(key))
     return Name.Yes

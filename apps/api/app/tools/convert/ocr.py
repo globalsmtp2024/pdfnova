@@ -1,7 +1,7 @@
 import subprocess
 import tempfile
-from functools import lru_cache
 from collections.abc import Sequence
+from functools import lru_cache
 from pathlib import Path
 
 import pikepdf
@@ -47,7 +47,9 @@ def installed_languages() -> tuple[str, ...]:
     if binary is None:
         return ()
     try:
-        result = subprocess.run([binary, "--list-langs"], capture_output=True, text=True, timeout=20, check=True)
+        result = subprocess.run(
+            [binary, "--list-langs"], capture_output=True, text=True, timeout=20, check=True
+        )
     except (subprocess.SubprocessError, OSError):
         return ()
     names = [line.strip() for line in result.stdout.splitlines()[1:] if line.strip()]

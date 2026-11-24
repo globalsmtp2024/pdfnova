@@ -113,7 +113,8 @@ class PdfToHtmlOptions(ToolOptions):
 
 HTML_HEAD = (
     '<!doctype html><html><head><meta charset="utf-8"><title>{title}</title>'
-    "<style>body{{font-family:system-ui,sans-serif;max-width:48rem;margin:2rem auto;padding:0 1rem;line-height:1.5}}"
+    "<style>body{{font-family:system-ui,sans-serif;max-width:48rem;margin:2rem auto;"
+    "padding:0 1rem;line-height:1.5}}"
     "table{{border-collapse:collapse;margin:1rem 0}}td,th{{border:1px solid #888;padding:.3rem .6rem}}"
     "section{{border-top:1px solid #ccc;padding-top:1rem;margin-top:1rem}}</style></head><body>"
 )

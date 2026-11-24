@@ -88,8 +88,8 @@ class BookmarksEditorTool(Tool[BookmarkOptions]):
                     outline.root.clear()
                 stack: list[list[OutlineItem]] = [outline.root]
                 previous_level = 1
-                for title, page, level in entries:
-                    level = min(level, previous_level + 1)
+                for title, page, raw_level in entries:
+                    level = min(raw_level, previous_level + 1)
                     item_node = OutlineItem(title, page)
                     del stack[level:]
                     stack[-1].append(item_node)

@@ -33,6 +33,14 @@ def cache_files_left(work_root: Path, file_ids: list[str]) -> int:
     )
 
 
+def remove_work_directory(work_root: Path, task_id: str) -> None:
+    shutil.rmtree(work_root.resolve() / task_id, ignore_errors=True)
+
+
+def work_directory_exists(work_root: Path, task_id: str) -> bool:
+    return (work_root.resolve() / task_id).exists()
+
+
 async def erase_task_data(
     storage: Storage, work_root: Path, task_id: str, file_ids: list[str]
 ) -> ErasureReport:
@@ -40,13 +48,13 @@ async def erase_task_data(
     report = ErasureReport(0, 0, 0, False)
     for _ in range(ATTEMPTS):
         deleted += await asyncio.to_thread(storage.delete_prefix, task_prefix(task_id))
-        purge_render_cache(work_root, file_ids)
-        shutil.rmtree(work_root.resolve() / task_id, ignore_errors=True)
+        await asyncio.to_thread(purge_render_cache, work_root, file_ids)
+        await asyncio.to_thread(remove_work_directory, work_root, task_id)
         report = ErasureReport(
             deleted_objects=deleted,
             remaining_objects=await asyncio.to_thread(storage.count_prefix, task_prefix(task_id)),
-            remaining_cache_files=cache_files_left(work_root, file_ids),
-            work_directory_left=(work_root.resolve() / task_id).exists(),
+            remaining_cache_files=await asyncio.to_thread(cache_files_left, work_root, file_ids),
+            work_directory_left=await asyncio.to_thread(work_directory_exists, work_root, task_id),
         )
         if report.verified:
             return report

@@ -5,7 +5,7 @@ import uuid
 import zipfile
 from collections import Counter
 from collections.abc import Sequence
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any, Literal
 
 import pypdfium2 as pdfium
@@ -45,7 +45,9 @@ class PdfToEpubOptions(ToolOptions):
     author: str = Field(default="", max_length=200)
 
 
-def page_blocks(item: InputFile, selection: list[int], include_tables: bool, ctx: JobContext[Any]) -> list[Block]:
+def page_blocks(
+    item: InputFile, selection: list[int], include_tables: bool, ctx: JobContext[Any]
+) -> list[Block]:
     blocks: list[Block] = []
     with open_plumber(item) as pdf:
         parsed: list[tuple[int, list[dict[str, Any]], list[Any]]] = []
@@ -100,9 +102,7 @@ def page_blocks(item: InputFile, selection: list[int], include_tables: bool, ctx
     return blocks
 
 
-def split_chapters(
-    item: InputFile, blocks: list[Block], selection: list[int], stem: str
-) -> list[Chapter]:
+def split_chapters(item: InputFile, blocks: list[Block], selection: list[int], stem: str) -> list[Chapter]:
     marks: list[tuple[int, str]] = []
     try:
         with open_pdf(item) as pdf:
@@ -125,7 +125,13 @@ def split_chapters(
             slot = max(index for index, start in enumerate(starts) if start <= block[0])
             chapters[slot][1].append(block)
         return [chapter for chapter in chapters if chapter[1]] or [(stem, blocks)]
-    level = 1 if any(block[1] == "h1" for block in blocks) else 2 if any(block[1] == "h2" for block in blocks) else 0
+    level = (
+        1
+        if any(block[1] == "h1" for block in blocks)
+        else 2
+        if any(block[1] == "h2" for block in blocks)
+        else 0
+    )
     if level:
         heading = f"h{level}"
         chapters = [(stem, [])]
@@ -194,7 +200,7 @@ def build_epub(
     chapters: list[Chapter], title: str, author: str, language: str, rtl: bool, cover: bytes | None
 ) -> bytes:
     identifier = f"urn:uuid:{uuid.uuid4()}"
-    modified = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    modified = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     manifest = [
         '<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',
         '<item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>',
@@ -209,7 +215,9 @@ def build_epub(
             '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta charset="utf-8"/><title>Cover</title></head>'
             '<body style="margin:0;text-align:center"><img src="cover.jpg" alt="Cover" style="max-width:100%"/></body></html>'
         )
-        manifest.append('<item id="cover-image" href="cover.jpg" media-type="image/jpeg" properties="cover-image"/>')
+        manifest.append(
+            '<item id="cover-image" href="cover.jpg" media-type="image/jpeg" properties="cover-image"/>'
+        )
         manifest.append('<item id="cover" href="cover.xhtml" media-type="application/xhtml+xml"/>')
         spine.append('<itemref idref="cover" linear="no"/>')
     nav_items: list[str] = []
@@ -234,7 +242,7 @@ def build_epub(
     files["OEBPS/toc.ncx"] = (
         '<?xml version="1.0" encoding="utf-8"?>\n<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">'
         f'<head><meta name="dtb:uid" content="{identifier}"/></head><docTitle><text>{html.escape(title)}</text></docTitle>'
-        f'<navMap>{"".join(ncx_points)}</navMap></ncx>'
+        f"<navMap>{''.join(ncx_points)}</navMap></ncx>"
     )
     files["OEBPS/style.css"] = STYLE
     creator = f"<dc:creator>{html.escape(author)}</dc:creator>" if author else ""

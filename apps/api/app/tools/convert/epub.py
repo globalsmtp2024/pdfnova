@@ -96,7 +96,9 @@ def extract_epub(source: Path, root: Path) -> set[str]:
                         break
                     copied += len(chunk)
                     if copied > MAX_ENTRY_BYTES:
-                        raise ToolFailedError("This EPUB contains a file that is too large.", code="epub_unsafe")
+                        raise ToolFailedError(
+                            "This EPUB contains a file that is too large.", code="epub_unsafe"
+                        )
                     writer.write(chunk)
             written.add(member.as_posix())
     return written
@@ -117,7 +119,9 @@ def resolve_href(base: str, href: str) -> str | None:
     return None if joined.startswith("..") or joined.startswith("/") else joined
 
 
-def table_of_contents(root: Path, opf_path: str, opf: etree._Element, manifest: dict[str, dict[str, str]]) -> dict[str, str]:
+def table_of_contents(
+    root: Path, opf_path: str, opf: etree._Element, manifest: dict[str, dict[str, str]]
+) -> dict[str, str]:
     titles: dict[str, str] = {}
     nav_item = next((item for item in manifest.values() if "nav" in item.get("properties", "").split()), None)
     if nav_item:
@@ -200,9 +204,15 @@ def sanitize(source: Path, options: EpubToPdfOptions) -> bytes:
             continue
         for attribute in list(element.attrib):
             value = element.attrib[attribute]
-            if attribute.lower().startswith("on") or value.strip().lower().startswith("javascript:"):
-                del element.attrib[attribute]
-            elif attribute.lower() in {"src", "href", "poster", "data"} and REMOTE.match(value) and tag != "a":
+            if (
+                attribute.lower().startswith("on")
+                or value.strip().lower().startswith("javascript:")
+                or (
+                    attribute.lower() in {"src", "href", "poster", "data"}
+                    and REMOTE.match(value)
+                    and tag != "a"
+                )
+            ):
                 del element.attrib[attribute]
         if tag == "link" and REMOTE.match(element.get("href", "")):
             parent = element.getparent()
@@ -217,7 +227,7 @@ def sanitize(source: Path, options: EpubToPdfOptions) -> bytes:
         f"@page{{size:{PAGE_CSS[options.page_size]};margin:{options.margin_mm}mm}}"
         f"body{{font-size:{options.font_size_pt}pt}}img,svg{{max-width:100%;height:auto}}"
     )
-    return lxml_html.tostring(document, encoding="utf-8", doctype="<!doctype html>")
+    return bytes(lxml_html.tostring(document, encoding="utf-8", doctype="<!doctype html>"))
 
 
 class EpubToPdfTool(Tool[EpubToPdfOptions]):
@@ -232,7 +242,7 @@ class EpubToPdfTool(Tool[EpubToPdfOptions]):
 
     def run(self, ctx: JobContext[EpubToPdfOptions]) -> list[OutputFile]:
         options = ctx.options
-        render_options = HtmlToPdfOptions(page_size=options.page_size, margin_mm=options.margin_mm)  # type: ignore[arg-type]
+        render_options = HtmlToPdfOptions(page_size=options.page_size, margin_mm=options.margin_mm)
 
         def handle(item: InputFile, _: int) -> list[OutputFile]:
             root = ctx.scratch_dir / f"epub-{abs(hash(item.path))}"
@@ -244,7 +254,9 @@ class EpubToPdfTool(Tool[EpubToPdfOptions]):
             for number, chapter in enumerate(chapters, start=1):
                 ctx.ensure_not_cancelled()
                 ctx.report(number / (len(chapters) + 1), f"Rendering chapter {number} of {len(chapters)}")
-                staged = (root / Path(*PurePosixPath(chapter.path).parts)).with_name(f"__render-{number}.html")
+                staged = (root / Path(*PurePosixPath(chapter.path).parts)).with_name(
+                    f"__render-{number}.html"
+                )
                 staged.write_bytes(sanitize(root / Path(*PurePosixPath(chapter.path).parts), options))
                 rendered = ctx.scratch_dir / f"chapter-{abs(hash(item.path))}-{number}.pdf"
                 render_html(staged, rendered, render_options, ctx.scratch_dir)

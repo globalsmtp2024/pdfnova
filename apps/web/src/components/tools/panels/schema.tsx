@@ -102,7 +102,7 @@ export function useSchemaPanel(
   schema?: Record<string, unknown>,
 ): ToolPanelView {
   const t = useTranslations("schemaFields");
-  const root = (schema ?? {}) as JsonSchema;
+  const root = useMemo(() => (schema ?? {}) as JsonSchema, [schema]);
   const fields = useMemo(() => {
     const properties = root.properties ?? {};
     return Object.entries(properties)

@@ -121,9 +121,7 @@ async def test_ai_key(
     body: AiKeyTest, request: Request, user: CurrentUser, service: AccountDep, container: ContainerDep
 ) -> AiKeyTestResult:
     await limit_by_ip(request, container, "ai-key-test", limit=10, window=60)
-    ok, message = await service.test_ai_key(
-        user, body.provider, body.api_key, body.base_url, body.model
-    )
+    ok, message = await service.test_ai_key(user, body.provider, body.api_key, body.base_url, body.model)
     return AiKeyTestResult(ok=ok, message=message)
 
 

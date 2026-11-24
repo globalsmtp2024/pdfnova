@@ -109,5 +109,5 @@ Phase 7
 - [x] 13 Performance code-level pass
 - [x] 14 Security code-level recheck
 - [x] 15 Fix STATUS.md (Live, Coming soon, Unverified)
-- [ ] 16 Clean ruff and mypy; eslint warnings in touched files
+- [x] 16 Clean ruff and mypy; eslint warnings in touched files
 - [ ] 17 FINAL CHECK (typecheck, i18n:check, production build, smoke all tools)

@@ -37,7 +37,7 @@ TEXT_SPEC = InputSpec(
     max_files=20,
     accepted_kinds=frozenset({FileKind.TEXT, FileKind.MARKDOWN, FileKind.CSV}),
 )
-BULLETS = ("•", "◦", "▪", "‣", "-", "*", "–")
+BULLETS = ("•", "◦", "▪", "‣", "-", "*", "\u2013")
 
 
 def decode_text(path: Path) -> str:
@@ -132,8 +132,8 @@ def markdown_lines(reader: PdfReader, index: int) -> list[tuple[float, str]]:
 
 def to_markdown(lines: list[tuple[float, str]], body_size: float) -> list[str]:
     output: list[str] = []
-    for size, text in lines:
-        text = re.sub(r"\s+", " ", text).strip()
+    for size, raw_text in lines:
+        text = re.sub(r"\s+", " ", raw_text).strip()
         if not text:
             continue
         ratio = size / body_size if body_size else 1.0

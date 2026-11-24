@@ -3,6 +3,7 @@ from typing import Any
 
 from pydantic import Field
 
+from app.files.sniff import FileKind
 from app.tools.base import (
     InputFile,
     InputFileInfo,
@@ -12,7 +13,6 @@ from app.tools.base import (
     ToolCategory,
     ToolOptions,
 )
-from app.files.sniff import FileKind
 from app.tools.convert.ocr import LANGUAGE_PATTERN, OcrOptions, OcrPdfTool
 from app.tools.convert.office_more import PdfToPowerPointOptions, PdfToPowerPointTool
 from app.tools.convert.office_out import (
@@ -117,4 +117,3 @@ class PdfToExcelOcrTool(OcrConvertTool):
     summary = "Recognise the text of a scanned PDF first, then pull its tables into an Excel workbook."
     converter = PdfToExcelTool()
     converter_options = PdfToExcelOptions
-

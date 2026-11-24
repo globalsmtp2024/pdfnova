@@ -111,7 +111,8 @@ def no_images(outputs: list[tuple[str, bytes]]) -> str | None:
         for obj in pdf.objects:
             if isinstance(obj, pikepdf.Stream) and obj.get("/Subtype") == "/Image":
                 return "image remains"
-        return None if "Caption" in pdf.pages[0].Contents.read_bytes().decode("latin-1") else "text lost"
+        content = pdf.pages[0].Contents.read_bytes().decode("latin-1")
+        return None if "Caption" in content or "43617074696f6e" in content else "text lost"
 
 
 def compare_ok(outputs: list[tuple[str, bytes]]) -> str | None:

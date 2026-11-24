@@ -130,7 +130,7 @@ class GrayscaleTool(Tool[GrayscaleOptions]):
     def run(self, ctx: JobContext[GrayscaleOptions]) -> list[OutputFile]:
         options = ctx.options
 
-        def handle(item: InputFile, _: int) -> list[OutputFile]:
+        def handle(item: InputFile, _index: int) -> list[OutputFile]:
             with open_pdf(item) as pdf:
                 if options.convert_vector_colors:
                     for page in pdf.pages:
@@ -194,7 +194,7 @@ class RemoveAnnotationsTool(Tool[RemoveAnnotationsOptions]):
         if not (options.remove_comments or options.remove_links or options.remove_form_fields):
             raise ToolInputError("Choose at least one kind of annotation to remove.")
 
-        def handle(item: InputFile, _: int) -> list[OutputFile]:
+        def handle(item: InputFile, _index: int) -> list[OutputFile]:
             with open_pdf(item) as pdf:
                 strip_annotations(pdf, options)
                 target = ctx.output_path(pdf_name(f"{item.stem}-clean", "clean"))
@@ -221,7 +221,7 @@ class RemoveBlankPagesTool(Tool[RemoveBlankOptions]):
     def run(self, ctx: JobContext[RemoveBlankOptions]) -> list[OutputFile]:
         options = ctx.options
 
-        def handle(item: InputFile, _: int) -> list[OutputFile]:
+        def handle(item: InputFile, _index: int) -> list[OutputFile]:
             with open_pdf(item) as source:
                 count = len(source.pages)
                 keep: list[int] = []
@@ -255,7 +255,7 @@ class ReversePagesTool(Tool[ReverseOptions]):
     seconds_per_page = 0.002
 
     def run(self, ctx: JobContext[ReverseOptions]) -> list[OutputFile]:
-        def handle(item: InputFile, _: int) -> list[OutputFile]:
+        def handle(item: InputFile, _index: int) -> list[OutputFile]:
             with open_pdf(item) as source:
                 result, _ = new_pdf_from_pages(source, list(range(len(source.pages)))[::-1])
                 with result:
@@ -280,7 +280,7 @@ class LinearizeTool(Tool[LinearizeOptions]):
     seconds_per_page = 0.003
 
     def run(self, ctx: JobContext[LinearizeOptions]) -> list[OutputFile]:
-        def handle(item: InputFile, _: int) -> list[OutputFile]:
+        def handle(item: InputFile, _index: int) -> list[OutputFile]:
             with open_pdf(item) as pdf:
                 target = ctx.output_path(pdf_name(f"{item.stem}-web", "web"))
                 save_pdf(pdf, target, linearize=True)

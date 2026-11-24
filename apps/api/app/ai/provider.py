@@ -92,7 +92,11 @@ class HttpProvider:
                     "generationConfig": {"maxOutputTokens": max_tokens},
                 },
             )
-        url = chat_completions_url(self.base_url) if self.name == "custom" else f"{self.base_url}/v1/chat/completions"
+        url = (
+            chat_completions_url(self.base_url)
+            if self.name == "custom"
+            else f"{self.base_url}/v1/chat/completions"
+        )
         headers = {"authorization": f"Bearer {self.key}"} if self.key else {}
         return client.post(
             url,

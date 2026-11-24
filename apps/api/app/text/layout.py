@@ -88,10 +88,7 @@ def render_blocks(
                     align="left",
                 )
                 stamp = overlay.text_stamp(line, style)
-                if paragraph_is_rtl(line):
-                    x = width - margin - stamp.width
-                else:
-                    x = margin + block.indent
+                x = width - margin - stamp.width if paragraph_is_rtl(line) else margin + block.indent
                 overlay.place(pdf.pages[-1], stamp, translate(x, cursor - stamp.height * 0.22))
         cursor -= block.space_after
     overlay.finalize()

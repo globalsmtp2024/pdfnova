@@ -14,3 +14,14 @@ No tool is blocked by a missing binary or a code failure. Office to PDF, OCR, HT
 | Tool | Slugs | Error | Fix |
 |---|---|---|---|
 | PDF to Word, PowerPoint, Excel (OCR) | `pdf-to-word-ocr`, `pdf-to-powerpoint-ocr`, `pdf-to-excel-ocr` | `Text recognition is not available on this server yet.` (no `tesseract` on this Windows machine) | Install Tesseract with the languages you need, run `python scripts/smoke_tools.py pdf-to-word-ocr,pdf-to-powerpoint-ocr,pdf-to-excel-ocr`, then add the three slugs to `apps/web/src/config/live.ts`. The language list comes from `GET /api/v1/ocr/languages`. |
+
+## Final smoke run (item 17)
+
+| Tool | Slugs | Error | Cause |
+|---|---|---|---|
+| Word, Excel, PowerPoint to PDF; OCR | `word-to-pdf`, `excel-to-pdf`, `powerpoint-to-pdf`, `ocr` | `Office conversion is not available on this server yet.` / `Text recognition is not available on this server yet.` | No LibreOffice or Tesseract on this Windows machine. They passed earlier on Linux; Docker images install both. |
+| OCR conversions | `pdf-to-word-ocr`, `pdf-to-powerpoint-ocr`, `pdf-to-excel-ocr` | `Text recognition is not available on this server yet.` | No Tesseract here; not marked Live. |
+
+## mypy
+
+`python -m mypy app` reports 31 errors in 11 files. They come from the pinned `pikepdf==9.4.2` type stubs (`Iterable[Object]` has no `__next__`, `Object.get` typed as taking `None`) and from generic `JobContext` variance in `tools/image/images.py`. They were present before this queue, fixing them needs casts across `formbuilder.py`, `digital.py`, `pdfa.py`, `documents.py`, `structure.py`, `page_layout.py`, `clean.py`, `more_stamps.py`, `forms.py`, `images.py`, `office_out.py`, and they were left alone rather than risk behavior changes. Ruff is clean.

@@ -22,3 +22,18 @@ Only three tools are not Live: `pdf-to-word-ocr`, `pdf-to-powerpoint-ocr` and `p
 - Editor find and replace works at text-object level and can miss text split across objects.
 - Pre-existing ruff and mypy findings may remain in unrelated files.
 - Failures and blocked items are recorded in `docs/FAILED.md`.
+
+## Final check results (QUEUE 3)
+
+| Check | Result |
+|---|---|
+| `npm run typecheck` | passes |
+| `npm run i18n:check` | Urdu complete (2052 strings); RTL check clean |
+| `npm run build` (production) | passes, 386 static pages |
+| `eslint src` | no errors, no warnings |
+| `ruff check` and `ruff format` (api) | clean |
+| `mypy app` | 31 errors from pinned pikepdf stubs, listed in `docs/FAILED.md` |
+| `scripts/smoke_tools.py`, all tools | 80 of 84 pass; AI tools pass against the local stub |
+| Smoke failures | `word-to-pdf`, `excel-to-pdf`, `powerpoint-to-pdf`, `ocr`, `pdf-to-word-ocr`, `pdf-to-powerpoint-ocr`, `pdf-to-excel-ocr`: LibreOffice and Tesseract are not installed on this machine (see `docs/FAILED.md`) |
+
+Note: the first three Office tools and `ocr` stay marked Live because they passed on Linux with the binaries installed; the three OCR conversion tools stay Coming soon.
