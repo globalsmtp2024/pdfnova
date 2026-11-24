@@ -18,6 +18,7 @@ Nothing in the catalogue. The three OCR conversions (`pdf-to-word-ocr`, `pdf-to-
 - Keyboard-only and screen reader testing of every tool has not been done.
 
 ## Notes
+- OCR on Windows: if `apps/api/var/tessdata` exists the API uses it automatically (copy `*.traineddata`, `configs` and `pdf.ttf` from the Tesseract install, plus `urd.traineddata` for Urdu). A tessdata folder without `configs` makes Tesseract produce no PDF output.
 - Chrome-based tools skip the sandbox address-space cap and run with a short TMPDIR, because Chrome fails under RLIMIT_AS and with long socket paths.
 - Editor find and replace works at text-object level and can miss text split across objects.
 - Pre-existing ruff and mypy findings may remain in unrelated files.

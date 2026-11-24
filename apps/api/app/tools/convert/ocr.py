@@ -1,3 +1,4 @@
+import os
 import subprocess
 import tempfile
 from collections.abc import Sequence
@@ -28,6 +29,7 @@ from app.tools.pdfkit import output_pdf, pdf_name, save_pdf
 
 TESSERACT_NAMES = ("tesseract",)
 WINDOWS_TESSERACT = (r"C:\Program Files\Tesseract-OCR\tesseract.exe",)
+LOCAL_TESSDATA = Path(__file__).resolve().parents[3] / "var" / "tessdata"
 PAGE_TIMEOUT_SECONDS = 120
 MAX_OCR_PIXELS = 36_000_000
 
@@ -41,27 +43,43 @@ class OcrOptions(ToolOptions):
     pages: str | None = Field(default=None, max_length=2000)
 
 
+def tesseract_env() -> dict[str, str]:
+    env = dict(os.environ)
+    if "TESSDATA_PREFIX" not in env and LOCAL_TESSDATA.is_dir():
+        env["TESSDATA_PREFIX"] = str(LOCAL_TESSDATA)
+    return env
+
+
 @lru_cache(maxsize=1)
+def _list_languages(binary: str) -> tuple[str, ...]:
+    result = subprocess.run(
+        [binary, "--list-langs"],
+        capture_output=True,
+        text=True,
+        timeout=20,
+        check=True,
+        env=tesseract_env(),
+    )
+    names = [line.strip() for line in result.stdout.splitlines()[1:] if line.strip()]
+    return tuple(sorted(name for name in names if name != "osd"))
+
+
 def installed_languages() -> tuple[str, ...]:
     binary = find_binary("TESSERACT_BINARY", TESSERACT_NAMES, WINDOWS_TESSERACT)
     if binary is None:
         return ()
     try:
-        result = subprocess.run(
-            [binary, "--list-langs"], capture_output=True, text=True, timeout=20, check=True
-        )
+        return _list_languages(binary)
     except (subprocess.SubprocessError, OSError):
         return ()
-    names = [line.strip() for line in result.stdout.splitlines()[1:] if line.strip()]
-    return tuple(sorted(name for name in names if name != "osd"))
 
 
 def check_language(language: str) -> None:
     available = installed_languages()
     unknown = [code for code in language.split("+") if code not in available]
-    if unknown and available:
+    if unknown:
         raise ToolFailedError(
-            f"The language {unknown[0]} is not installed. Installed: {', '.join(available)}.",
+            f"The language {unknown[0]} is not installed. Installed: {', '.join(available) or 'none'}.",
             code="ocr_language_missing",
         )
 
@@ -69,7 +87,13 @@ def check_language(language: str) -> None:
 def recognise(binary: str, image: Path, base: Path, language: str) -> Path:
     command = [binary, str(image), str(base), "-l", language, "pdf"]
     try:
-        subprocess.run(command, capture_output=True, timeout=PAGE_TIMEOUT_SECONDS, check=True)
+        subprocess.run(
+            command,
+            capture_output=True,
+            timeout=PAGE_TIMEOUT_SECONDS,
+            check=True,
+            env=tesseract_env(),
+        )
     except subprocess.TimeoutExpired as exc:
         raise ToolFailedError("A page took too long to recognise.", code="ocr_timeout") from exc
     except subprocess.CalledProcessError as exc:
