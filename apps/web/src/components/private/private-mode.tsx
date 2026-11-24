@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, FileDown, ShieldCheck } from "lucide-react";
+import { Download, FileDown, Play, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 
@@ -331,6 +331,7 @@ export function PrivateMode() {
             </>
           ) : null}
           <Button
+            icon={<Play />}
             type="button"
             variant="primary"
             disabled={!ready}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, EyeOff, LockKeyhole, LockKeyholeOpen } from "lucide-react";
+import { Eye, EyeOff, LockKeyhole, LockKeyholeOpen, LockOpen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
 
@@ -82,7 +82,14 @@ export function PasswordPrompt({
             )}
           </button>
         </div>
-        <Button type="submit" size="sm" variant="solid" loading={busy} disabled={!value}>
+        <Button
+          icon={<LockOpen />}
+          type="submit"
+          size="sm"
+          variant="solid"
+          loading={busy}
+          disabled={!value}
+        >
           {t("unlock")}
         </Button>
       </div>

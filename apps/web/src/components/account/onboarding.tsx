@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, Gift, Rocket } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, Gift, Rocket } from "lucide-react";
 import { AnimatePresence, m } from "motion/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -103,6 +103,8 @@ export function Onboarding() {
       </AnimatePresence>
       <div className="flex justify-between gap-2">
         <Button
+          icon={<ArrowLeft />}
+          mirrorIcon
           variant="ghost"
           disabled={index === 0}
           onClick={() => setIndex((value) => Math.max(value - 1, 0))}
@@ -110,6 +112,8 @@ export function Onboarding() {
           {commonT("back")}
         </Button>
         <Button
+          iconEnd={<ArrowRight />}
+          mirrorIcon
           variant="primary"
           onClick={() => (last ? router.push("/tools") : setIndex((value) => value + 1))}
         >

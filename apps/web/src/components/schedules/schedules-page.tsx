@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarClock, LogIn, Play, Trash2 } from "lucide-react";
+import { CalendarClock, LogIn, Play, Power, Trash2 } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -256,6 +256,7 @@ export function SchedulesPage() {
                     {t("runNow")}
                   </Button>
                   <Button
+                    icon={<Power />}
                     size="sm"
                     variant="ghost"
                     onClick={() =>

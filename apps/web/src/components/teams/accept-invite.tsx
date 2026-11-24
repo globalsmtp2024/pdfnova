@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleAlert, CircleCheck } from "lucide-react";
+import { CircleAlert, CircleCheck, UserCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -54,6 +54,7 @@ export function AcceptInvite({ token }: { token: string }) {
         </p>
       ) : null}
       <Button
+        icon={<UserCheck />}
         variant="primary"
         loading={accept.isPending}
         disabled={started && accept.isError}

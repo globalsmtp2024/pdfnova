@@ -6,8 +6,11 @@ import {
   CircleAlert,
   CircleCheck,
   Download,
+  Eraser,
   LoaderCircle,
+  Play,
   RotateCcw,
+  Square,
   Trash2,
 } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
@@ -220,6 +223,7 @@ export function BatchRunner() {
         ) : null}
         <div className="flex flex-col gap-2">
           <Button
+            icon={<Play />}
             type="button"
             variant="primary"
             disabled={!canRun}
@@ -230,7 +234,7 @@ export function BatchRunner() {
             {t("start", { count: waiting + failed })}
           </Button>
           {runner.running ? (
-            <Button type="button" variant="outline" onClick={runner.stop}>
+            <Button icon={<Square />} type="button" variant="outline" onClick={runner.stop}>
               {t("stop")}
             </Button>
           ) : null}
@@ -255,6 +259,7 @@ export function BatchRunner() {
             {t("downloadAll")}
           </Button>
           <Button
+            icon={<Eraser />}
             type="button"
             variant="ghost"
             disabled={runner.running || !runner.items.length}

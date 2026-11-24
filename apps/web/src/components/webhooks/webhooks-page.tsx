@@ -7,6 +7,7 @@ import {
   Link2,
   LogIn,
   Plus,
+  Power,
   Send,
   Trash2,
   Webhook as WebhookIcon,
@@ -285,6 +286,7 @@ export function WebhooksPage() {
                     {t("test")}
                   </Button>
                   <Button
+                    icon={<Power />}
                     size="sm"
                     variant="ghost"
                     onClick={() =>

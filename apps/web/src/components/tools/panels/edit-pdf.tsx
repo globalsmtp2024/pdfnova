@@ -12,13 +12,14 @@ import {
   MousePointer2,
   Pencil,
   Redo2,
+  Replace,
   Square,
   StickyNote,
   TextCursorInput,
   Trash2,
   Type,
-  Undo2,
   type LucideIcon,
+  Undo2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
@@ -934,6 +935,7 @@ export function useEditPdfPanel(files: LocalFile[]): ToolPanelView {
           {find ? t("matches", { count: matchTotal ?? 0 }) : t("replaceNote")}
         </p>
         <Button
+          icon={<Replace />}
           type="button"
           size="sm"
           variant="outline"

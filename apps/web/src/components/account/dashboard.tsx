@@ -2,6 +2,7 @@
 
 import {
   Activity,
+  Ban,
   CalendarClock,
   Check,
   Copy,
@@ -255,6 +256,7 @@ function ApiKeysPanel() {
                 <Badge>{t("revoked")}</Badge>
               ) : (
                 <Button
+                  icon={<Ban />}
                   variant="ghost"
                   size="sm"
                   onClick={() => revoke.mutate(key.id, { onError: toastError })}

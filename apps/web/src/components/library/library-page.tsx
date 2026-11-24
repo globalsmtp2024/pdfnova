@@ -7,6 +7,7 @@ import {
   LogIn,
   Pencil,
   RotateCcw,
+  Save,
   Search,
   Trash2,
   Upload,
@@ -182,7 +183,13 @@ function FileRow({
               </option>
             ))}
           </Select>
-          <Button size="sm" variant="solid" onClick={save} loading={actions.updateFile.isPending}>
+          <Button
+            icon={<Save />}
+            size="sm"
+            variant="solid"
+            onClick={save}
+            loading={actions.updateFile.isPending}
+          >
             {t("save")}
           </Button>
         </div>

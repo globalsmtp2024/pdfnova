@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  ArrowLeft,
+  ArrowRight,
   CalendarClock,
   CalendarDays,
   CheckSquare,
@@ -8,6 +10,7 @@ import {
   Mail,
   PenLine,
   Plus,
+  Send,
   Signature,
   TextCursorInput,
   Trash2,
@@ -464,12 +467,20 @@ export function EsignNew() {
 
       <div className="flex gap-2">
         {step > 1 ? (
-          <Button type="button" variant="outline" onClick={() => setStep(step - 1)}>
+          <Button
+            icon={<ArrowLeft />}
+            mirrorIcon
+            type="button"
+            variant="outline"
+            onClick={() => setStep(step - 1)}
+          >
             {t("back")}
           </Button>
         ) : null}
         {step < 4 ? (
           <Button
+            iconEnd={<ArrowRight />}
+            mirrorIcon
             type="button"
             variant="primary"
             data-esign-next
@@ -483,7 +494,13 @@ export function EsignNew() {
             {t("next")}
           </Button>
         ) : (
-          <Button type="submit" variant="primary" loading={create.isPending} data-esign-send>
+          <Button
+            icon={<Send />}
+            type="submit"
+            variant="primary"
+            loading={create.isPending}
+            data-esign-send
+          >
             {t("sendRequest")}
           </Button>
         )}

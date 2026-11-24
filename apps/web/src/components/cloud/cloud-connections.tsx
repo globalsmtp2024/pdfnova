@@ -1,6 +1,6 @@
 "use client";
 
-import { Cloud } from "lucide-react";
+import { Cloud, Link2, Unplug } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +28,7 @@ export function CloudConnections() {
           </span>
           {provider.connected ? (
             <Button
+              icon={<Unplug />}
               size="sm"
               variant="outline"
               onClick={() => disconnect.mutate(provider.name, { onError: toastError })}
@@ -36,6 +37,7 @@ export function CloudConnections() {
             </Button>
           ) : (
             <Button
+              icon={<Link2 />}
               size="sm"
               variant="solid"
               onClick={() => void startCloudConnect(provider.name).catch(toastError)}

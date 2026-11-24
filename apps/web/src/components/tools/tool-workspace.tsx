@@ -16,12 +16,16 @@ import {
 } from "@dnd-kit/sortable";
 import {
   CircleAlert,
-  Clock,
   ClipboardPaste,
+  Clock,
   Link2,
   Loader2,
+  Play,
+  RotateCcw,
   ShieldCheck,
   Sparkles,
+  Undo2,
+  X,
 } from "lucide-react";
 import { AnimatePresence, m } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
@@ -109,7 +113,13 @@ function UrlImport({
           onChange={(event) => setUrl(event.target.value)}
           className="h-10"
         />
-        <Button type="submit" variant="solid" loading={busy} disabled={!url.trim()}>
+        <Button
+          icon={<Link2 />}
+          type="submit"
+          variant="solid"
+          loading={busy}
+          disabled={!url.trim()}
+        >
           {t("importUrlButton")}
         </Button>
       </div>
@@ -238,6 +248,7 @@ export function ToolWorkspace({
         <Progress value={progress} label={t("processing")} />
         <div className="flex justify-end">
           <Button
+            icon={<X />}
             variant="ghost"
             size="sm"
             onClick={() => session.cancel().catch((error: unknown) => toastError(error))}
@@ -276,10 +287,10 @@ export function ToolWorkspace({
           ) : null}
         </div>
         <div className="flex gap-2">
-          <Button variant="solid" onClick={() => session.reset(true)}>
+          <Button icon={<RotateCcw />} variant="solid" onClick={() => session.reset(true)}>
             {t("retry")}
           </Button>
-          <Button variant="ghost" onClick={() => session.reset(false)}>
+          <Button icon={<Undo2 />} variant="ghost" onClick={() => session.reset(false)}>
             {t("startOver")}
           </Button>
         </div>
@@ -430,6 +441,7 @@ export function ToolWorkspace({
             </p>
           </div>
           <Button
+            icon={<Play />}
             variant="primary"
             size="lg"
             disabled={!canStart}

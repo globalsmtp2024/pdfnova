@@ -1,6 +1,15 @@
 "use client";
 
-import { ArrowRight, Clock, FileUp, Gift, ShieldCheck, Smartphone, UserX } from "lucide-react";
+import {
+  ArrowRight,
+  Clock,
+  Eraser,
+  FileUp,
+  Gift,
+  ShieldCheck,
+  Smartphone,
+  UserX,
+} from "lucide-react";
 import { AnimatePresence, m, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
@@ -71,7 +80,7 @@ export function SmartDropzone({ size = "hero" }: { size?: "hero" | "compact" }) 
                 <FileUp className="size-4 text-primary" aria-hidden />
                 {t("detected", { count: files.length, size: formatBytes(totalSize) })}
               </p>
-              <Button variant="ghost" size="sm" onClick={() => setFiles([])}>
+              <Button icon={<Eraser />} variant="ghost" size="sm" onClick={() => setFiles([])}>
                 {t("clear")}
               </Button>
             </div>

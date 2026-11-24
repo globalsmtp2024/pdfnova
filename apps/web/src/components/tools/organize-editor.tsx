@@ -18,6 +18,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import {
   ArrowDownUp,
+  ArrowUpDown,
   Copy,
   FilePlus2,
   Redo2,
@@ -348,7 +349,12 @@ export function OrganizeEditor({
           <ArrowDownUp aria-hidden />
           {t("reverse")}
         </Button>
-        <Button size="sm" variant="ghost" onClick={() => dispatch({ type: "sortOriginal" })}>
+        <Button
+          icon={<ArrowUpDown />}
+          size="sm"
+          variant="ghost"
+          onClick={() => dispatch({ type: "sortOriginal" })}
+        >
           {t("sortOriginal")}
         </Button>
         {targets.length ? (

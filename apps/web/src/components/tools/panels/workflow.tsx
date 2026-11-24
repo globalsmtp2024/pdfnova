@@ -469,6 +469,7 @@ export function useWorkflowPanel(files: LocalFile[]): ToolPanelView {
               ))}
               {canWriteTeam ? (
                 <Button
+                  icon={<Save />}
                   type="button"
                   size="sm"
                   variant="outline"

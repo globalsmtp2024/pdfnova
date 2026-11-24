@@ -104,7 +104,7 @@ Phase 7
 - [x] 8 Urdu for every remaining English-only page and string; i18n:check passes
 - [x] 9 Features section redesign (home bento grid and /features)
 - [x] 10 Forms polish (placeholders, icons, show/hide password, inline validation)
-- [ ] 11 Button and icon pass
+- [x] 11 Button and icon pass
 - [ ] 12 Accessibility and SEO code-level pass
 - [ ] 13 Performance code-level pass
 - [ ] 14 Security code-level recheck

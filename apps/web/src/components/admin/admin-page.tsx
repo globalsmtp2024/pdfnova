@@ -1,6 +1,6 @@
 "use client";
 
-import { Link2, Megaphone, ShieldAlert } from "lucide-react";
+import { Check, Link2, Megaphone, Save, ShieldAlert, X } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -309,6 +309,7 @@ function FairUseEditor() {
         </label>
       ))}
       <Button
+        icon={<Save />}
         type="submit"
         variant="primary"
         className="sm:col-span-2 sm:justify-self-start"
@@ -363,6 +364,7 @@ function Abuse() {
               {item.status === "open" ? (
                 <span className="flex gap-2">
                   <Button
+                    icon={<Check />}
                     size="sm"
                     variant="outline"
                     onClick={() =>
@@ -375,6 +377,7 @@ function Abuse() {
                     {t("markActioned")}
                   </Button>
                   <Button
+                    icon={<X />}
                     size="sm"
                     variant="ghost"
                     onClick={() =>
@@ -477,6 +480,7 @@ function AnnouncementEditor() {
         )}
       </Field>
       <Button
+        icon={<Save />}
         type="submit"
         variant="primary"
         className="self-start"

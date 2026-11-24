@@ -1,6 +1,16 @@
 "use client";
 
-import { Check, CircleX, PenLine } from "lucide-react";
+import {
+  Ban,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  CircleCheck,
+  CircleX,
+  Eraser,
+  PenLine,
+  X,
+} from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useMemo, useRef, useState, type PointerEvent } from "react";
 
@@ -143,16 +153,22 @@ function SignaturePad({
           data-esign-pad
         />
         <div className="flex justify-between gap-2">
-          <Button type="button" variant="ghost" onClick={mode === "draw" ? clear : onCancel}>
+          <Button
+            icon={<Eraser />}
+            type="button"
+            variant="ghost"
+            onClick={mode === "draw" ? clear : onCancel}
+          >
             {mode === "draw" ? t("clear") : t("cancel")}
           </Button>
           <span className="flex gap-2">
             {mode === "draw" ? (
-              <Button type="button" variant="ghost" onClick={onCancel}>
+              <Button icon={<X />} type="button" variant="ghost" onClick={onCancel}>
                 {t("cancel")}
               </Button>
             ) : null}
             <Button
+              icon={<Check />}
               type="button"
               variant="primary"
               disabled={mode === "draw" ? !drawn : !typed.trim()}
@@ -263,6 +279,8 @@ export function EsignSign({ token }: { token: string }) {
 
       <div className="flex items-center gap-2">
         <Button
+          icon={<ChevronLeft />}
+          mirrorIcon
           type="button"
           size="sm"
           variant="outline"
@@ -275,6 +293,8 @@ export function EsignSign({ token }: { token: string }) {
           {t("pageOf", { page: pageIndex + 1, count: data.page_count })}
         </span>
         <Button
+          iconEnd={<ChevronRight />}
+          mirrorIcon
           type="button"
           size="sm"
           variant="outline"
@@ -346,6 +366,7 @@ export function EsignSign({ token }: { token: string }) {
       </label>
       <div className="flex flex-wrap gap-2">
         <Button
+          icon={<CircleCheck />}
           type="button"
           variant="primary"
           disabled={!consent || missing}
@@ -355,7 +376,7 @@ export function EsignSign({ token }: { token: string }) {
         >
           {t("finish")}
         </Button>
-        <Button type="button" variant="outline" onClick={() => setDeclining(true)}>
+        <Button icon={<Ban />} type="button" variant="outline" onClick={() => setDeclining(true)}>
           {t("decline")}
         </Button>
         {missing ? (
@@ -381,6 +402,7 @@ export function EsignSign({ token }: { token: string }) {
           </p>
           <div className="flex gap-2">
             <Button
+              icon={<Ban />}
               type="button"
               variant="danger"
               loading={decline.isPending}
@@ -393,7 +415,7 @@ export function EsignSign({ token }: { token: string }) {
             >
               {t("confirmDecline")}
             </Button>
-            <Button type="button" variant="ghost" onClick={() => setDeclining(false)}>
+            <Button icon={<X />} type="button" variant="ghost" onClick={() => setDeclining(false)}>
               {t("cancel")}
             </Button>
           </div>

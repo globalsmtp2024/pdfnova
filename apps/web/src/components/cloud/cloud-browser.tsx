@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, File as FileIcon, Folder, Search } from "lucide-react";
+import { Check, ChevronRight, File as FileIcon, Folder, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -120,6 +120,7 @@ export function CloudBrowser({
         )}
         {mode === "folder" ? (
           <Button
+            icon={<Check />}
             type="button"
             variant="primary"
             loading={busy}

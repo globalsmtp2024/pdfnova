@@ -8,11 +8,13 @@ import {
   KeyRound,
   Link2,
   LogIn,
+  LogOut,
   Mail,
   Monitor,
   PlugZap,
   Save,
   ShieldCheck,
+  ShieldOff,
   SlidersHorizontal,
   Trash2,
   User as UserIcon,
@@ -70,7 +72,13 @@ function ProfileSection({ user }: { user: User }) {
             <Input id={props.id} icon={<Mail />} dir="ltr" value={user.email} readOnly disabled />
           )}
         </Field>
-        <Button type="submit" variant="solid" loading={update.isPending} className="w-fit">
+        <Button
+          icon={<Save />}
+          type="submit"
+          variant="solid"
+          loading={update.isPending}
+          className="w-fit"
+        >
           {t("save")}
         </Button>
       </form>
@@ -173,6 +181,7 @@ function TwoFactor({ user }: { user: User }) {
       ) : null}
       {!user.totp_enabled && !setup ? (
         <Button
+          icon={<ShieldCheck />}
           variant="outline"
           className="w-fit"
           loading={begin.isPending}
@@ -214,6 +223,7 @@ function TwoFactor({ user }: { user: User }) {
             )}
           </Field>
           <Button
+            icon={<ShieldCheck />}
             type="submit"
             variant="solid"
             className="w-fit"
@@ -263,7 +273,7 @@ function TwoFactor({ user }: { user: User }) {
               />
             )}
           </Field>
-          <Button type="submit" variant="outline" loading={disable.isPending}>
+          <Button icon={<ShieldOff />} type="submit" variant="outline" loading={disable.isPending}>
             {t("disable")}
           </Button>
         </form>
@@ -333,6 +343,7 @@ function PasswordForm({ user }: { user: User }) {
         )}
       </Field>
       <Button
+        icon={<KeyRound />}
         type="submit"
         variant="outline"
         loading={change.isPending}
@@ -374,7 +385,12 @@ function Sessions() {
             {entry.current ? (
               <span className="text-xs font-medium text-success-strong">{t("thisDevice")}</span>
             ) : (
-              <Button variant="ghost" size="sm" onClick={() => revoke.mutate(entry.id)}>
+              <Button
+                icon={<LogOut />}
+                variant="ghost"
+                size="sm"
+                onClick={() => revoke.mutate(entry.id)}
+              >
                 {t("signOutSession")}
               </Button>
             )}
@@ -660,6 +676,7 @@ function DataSection({ user }: { user: User }) {
             </Field>
           )}
           <Button
+            icon={<Trash2 />}
             type="submit"
             variant="danger"
             loading={remove.isPending}
