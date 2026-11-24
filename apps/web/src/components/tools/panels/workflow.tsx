@@ -1,28 +1,15 @@
 "use client";
 
-import "@xyflow/react/dist/style.css";
-
-import {
-  Background,
-  Controls,
-  Handle,
-  Position,
-  ReactFlow,
-  type Connection,
-  type Edge,
-  type Node,
-  type NodeProps,
-  type OnEdgesChange,
-  type OnNodesChange,
-} from "@xyflow/react";
-import { FileInput, Plus, Save, Trash2 } from "lucide-react";
+import type { Connection, Edge, Node, OnEdgesChange, OnNodesChange } from "@xyflow/react";
+import dynamic from "next/dynamic";
+import { Plus, Save, Trash2 } from "lucide-react";
 import type React from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
 
 import type { ToolPanelView } from "@/components/tools/panels/registry";
-import { ToolIcon } from "@/components/tools/tool-icon";
+import type { NodeData } from "@/components/tools/panels/workflow-canvas";
 import type { LocalFile } from "@/components/tools/use-tool-session";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
@@ -44,7 +31,6 @@ import {
   type GraphEdge,
   type GraphNode,
 } from "@/lib/workflow-graph";
-import { cn } from "@/lib/utils";
 
 type Position2D = { x: number; y: number };
 type SavedWorkflow = {
@@ -53,32 +39,13 @@ type SavedWorkflow = {
   edges: GraphEdge[];
   positions: Record<string, Position2D>;
 };
-type NodeData = { title: string; slug: string; selected: boolean; input?: boolean };
+
+const WorkflowCanvas = dynamic(() => import("@/components/tools/panels/workflow-canvas"), {
+  ssr: false,
+  loading: () => <div className="h-full animate-pulse bg-surface-muted" />,
+});
 
 const STORAGE_KEY = "pn.workflows";
-
-function ToolNode({ data }: NodeProps<Node<NodeData>>) {
-  return (
-    <div
-      className={cn(
-        "flex min-w-44 items-center gap-2 rounded-xl border bg-surface px-3 py-2 text-sm shadow-soft",
-        data.selected ? "border-primary ring-2 ring-primary/40" : "border-border",
-      )}
-    >
-      <Handle type="target" position={Position.Left} />
-      {data.input ? (
-        <FileInput className="size-5 text-primary" aria-hidden />
-      ) : (
-        <ToolIcon slug={data.slug} size="sm" />
-      )}
-      <span className="font-medium">{data.title}</span>
-      {data.input ? null : <Handle type="source" position={Position.Right} />}
-      {data.input ? <Handle type="source" position={Position.Right} /> : null}
-    </div>
-  );
-}
-
-const NODE_TYPES = { tool: ToolNode };
 
 function readSaved(): SavedWorkflow[] {
   try {
@@ -318,22 +285,15 @@ export function useWorkflowPanel(files: LocalFile[]): ToolPanelView {
         } as React.CSSProperties
       }
     >
-      <ReactFlow
+      <WorkflowCanvas
         nodes={rfNodes}
         edges={rfEdges}
-        nodeTypes={NODE_TYPES}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={connect}
-        onNodeClick={(_, node) => setSelectedId(node.id === INPUT_ID ? null : node.id)}
+        onNodeClick={(id) => setSelectedId(id === INPUT_ID ? null : id)}
         onPaneClick={() => setSelectedId(null)}
-        fitView
-        deleteKeyCode={["Delete", "Backspace"]}
-        proOptions={{ hideAttribution: true }}
-      >
-        <Background />
-        <Controls showInteractive={false} />
-      </ReactFlow>
+      />
     </div>
   );
 
