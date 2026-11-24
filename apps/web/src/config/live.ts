@@ -80,4 +80,7 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "remove-metadata",
   "epub-to-pdf",
   "pdf-to-epub",
+  "pdf-to-word-ocr",
+  "pdf-to-powerpoint-ocr",
+  "pdf-to-excel-ocr",
 ]);

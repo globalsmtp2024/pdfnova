@@ -1,10 +1,10 @@
 # Status
 
 ## Live
-81 of 84 catalogue tools are Live (everything listed in `apps/web/src/config/live.ts`). Besides the tools, these exist and work in code: browser editor, form builder, certificate signing, e-sign requests, redaction presets, visual compare, AI smart tools, workflow builder and gallery, batch, My files, teams, webhooks, API keys with scopes and SDKs, cloud imports, installable app and share target, on-device private mode (merge, split, rotate, extract pages, images to PDF, metadata), scheduled workflows, admin console, verified deletion, Custom (OpenAI-compatible) AI provider, English and Urdu (right-to-left) interface, legal and roadmap pages.
+All 84 catalogue tools are Live (everything listed in `apps/web/src/config/live.ts`). Besides the tools, these exist and work in code: browser editor, form builder, certificate signing, e-sign requests, redaction presets, visual compare, AI smart tools, workflow builder and gallery, batch, My files, teams, webhooks, API keys with scopes and SDKs, cloud imports, installable app and share target, on-device private mode (merge, split, rotate, extract pages, images to PDF, metadata), scheduled workflows, admin console, verified deletion, Custom (OpenAI-compatible) AI provider, English and Urdu (right-to-left) interface, legal and roadmap pages.
 
 ## Coming soon
-Only three tools are not Live: `pdf-to-word-ocr`, `pdf-to-powerpoint-ocr` and `pdf-to-excel-ocr`. They are built and have smoke cases, but they need Tesseract, which is not installed on the development machine, so they have not been verified end to end. They go Live once their smoke cases pass where Tesseract is installed (the Docker image installs it).
+Nothing in the catalogue. The three OCR conversions (`pdf-to-word-ocr`, `pdf-to-powerpoint-ocr`, `pdf-to-excel-ocr`) passed their smoke cases with Tesseract 5.4 installed locally and recognised the text of a generated scanned table.
 
 ## Unverified
 - PDF/A output is structured for 1b/2b/3b but has not been checked with an independent validator such as veraPDF.
@@ -33,7 +33,7 @@ Only three tools are not Live: `pdf-to-word-ocr`, `pdf-to-powerpoint-ocr` and `p
 | `eslint src` | no errors, no warnings |
 | `ruff check` and `ruff format` (api) | clean |
 | `mypy app` | 31 errors from pinned pikepdf stubs, listed in `docs/FAILED.md` |
-| `scripts/smoke_tools.py`, all tools | 77 of 84 pass (AI tools and remove-images re-run and pass; AI only against the local stub) |
-| Smoke failures | `word-to-pdf`, `excel-to-pdf`, `powerpoint-to-pdf`, `ocr`, `pdf-to-word-ocr`, `pdf-to-powerpoint-ocr`, `pdf-to-excel-ocr`: LibreOffice and Tesseract are not installed on this machine (see `docs/FAILED.md`) |
+| `scripts/smoke_tools.py`, all tools | 81 of 84 pass (AI tools and remove-images re-run and pass; AI only against the local stub) |
+| Smoke failures | `word-to-pdf`, `excel-to-pdf`, `powerpoint-to-pdf`, LibreOffice is not installed on this machine (see `docs/FAILED.md`). The OCR conversions and `ocr` pass with Tesseract installed locally |
 
-Note: the first three Office tools and `ocr` stay marked Live because they passed on Linux with the binaries installed; the three OCR conversion tools stay Coming soon.
+Note: the three Office to PDF tools stay Live because they passed on Linux with LibreOffice installed.

@@ -35,6 +35,21 @@ def sample_image(fmt: str = "PNG", size: tuple[int, int] = (320, 240)) -> bytes:
     return buffer.getvalue()
 
 
+def table_scan_image() -> bytes:
+    from PIL import ImageDraw, ImageFont
+
+    page = Image.new("RGB", (1200, 500), "white")
+    drawer = ImageDraw.Draw(page)
+    font = ImageFont.truetype(str(FONT_PATH), 48)
+    rows = [("Item", "Quantity", "Price"), ("Apple", "3", "120"), ("Mango", "5", "250"), ("Grapes", "2", "90")]
+    for row_index, row in enumerate(rows):
+        for column_index, cell in enumerate(row):
+            drawer.text((40 + column_index * 400, 40 + row_index * 105), cell, fill="black", font=font)
+    buffer = io.BytesIO()
+    page.save(buffer, format="PNG")
+    return buffer.getvalue()
+
+
 def scan_photo() -> bytes:
     from PIL import ImageDraw
 
@@ -418,6 +433,21 @@ def pptx_sample() -> bytes:
     return buffer.getvalue()
 
 
+def zip_text(member: str, needle: str) -> Check:
+    import zipfile
+
+    def check(outputs: list[tuple[str, bytes]]) -> str | None:
+        try:
+            with zipfile.ZipFile(io.BytesIO(outputs[0][1])) as archive:
+                if member not in archive.namelist():
+                    return f"missing {member}"
+                return None if needle in archive.read(member).decode("utf8") else f"{needle} not recognised"
+        except zipfile.BadZipFile:
+            return "not a zip container"
+
+    return check
+
+
 def zip_has(member: str) -> Check:
     import zipfile
 
@@ -563,9 +593,9 @@ CASES: list[Case] = [
     Case("epub-to-pdf", [("evil.epub", epub_sample(True), "application/epub+zip")], check=has_bookmarks(2)),
     Case("pdf-to-epub", pdf_upload(), {}, check=epub_valid(1)),
     Case("pdf-to-epub", [("book.pdf", outlined_pdf(), "application/pdf")], {}, check=epub_valid(2)),
-    Case("pdf-to-word-ocr", [("scan.png", sample_image("PNG", (800, 300)), "image/png")], {"language": "eng"}, check=zip_has("word/document.xml")),
-    Case("pdf-to-powerpoint-ocr", [("scan.png", sample_image("PNG", (800, 300)), "image/png")], {"language": "eng"}, check=zip_has("ppt/presentation.xml")),
-    Case("pdf-to-excel-ocr", [("scan.png", sample_image("PNG", (800, 300)), "image/png")], {"language": "eng"}, check=zip_has("xl/workbook.xml")),
+    Case("pdf-to-word-ocr", [("scan.png", table_scan_image(), "image/png")], {"language": "eng"}, check=zip_text("word/document.xml", "Apple")),
+    Case("pdf-to-powerpoint-ocr", [("scan.png", table_scan_image(), "image/png")], {"language": "eng"}, check=zip_text("ppt/slides/slide1.xml", "Apple")),
+    Case("pdf-to-excel-ocr", [("scan.png", table_scan_image(), "image/png")], {"language": "eng"}, check=zip_text("xl/worksheets/sheet1.xml", "Apple")),
     Case("compress", pdf_upload(), {"level": "recommended"}),
     Case("repair", [("sample.pdf", damaged(sample_pdf()), "application/pdf")]),
     Case("page-numbers", pdf_upload(), {"format": "page_n_of_total"}),
