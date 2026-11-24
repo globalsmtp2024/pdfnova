@@ -1658,7 +1658,22 @@
     "language_es": "ہسپانوی",
     "language_en": "انگریزی",
     "language_ur": "اردو",
-    "language_hint": "زیادہ سے زیادہ چار زبانیں چنیں۔ صرف سرور پر نصب زبانیں دکھائی جاتی ہیں۔"
+    "language_hint": "زیادہ سے زیادہ چار زبانیں چنیں۔ صرف سرور پر نصب زبانیں دکھائی جاتی ہیں۔",
+    "pages_placeholder": "1-3, 5, 8-last",
+    "language_placeholder": "مثلاً انگریزی یا اردو",
+    "focus_placeholder": "مثلاً اہم خطرات اور آخری تاریخیں",
+    "extra_placeholder": "کوئی اور بات جو جواب میں مدنظر رکھی جائے",
+    "hint_placeholder": "کیا تلاش کرنا ہے اس کا مختصر اشارہ",
+    "title_placeholder": "دستاویز کا عنوان",
+    "author_placeholder": "مصنف کا نام",
+    "find_placeholder": "تلاش کرنے کا متن",
+    "replace_placeholder": "بدلنے کا متن",
+    "questions_placeholder": "ہر سطر میں ایک سوال",
+    "fields_placeholder": "ہر سطر میں ایک فیلڈ کا نام",
+    "categories_placeholder": "ہر سطر میں ایک زمرہ",
+    "choices_placeholder": "ہر سطر میں ایک انتخاب",
+    "text_placeholder": "اپنا متن لکھیں",
+    "value_placeholder": "قدر"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",

@@ -1608,7 +1608,22 @@
     "language_es": "Spanish",
     "language_en": "English",
     "language_ur": "Urdu",
-    "language_hint": "Pick up to four languages. Only languages installed on the server are listed."
+    "language_hint": "Pick up to four languages. Only languages installed on the server are listed.",
+    "pages_placeholder": "1-3, 5, 8-last",
+    "language_placeholder": "For example English or Urdu",
+    "focus_placeholder": "For example key risks and deadlines",
+    "extra_placeholder": "Anything else the answer should consider",
+    "hint_placeholder": "A short hint about what to look for",
+    "title_placeholder": "Document title",
+    "author_placeholder": "Author name",
+    "find_placeholder": "Text to find",
+    "replace_placeholder": "Replacement text",
+    "questions_placeholder": "One question per line",
+    "fields_placeholder": "One field name per line",
+    "categories_placeholder": "One category per line",
+    "choices_placeholder": "One choice per line",
+    "text_placeholder": "Type your text",
+    "value_placeholder": "Value"
   },
   "tools": {
     "remove-annotations": {

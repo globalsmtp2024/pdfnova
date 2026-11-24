@@ -19,7 +19,7 @@ import {
   type FontKey,
 } from "@/components/tools/stamp-controls";
 import type { LocalFile } from "@/components/tools/use-tool-session";
-import { Input } from "@/components/ui/input";
+import { Input, Textarea } from "@/components/ui/input";
 import { parsePageSet } from "@/lib/page-expression";
 import {
   ANCHORS,
@@ -228,14 +228,13 @@ export function useWatermarkPanel(files: LocalFile[]): ToolPanelView {
               <label htmlFor="wm-text" className="text-sm font-medium">
                 {t("text")}
               </label>
-              <textarea
+              <Textarea
                 id="wm-text"
                 dir="auto"
                 rows={2}
                 maxLength={1000}
                 value={text}
                 onChange={(event) => setText(event.target.value)}
-                className="rounded-(--radius-control) border border-border-strong bg-surface p-2 text-sm"
               />
             </div>
             <div className="grid grid-cols-2 gap-2">

@@ -7,7 +7,7 @@ import { useMemo, useState, type ChangeEvent } from "react";
 import { ToggleRow } from "@/components/tools/option-panels";
 import type { ToolPanelView } from "@/components/tools/panels/registry";
 import type { LocalFile } from "@/components/tools/use-tool-session";
-import { Input, Select } from "@/components/ui/input";
+import { Input, PasswordInput, Select, Textarea } from "@/components/ui/input";
 import { apiJson } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -131,6 +131,9 @@ export function useSchemaPanel(
   const [imageError, setImageError] = useState<string | null>(null);
   const required = new Set(root.required ?? []);
   const label = (name: string) => (t.has(name) ? t(name) : humanize(name));
+  const placeholder = (name: string) =>
+    t.has(`${name}_placeholder`) ? t(`${name}_placeholder`) : undefined;
+  const counter = useTranslations("form");
   const optionLabel = (name: string, option: unknown) => {
     const key = `${name}_${String(option)}`;
     return t.has(key) ? t(key) : humanize(String(option));
@@ -278,7 +281,8 @@ export function useSchemaPanel(
             id={id}
             dir="ltr"
             type="number"
-            inputMode="decimal"
+            inputMode={kind === "integer" ? "numeric" : "decimal"}
+            enterKeyHint="done"
             min={field.minimum}
             max={field.maximum}
             step={kind === "integer" ? 1 : "any"}
@@ -286,19 +290,35 @@ export function useSchemaPanel(
             onChange={(event) => set(name, event.target.value)}
           />
         ) : null}
-        {kind === "text" ? (
+        {kind === "text" && /password/i.test(name) ? (
+          <PasswordInput
+            id={id}
+            autoComplete="off"
+            maxLength={field.maxLength}
+            placeholder={placeholder(name)}
+            value={String(current(name, fallback) ?? "")}
+            onChange={(event) => set(name, event.target.value)}
+          />
+        ) : null}
+        {kind === "text" && !/password/i.test(name) ? (
           <Input
             id={id}
+            dir="auto"
+            autoComplete="off"
+            enterKeyHint="done"
             maxLength={field.maxLength}
+            placeholder={placeholder(name)}
             value={String(current(name, fallback) ?? "")}
             onChange={(event) => set(name, event.target.value)}
           />
         ) : null}
         {kind === "area" || kind === "lines" ? (
-          <textarea
+          <Textarea
             id={id}
+            dir="auto"
             rows={kind === "area" ? 6 : 4}
             maxLength={field.maxLength}
+            placeholder={placeholder(name)}
             value={String(
               current(
                 name,
@@ -306,11 +326,16 @@ export function useSchemaPanel(
               ) ?? "",
             )}
             onChange={(event) => set(name, event.target.value)}
-            className={cn(
-              "rounded-(--radius-control) border border-border-strong bg-surface p-2 text-sm",
-              kind === "lines" && "font-mono",
-            )}
+            className={cn(kind === "lines" && "font-mono")}
           />
+        ) : null}
+        {(kind === "area" || kind === "text") && field.maxLength && field.maxLength <= 5000 ? (
+          <p className="text-end text-xs text-muted tabular-nums" aria-live="off">
+            {counter("chars", {
+              count: String(current(name, fallback) ?? "").length,
+              max: field.maxLength,
+            })}
+          </p>
         ) : null}
         {kind === "image" ? (
           <input

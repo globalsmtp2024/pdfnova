@@ -7,7 +7,7 @@ import { useCallback, useState, type ChangeEvent } from "react";
 import type { ToolPanelView } from "@/components/tools/panels/registry";
 import { useSchemaPanel } from "@/components/tools/panels/schema";
 import type { LocalFile } from "@/components/tools/use-tool-session";
-import { Input } from "@/components/ui/input";
+import { Input, PasswordInput } from "@/components/ui/input";
 
 const MAX_CERTIFICATE_BYTES = 64 * 1024;
 
@@ -79,9 +79,8 @@ export function useDigitalSignPanel(
         <label htmlFor="digital-sign-password" className="text-sm font-medium">
           {t("password")}
         </label>
-        <Input
+        <PasswordInput
           id="digital-sign-password"
-          type="password"
           autoComplete="off"
           className="h-10"
           value={password}
