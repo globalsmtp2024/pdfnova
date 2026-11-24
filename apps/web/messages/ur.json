@@ -2872,7 +2872,14 @@
       "topTools": "سب سے زیادہ استعمال ہونے والے ٹولز",
       "categories": "زمرے کے لحاظ سے استعمال",
       "recentUsers": "تازہ ترین صارفین",
-      "unusedTools": "پچھلے {days} دنوں میں استعمال نہ ہونے والے ٹولز"
+      "unusedTools": "پچھلے {days} دنوں میں استعمال نہ ہونے والے ٹولز",
+      "legendTasks": "کام",
+      "legendFailed": "ناکام",
+      "legendSignups": "نئے صارفین",
+      "outcome": "کاموں کے نتائج",
+      "succeeded": "کامیاب",
+      "failed": "ناکام",
+      "other": "دیگر"
     },
     "cols": {
       "tool": "ٹول",
@@ -2881,7 +2888,39 @@
       "failed": "ناکام",
       "successRate": "کامیابی کی شرح",
       "avg": "اوسط وقت",
-      "p95": "95 فیصد"
+      "p95": "95 فیصد",
+      "share": "حصہ"
+    },
+    "welcome": "خوش آمدید، {name}",
+    "allToolsUsed": "اس مدت میں ہر ٹول کم از کم ایک بار چلا۔",
+    "failures": {
+      "signedIn": "سائن اِن",
+      "guest": "مہمان"
+    },
+    "users": {
+      "found": "{count} صارفین",
+      "user": "صارف",
+      "status": "حالت",
+      "activity": "سرگرمی",
+      "statusActive": "فعال",
+      "statusDisabled": "غیر فعال",
+      "verified": "ای میل تصدیق شدہ",
+      "unverified": "ای میل تصدیق شدہ نہیں",
+      "lastSeen": "آخری سائن اِن {when}",
+      "neverSeen": "کبھی سائن اِن نہیں ہوئے",
+      "joined": "شمولیت {date}"
+    },
+    "system": {
+      "allGood": "تمام سسٹم معمول کے مطابق چل رہے ہیں",
+      "issues": "{count} جانچوں پر توجہ درکار ہے"
+    },
+    "settings": {
+      "flagsTitle": "فیچر فلیگز",
+      "flagsSub": "سائٹ کے حصے سب کے لیے آن یا آف کریں۔",
+      "fairUseTitle": "منصفانہ استعمال کی حدیں",
+      "announcementTitle": "اعلان کی پٹی",
+      "announcementSub": "ہر صفحے کے اوپر دکھایا جانے والا مختصر پیغام۔",
+      "preview": "پیش منظر"
     }
   }
 }

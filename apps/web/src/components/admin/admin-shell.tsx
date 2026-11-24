@@ -17,6 +17,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useEffect, type ReactNode } from "react";
 
+import { Avatar } from "@/components/admin/admin-ui";
 import { LogoMark } from "@/components/layout/logo";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
@@ -85,7 +86,11 @@ export function AdminShell({ children }: { children: ReactNode }) {
   return (
     <div className="grid min-h-dvh lg:grid-cols-[16rem_1fr]" data-admin>
       <aside className="flex flex-col gap-6 border-border bg-surface p-4 max-lg:border-b lg:sticky lg:top-0 lg:h-dvh lg:border-e">
-        <div className="flex items-center gap-2.5">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-linear-to-b from-primary-subtle to-transparent"
+        />
+        <div className="relative flex items-center gap-2.5">
           <LogoMark />
           <div className="flex flex-col leading-tight">
             <span className="font-display text-base font-bold">{t("console")}</span>
@@ -106,7 +111,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 className={cn(
                   "flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                   active
-                    ? "bg-primary-subtle text-primary"
+                    ? "bg-cta-gradient text-primary-foreground shadow-soft"
                     : "text-muted hover:bg-surface-muted hover:text-foreground",
                 )}
               >
@@ -117,9 +122,17 @@ export function AdminShell({ children }: { children: ReactNode }) {
           })}
         </nav>
         <div className="mt-auto flex flex-col gap-3 max-lg:hidden">
-          <p className="truncate text-xs text-muted" dir="ltr">
-            {session.data.email}
-          </p>
+          <div className="flex items-center gap-2.5 rounded-xl border border-border bg-surface-muted p-2.5">
+            <Avatar name={session.data.display_name || session.data.email} size="sm" />
+            <span className="flex min-w-0 flex-col leading-tight">
+              <span className="truncate text-sm font-medium">
+                {session.data.display_name || session.data.email}
+              </span>
+              <span className="truncate text-xs text-muted" dir="ltr">
+                {session.data.email}
+              </span>
+            </span>
+          </div>
           <Button
             variant="outline"
             size="sm"
@@ -140,7 +153,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
       <div className="flex min-w-0 flex-col">
-        <header className="flex h-14 items-center justify-between gap-3 border-b border-border px-4 sm:px-6">
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-border bg-glass px-4 backdrop-blur-xl sm:px-6">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-subtle px-2.5 py-1 text-xs font-semibold text-primary">
             <ShieldCheck className="size-3.5" aria-hidden />
             {t("prefix")}
