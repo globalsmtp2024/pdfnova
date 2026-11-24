@@ -1666,7 +1666,9 @@
     "output_ics": "کیلنڈر (.ics)",
     "remove_attachments": "منسلک فائلیں ہٹائیں",
     "remove_javascript": "اسکرپٹس ہٹائیں",
-    "remove_thumbnails": "صفحے کے تھمب نیل ہٹائیں"
+    "remove_thumbnails": "صفحے کے تھمب نیل ہٹائیں",
+    "font_size_pt": "فونٹ کا سائز (pt)",
+    "add_bookmarks": "ہر باب کے لیے بُک مارک شامل کریں"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",

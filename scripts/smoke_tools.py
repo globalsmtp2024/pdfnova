@@ -466,11 +466,57 @@ def redacted_ok(outputs: list[tuple[str, bytes]]) -> str | None:
     return "text still present" if b"fox" in blob or b"Tj" in blob else None
 
 
+def epub_sample(hostile: bool = False) -> bytes:
+    import zipfile
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        archive.writestr("mimetype", "application/epub+zip", compress_type=zipfile.ZIP_STORED)
+        archive.writestr(
+            "META-INF/container.xml",
+            '<?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">'
+            '<rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>',
+        )
+        archive.writestr(
+            "OEBPS/content.opf",
+            '<?xml version="1.0"?><package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="id">'
+            '<metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:title>Smoke Book</dc:title><dc:identifier id="id">x</dc:identifier></metadata>'
+            '<manifest><item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>'
+            '<item id="c1" href="c1.xhtml" media-type="application/xhtml+xml"/><item id="c2" href="c2.xhtml" media-type="application/xhtml+xml"/></manifest>'
+            '<spine><itemref idref="c1"/><itemref idref="c2"/></spine></package>',
+        )
+        archive.writestr(
+            "OEBPS/nav.xhtml",
+            '<html xmlns="http://www.w3.org/1999/xhtml"><body><nav><ol><li><a href="c1.xhtml">First chapter</a></li>'
+            '<li><a href="c2.xhtml">Second chapter</a></li></ol></nav></body></html>',
+        )
+        script = "<script>document.title='x'</script>" if hostile else ""
+        archive.writestr("OEBPS/c1.xhtml", f"<html xmlns='http://www.w3.org/1999/xhtml'><body><h1>One</h1><p>Hello</p>{script}</body></html>")
+        archive.writestr("OEBPS/c2.xhtml", "<html xmlns='http://www.w3.org/1999/xhtml'><body><h1>Two</h1><p>World</p></body></html>")
+        if hostile:
+            archive.writestr("../../escape.txt", "outside")
+            archive.writestr("/abs.txt", "outside")
+    return buffer.getvalue()
+
+
+def has_bookmarks(count: int) -> Check:
+    def check(outputs: list[tuple[str, bytes]]) -> str | None:
+        problem = pdfs_open(outputs)
+        if problem:
+            return problem
+        with pikepdf.open(io.BytesIO(outputs[0][1])) as pdf, pdf.open_outline() as outline:
+            return None if len(outline.root) == count else f"expected {count} bookmarks, found {len(outline.root)}"
+
+    return check
+
+
 CASES: list[Case] = [
     Case("remove-pages", pdf_upload(), {"pages": "2"}),
     Case("extract-pages", pdf_upload(), {"pages": "1-2"}),
     Case("organize", pdf_upload(), {"pages": [{"page": 3}, {"page": 1, "rotate": 90}, {"source": "blank"}]}),
     Case("remove-metadata", pdf_upload(), {}),
+    Case("epub-to-pdf", [("book.epub", epub_sample(), "application/epub+zip")], check=has_bookmarks(2)),
+    Case("epub-to-pdf", [("evil.epub", epub_sample(True), "application/epub+zip")], check=has_bookmarks(2)),
     Case("compress", pdf_upload(), {"level": "recommended"}),
     Case("repair", [("sample.pdf", damaged(sample_pdf()), "application/pdf")]),
     Case("page-numbers", pdf_upload(), {"format": "page_n_of_total"}),

@@ -261,6 +261,8 @@ const FIELDS = {
   remove_attachments: ["Remove attached files", "منسلک فائلیں ہٹائیں"],
   remove_javascript: ["Remove scripts", "اسکرپٹس ہٹائیں"],
   remove_thumbnails: ["Remove page thumbnails", "صفحے کے تھمب نیل ہٹائیں"],
+  font_size_pt: ["Font size (pt)", "فونٹ کا سائز (pt)"],
+  add_bookmarks: ["Add a bookmark for each chapter", "ہر باب کے لیے بُک مارک شامل کریں"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

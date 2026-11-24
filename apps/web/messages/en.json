@@ -1534,7 +1534,9 @@
     "output_ics": "Calendar (.ics)",
     "remove_attachments": "Remove attached files",
     "remove_javascript": "Remove scripts",
-    "remove_thumbnails": "Remove page thumbnails"
+    "remove_thumbnails": "Remove page thumbnails",
+    "font_size_pt": "Font size (pt)",
+    "add_bookmarks": "Add a bookmark for each chapter"
   },
   "tools": {
     "remove-annotations": {
