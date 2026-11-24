@@ -4,7 +4,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Bot,
   Database,
+  KeyRound,
   LogIn,
+  Mail,
   Monitor,
   ShieldCheck,
   SlidersHorizontal,
@@ -18,7 +20,7 @@ import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ThemeSelect } from "@/components/layout/theme-toggle";
 import { Callout, EmptyState } from "@/components/ui/blocks";
 import { Button } from "@/components/ui/button";
-import { Field, Input } from "@/components/ui/input";
+import { Field, Input, PasswordInput, Select } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast, toastError } from "@/components/ui/toaster";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -41,10 +43,16 @@ function ProfileSection({ user }: { user: User }) {
   return (
     <Panel title={t("profile")} icon={UserIcon}>
       <form onSubmit={submit} className="flex flex-col gap-4">
-        <Field label={t("displayName")}>
+        <Field label={t("displayName")} counter={{ value: name.length, max: 120 }}>
           {(props) => (
             <Input
               id={props.id}
+              aria-describedby={props.describedBy}
+              invalid={props.invalid}
+              icon={<UserIcon />}
+              enterKeyHint="done"
+              autoComplete="name"
+              placeholder={t("displayNamePlaceholder")}
               value={name}
               maxLength={120}
               onChange={(event) => setName(event.target.value)}
@@ -52,7 +60,9 @@ function ProfileSection({ user }: { user: User }) {
           )}
         </Field>
         <Field label={t("email")}>
-          {(props) => <Input id={props.id} value={user.email} readOnly disabled />}
+          {(props) => (
+            <Input id={props.id} icon={<Mail />} dir="ltr" value={user.email} readOnly disabled />
+          )}
         </Field>
         <Button type="submit" variant="solid" loading={update.isPending} className="w-fit">
           {t("save")}
@@ -184,7 +194,13 @@ function TwoFactor({ user }: { user: User }) {
             {(props) => (
               <Input
                 id={props.id}
+                aria-describedby={props.describedBy}
+                invalid={props.invalid}
+                icon={<ShieldCheck />}
+                dir="ltr"
                 inputMode="numeric"
+                enterKeyHint="done"
+                placeholder="123456"
                 autoComplete="one-time-code"
                 value={code}
                 onChange={(event) => setCode(event.target.value)}
@@ -213,9 +229,11 @@ function TwoFactor({ user }: { user: User }) {
           {user.has_password ? (
             <Field label={t("currentPassword")}>
               {(props) => (
-                <Input
+                <PasswordInput
                   id={props.id}
-                  type="password"
+                  aria-describedby={props.describedBy}
+                  invalid={props.invalid}
+                  icon={<KeyRound />}
                   autoComplete="current-password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
@@ -227,6 +245,12 @@ function TwoFactor({ user }: { user: User }) {
             {(props) => (
               <Input
                 id={props.id}
+                aria-describedby={props.describedBy}
+                invalid={props.invalid}
+                icon={<ShieldCheck />}
+                dir="ltr"
+                enterKeyHint="done"
+                placeholder="123456"
                 autoComplete="one-time-code"
                 value={code}
                 onChange={(event) => setCode(event.target.value)}
@@ -244,6 +268,7 @@ function TwoFactor({ user }: { user: User }) {
 
 function PasswordForm({ user }: { user: User }) {
   const t = useTranslations("settings");
+  const form = useTranslations("form");
   const queryClient = useQueryClient();
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
@@ -272,9 +297,11 @@ function PasswordForm({ user }: { user: User }) {
       {user.has_password ? (
         <Field label={t("currentPassword")}>
           {(props) => (
-            <Input
+            <PasswordInput
               id={props.id}
-              type="password"
+              aria-describedby={props.describedBy}
+              invalid={props.invalid}
+              icon={<KeyRound />}
               autoComplete="current-password"
               value={current}
               onChange={(event) => setCurrent(event.target.value)}
@@ -282,11 +309,17 @@ function PasswordForm({ user }: { user: User }) {
           )}
         </Field>
       ) : null}
-      <Field label={t("newPassword")}>
+      <Field
+        label={t("newPassword")}
+        hint={t("newPasswordHint")}
+        error={next.length > 0 && next.length < 10 ? form("passwordShort", { min: 10 }) : null}
+      >
         {(props) => (
-          <Input
+          <PasswordInput
             id={props.id}
-            type="password"
+            aria-describedby={props.describedBy}
+            invalid={props.invalid}
+            icon={<KeyRound />}
             autoComplete="new-password"
             value={next}
             onChange={(event) => setNext(event.target.value)}
@@ -407,25 +440,26 @@ function AiKeySection({ user }: { user: User }) {
       >
         <Field label={t("aiProvider")}>
           {(props) => (
-            <select
+            <Select
               id={props.id}
               value={provider}
               onChange={(event) => setProvider(event.target.value)}
-              className="h-11 rounded-(--radius-control) border border-border-strong bg-surface px-3 text-sm"
             >
               {(providers.data?.providers ?? ["anthropic"]).map((entry) => (
                 <option key={entry} value={entry}>
                   {entry}
                 </option>
               ))}
-            </select>
+            </Select>
           )}
         </Field>
         <Field label={t("aiKey")}>
           {(props) => (
-            <Input
+            <PasswordInput
               id={props.id}
-              type="password"
+              aria-describedby={props.describedBy}
+              invalid={props.invalid}
+              icon={<KeyRound />}
               autoComplete="off"
               value={key}
               onChange={(event) => setKey(event.target.value)}
@@ -510,9 +544,11 @@ function DataSection({ user }: { user: User }) {
           {user.has_password ? (
             <Field label={t("currentPassword")}>
               {(props) => (
-                <Input
+                <PasswordInput
                   id={props.id}
-                  type="password"
+                  aria-describedby={props.describedBy}
+                  invalid={props.invalid}
+                  icon={<KeyRound />}
                   autoComplete="current-password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
@@ -524,6 +560,8 @@ function DataSection({ user }: { user: User }) {
               {(props) => (
                 <Input
                   id={props.id}
+                  aria-describedby={props.describedBy}
+                  invalid={props.invalid}
                   type="email"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}

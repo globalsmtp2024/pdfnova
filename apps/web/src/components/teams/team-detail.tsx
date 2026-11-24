@@ -1,18 +1,19 @@
 "use client";
 
-import { FolderOpen, Mail, Trash2, Workflow } from "lucide-react";
+import { FolderOpen, Mail, Send, Trash2, Workflow } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Field, Input, Select } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast, toastError } from "@/components/ui/toaster";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useSession } from "@/lib/session";
 import { useTeam, useTeamMutations, useTeamWorkflows } from "@/lib/teams";
 import { cn } from "@/lib/utils";
+import { isEmail } from "@/lib/validate";
 
 export function TeamDetailView({ id }: { id: string }) {
   const t = useTranslations("teams");
@@ -24,6 +25,8 @@ export function TeamDetailView({ id }: { id: string }) {
   const mutations = useTeamMutations(id);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("member");
+  const form = useTranslations("form");
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   if (team.isPending) return <Skeleton className="h-60 w-full" />;
   if (!team.data) {
@@ -91,7 +94,7 @@ export function TeamDetailView({ id }: { id: string }) {
                 </span>
                 <span className="flex items-center gap-2">
                   {editable ? (
-                    <select
+                    <Select
                       value={member.role}
                       aria-label={t("changeRole")}
                       onChange={(event) =>
@@ -100,14 +103,13 @@ export function TeamDetailView({ id }: { id: string }) {
                           { onError: toastError },
                         )
                       }
-                      className="h-9 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
                     >
                       {["admin", "member", "viewer"].map((entry) => (
                         <option key={entry} value={entry} disabled={!assignable.includes(entry)}>
                           {t(`role.${entry}`)}
                         </option>
                       ))}
-                    </select>
+                    </Select>
                   ) : (
                     <Badge tone="neutral">{t(`role.${member.role}`)}</Badge>
                   )}
@@ -139,9 +141,15 @@ export function TeamDetailView({ id }: { id: string }) {
         <section className="flex flex-col gap-3">
           <h2 className="font-display text-xl font-semibold">{t("invite")}</h2>
           <form
-            className="flex flex-wrap items-end gap-2"
+            className="flex flex-wrap items-start gap-2"
+            noValidate
             onSubmit={(event) => {
               event.preventDefault();
+              if (!isEmail(email)) {
+                setEmailError(email.trim() ? form("invalidEmail") : form("required"));
+                return;
+              }
+              setEmailError(null);
               mutations.invite.mutate(
                 { email: email.trim(), role },
                 {
@@ -154,37 +162,49 @@ export function TeamDetailView({ id }: { id: string }) {
               );
             }}
           >
-            <label className="flex min-w-56 flex-1 flex-col gap-1 text-sm font-medium">
-              {t("email")}
-              <Input
-                type="email"
-                required
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                data-team-invite-email
-              />
-            </label>
-            <label className="flex flex-col gap-1 text-sm font-medium">
-              {t("roleLabel")}
-              <select
-                value={role}
-                onChange={(event) => setRole(event.target.value)}
-                className="h-11 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
-              >
-                {assignable.map((entry) => (
-                  <option key={entry} value={entry}>
-                    {t(`role.${entry}`)}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <Field label={t("email")} required error={emailError} className="min-w-56 flex-1">
+              {(props) => (
+                <Input
+                  id={props.id}
+                  aria-describedby={props.describedBy}
+                  invalid={props.invalid}
+                  icon={<Mail />}
+                  dir="ltr"
+                  type="email"
+                  inputMode="email"
+                  enterKeyHint="send"
+                  autoComplete="off"
+                  placeholder={t("invitePlaceholder")}
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  data-team-invite-email
+                />
+              )}
+            </Field>
+            <Field label={t("roleLabel")}>
+              {(props) => (
+                <Select
+                  id={props.id}
+                  value={role}
+                  onChange={(event) => setRole(event.target.value)}
+                >
+                  {assignable.map((entry) => (
+                    <option key={entry} value={entry}>
+                      {t(`role.${entry}`)}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            </Field>
             <Button
               type="submit"
               variant="primary"
+              icon={<Send />}
+              mirrorIcon
               loading={mutations.invite.isPending}
+              className="mt-[1.65rem]"
               data-team-invite
             >
-              <Mail aria-hidden />
               {t("sendInvite")}
             </Button>
           </form>

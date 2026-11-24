@@ -1937,7 +1937,13 @@
       "declined": "دستخط سے انکار",
       "completed": "تمام دستخط جمع ہو گئے",
       "cancelled": "درخواست منسوخ"
-    }
+    },
+    "titlePlaceholder": "مثلاً سروس معاہدہ 2026",
+    "messagePlaceholder": "دستخط کنندگان کے لیے مختصر پیغام لکھیں (اختیاری)",
+    "expiresHint": "اتنے دنوں کے بعد دستخط کنندگان دستخط نہیں کر سکیں گے (1 سے 60)۔",
+    "signerNamePlaceholder": "پورا نام",
+    "signerEmailPlaceholder": "signer@example.com",
+    "declinePlaceholder": "بھیجنے والے کو بتائیں کہ آپ کیوں انکار کر رہے ہیں (اختیاری)"
   },
   "aiBudget": {
     "title": "آج کا مشترکہ AI الاؤنس",
@@ -1990,7 +1996,9 @@
     "deleteConfirm": "میرا اکاؤنٹ حذف کریں",
     "confirmEmail": "تصدیق کے لیے اپنی ای میل لکھیں",
     "language": "زبان",
-    "theme": "تھیم"
+    "theme": "تھیم",
+    "displayNamePlaceholder": "آپ کا نام",
+    "newPasswordHint": "کم از کم 10 حروف۔"
   },
   "workflowBuilder": {
     "input": "آپ کی PDFs",
@@ -2104,7 +2112,9 @@
     "restore": "بحال کریں",
     "deleteForever": "ہمیشہ کے لیے حذف کریں",
     "space": "جگہ",
-    "personal": "ذاتی"
+    "personal": "ذاتی",
+    "folderCreated": "فولڈر “{name}” بن گیا۔",
+    "folderPlaceholder": "مثلاً معاہدے 2026"
   },
   "teams": {
     "title": "ٹیمیں",
@@ -2145,7 +2155,10 @@
       "admin": "منتظم",
       "member": "رکن",
       "viewer": "ناظر"
-    }
+    },
+    "created": "ٹیم “{name}” بن گئی۔",
+    "newTeamPlaceholder": "مثلاً قانونی ٹیم",
+    "invitePlaceholder": "colleague@company.com"
   },
   "dashboard": {
     "keyScopes": "دائرے",
@@ -2188,7 +2201,9 @@
       "expired": "میعاد ختم"
     },
     "filesDeleted": "فائلیں حذف ہو گئیں",
-    "expiresIn": "{time} میں حذف ہوں گی"
+    "expiresIn": "{time} میں حذف ہوں گی",
+    "keyNamePlaceholder": "مثلاً انوائس آٹومیشن",
+    "scopesRequired": "اس کلید کے لیے کم از کم ایک اجازت منتخب کریں۔"
   },
   "webhooks": {
     "title": "ویب ہکس",
@@ -2222,7 +2237,11 @@
       "pending": "دوبارہ کوشش جاری",
       "delivered": "پہنچ گیا",
       "failed": "ناکام"
-    }
+    },
+    "created": "ویب ہک شامل ہو گیا۔ اس کا دستخطی راز ابھی کاپی کر لیں؛ یہ صرف ایک بار دکھایا جاتا ہے۔",
+    "urlHint": "عوامی https ایڈریس ہونا ضروری ہے۔ ہم اس پر دستخط شدہ POST درخواستیں بھیجتے ہیں۔",
+    "descriptionPlaceholder": "مثلاً ہمارے بلنگ سسٹم کو اطلاع دیں",
+    "eventsRequired": "کم از کم ایک ایونٹ منتخب کریں۔"
   },
   "cloud": {
     "pickFile": "{service} سے فائل منتخب کریں",
@@ -2352,7 +2371,8 @@
       "4": "جمعہ",
       "5": "ہفتہ",
       "6": "اتوار"
-    }
+    },
+    "namePlaceholder": "مثلاً ہفتہ وار اسکین کی صفائی"
   },
   "admin": {
     "title": "منتظم",
@@ -2415,14 +2435,99 @@
       "open": "کھلی",
       "actioned": "نمٹائی گئی",
       "dismissed": "مسترد"
-    }
+    },
+    "messageEnPlaceholder": "e.g. Scheduled maintenance on Sunday 02:00 UTC",
+    "messageUrPlaceholder": "مثلاً اتوار کو 02:00 UTC پر طے شدہ دیکھ بھال",
+    "hrefHint": "اختیاری۔ جیسے /status یا مکمل https:// ایڈریس۔",
+    "hrefInvalid": "ایسا راستہ دیں جو / سے شروع ہو یا https:// ایڈریس۔"
   },
   "announcement": {
     "label": "اعلان"
   },
   "auth": {
     "panelTitle": "آپ کی دستاویزات، سنبھالی ہوئی۔",
-    "panelBody": "اکاؤنٹ اختیاری ہے۔ اس سے ہسٹری، API کلیدیں، 24 گھنٹے کا رکھاؤ اور ہر آلے سے رسائی ملتی ہے۔ سب کچھ مفت رہتا ہے۔"
+    "panelBody": "اکاؤنٹ اختیاری ہے۔ اس سے ہسٹری، API کلیدیں، 24 گھنٹے کا رکھاؤ اور ہر آلے سے رسائی ملتی ہے۔ سب کچھ مفت رہتا ہے۔",
+    "mfa": {
+      "title": "دو مرحلہ توثیق",
+      "subtitle": "اپنی تصدیقی ایپ کا 6 ہندسوں والا کوڈ یا ریکوری کوڈ درج کریں۔",
+      "codeLabel": "تصدیقی کوڈ",
+      "codeHint": "کوڈ ہر 30 سیکنڈ بعد بدلتے ہیں۔",
+      "short": "پورا 6 ہندسوں کا کوڈ یا ریکوری کوڈ درج کریں۔",
+      "submit": "تصدیق کریں اور سائن اِن کریں",
+      "useDifferent": "دوسرا اکاؤنٹ استعمال کریں"
+    },
+    "login": {
+      "title": "خوش آمدید",
+      "subtitle": "اپنی فائلیں، حدود اور سیٹنگز ایک جگہ رکھنے کے لیے سائن اِن کریں۔",
+      "newHere": "نئے ہیں؟",
+      "createAccount": "مفت اکاؤنٹ بنائیں",
+      "oauthFailed": "اس فراہم کنندہ کے ذریعے سائن اِن نہیں ہو سکا۔",
+      "oauthHint": "دوبارہ کوشش کریں، یا ای میل اور پاس ورڈ استعمال کریں۔",
+      "email": "ای میل",
+      "emailPlaceholder": "you@example.com",
+      "password": "پاس ورڈ",
+      "passwordPlaceholder": "آپ کا پاس ورڈ",
+      "forgot": "پاس ورڈ بھول گئے؟",
+      "submit": "سائن اِن کریں"
+    },
+    "register": {
+      "title": "اپنا مفت اکاؤنٹ بنائیں",
+      "subtitle": "روزانہ زیادہ حدیں، بڑی فائلیں اور آپ کی سیٹنگز محفوظ۔",
+      "haveAccount": "پہلے سے اکاؤنٹ ہے؟",
+      "signIn": "سائن اِن کریں",
+      "name": "نام",
+      "nameHint": "اختیاری۔ آپ کے ورک اسپیس میں دکھایا جائے گا۔",
+      "namePlaceholder": "آپ کا نام",
+      "email": "ای میل",
+      "emailPlaceholder": "you@example.com",
+      "password": "پاس ورڈ",
+      "passwordHint": "کم از کم 10 حروف۔ ایک مختصر جملہ بھی اچھا رہتا ہے۔",
+      "passwordPlaceholder": "پاس ورڈ منتخب کریں",
+      "submit": "اکاؤنٹ بنائیں"
+    },
+    "forgot": {
+      "sentTitle": "اپنا ان باکس دیکھیں",
+      "sentSubtitle": "اگر {email} کے لیے اکاؤنٹ موجود ہے تو ری سیٹ لنک بھیجا جا رہا ہے۔ یہ ایک گھنٹے تک کارآمد ہے۔",
+      "back": "سائن اِن پر واپس جائیں",
+      "title": "اپنا پاس ورڈ ری سیٹ کریں",
+      "subtitle": "ہم آپ کو نیا پاس ورڈ چننے کے لیے محفوظ لنک ای میل کریں گے۔",
+      "email": "ای میل",
+      "emailPlaceholder": "you@example.com",
+      "submit": "ری سیٹ لنک بھیجیں"
+    },
+    "reset": {
+      "incompleteTitle": "لنک نامکمل ہے",
+      "incompleteSubtitle": "اس ری سیٹ لنک میں کوڈ موجود نہیں۔ اپنی ای میل سے لنک دوبارہ کھولیں یا نیا لنک منگوائیں۔",
+      "requestNew": "نیا لنک منگوائیں",
+      "doneTitle": "پاس ورڈ تبدیل ہو گیا",
+      "doneSubtitle": "آپ ہر جگہ سے سائن آؤٹ ہو گئے ہیں۔ نئے پاس ورڈ سے سائن اِن کریں۔",
+      "signIn": "سائن اِن کریں",
+      "title": "نیا پاس ورڈ منتخب کریں",
+      "newPassword": "نیا پاس ورڈ",
+      "passwordHint": "کم از کم 10 حروف۔",
+      "passwordPlaceholder": "نیا پاس ورڈ",
+      "confirm": "نئے پاس ورڈ کی تصدیق",
+      "confirmPlaceholder": "دوبارہ لکھیں",
+      "submit": "پاس ورڈ تبدیل کریں"
+    },
+    "verify": {
+      "pendingTitle": "آپ کی ای میل کی تصدیق ہو رہی ہے…",
+      "pendingSubtitle": "بس ایک لمحہ لگے گا۔",
+      "doneTitle": "ای میل کی تصدیق ہو گئی",
+      "doneSubtitle": "شکریہ! آپ کا اکاؤنٹ مکمل طور پر تیار ہے۔",
+      "start": "اپنا اکاؤنٹ استعمال کرنا شروع کریں",
+      "failedTitle": "ہم آپ کی ای میل کی تصدیق نہیں کر سکے",
+      "failedGeneric": "ہم آپ کی ای میل کی تصدیق نہیں کر سکے۔",
+      "missingCode": "اس لنک میں کوڈ موجود نہیں۔",
+      "failedHint": "سائن اِن کریں اور اپنے اکاؤنٹ سے نئی تصدیقی لنک منگوائیں۔"
+    },
+    "expired": {
+      "title": "سائن اِن کی مدت ختم ہو گئی",
+      "subtitle": "جاری رکھنے کے لیے دوبارہ سائن اِن شروع کریں۔",
+      "signIn": "سائن اِن کریں"
+    },
+    "orEmail": "یا ای میل کے ساتھ",
+    "continueWith": "{provider} کے ساتھ جاری رکھیں"
   },
   "contact": {
     "metaTitle": "رابطہ",
@@ -2443,7 +2548,10 @@
       "security": "سلامتی کی رپورٹ",
       "other": "کچھ اور"
     },
-    "website": "اس خانے کو خالی چھوڑیں"
+    "website": "اس خانے کو خالی چھوڑیں",
+    "namePlaceholder": "آپ کا پورا نام",
+    "emailPlaceholder": "you@example.com",
+    "messagePlaceholder": "بتائیں کہ آپ کو کس چیز میں مدد چاہیے۔ ٹول کا نام اور آپ کی توقع بھی لکھیں۔"
   },
   "status": {
     "metaTitle": "سسٹم کی حالت",
@@ -2528,5 +2636,18 @@
       "feedback": "رابطہ صفحے کے ذریعے خامیاں بتائیں اور فیچرز تجویز کریں۔",
       "translate": "انٹرفیس کا اپنی زبان میں ترجمہ کرنے میں مدد کریں۔"
     }
+  },
+  "form": {
+    "showPassword": "پاس ورڈ دکھائیں",
+    "hidePassword": "پاس ورڈ چھپائیں",
+    "required": "یہ خانہ پُر کرنا ضروری ہے۔",
+    "invalidEmail": "درست ای میل ایڈریس درج کریں۔",
+    "passwordShort": "کم از کم {min} حروف استعمال کریں۔",
+    "passwordsDiffer": "دونوں پاس ورڈ مختلف ہیں۔",
+    "invalidUrl": "مکمل ویب ایڈریس درج کریں جو https:// سے شروع ہو۔",
+    "saved": "محفوظ ہو گیا۔",
+    "sending": "بھیجا جا رہا ہے…",
+    "tryAgain": "کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔",
+    "chars": "{max} میں سے {count} حروف"
   }
 }

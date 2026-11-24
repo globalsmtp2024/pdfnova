@@ -11,6 +11,7 @@ import {
   Layers,
   LogIn,
   PenLine,
+  Plus,
   ShieldAlert,
   ShieldCheck,
   Users,
@@ -18,14 +19,14 @@ import {
   Workflow,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useRef, useState, type FormEvent, type ReactNode } from "react";
 
 import { ApiActivityChart } from "@/components/account/api-activity-chart";
 import { ToolIcon } from "@/components/tools/tool-icon";
 import { Badge } from "@/components/ui/badge";
 import { Callout, EmptyState } from "@/components/ui/blocks";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Field, focusFirstInvalid, Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toastError } from "@/components/ui/toaster";
@@ -121,10 +122,21 @@ function ApiKeysPanel() {
   const [scopes, setScopes] = useState<string[]>(["tasks:read", "tasks:write"]);
   const [secret, setSecret] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const formText = useTranslations("form");
+  const formRef = useRef<HTMLFormElement>(null);
+  const [errors, setErrors] = useState<{ name?: string; scopes?: string }>({});
   const submit = async (event: FormEvent) => {
     event.preventDefault();
+    const problems: { name?: string; scopes?: string } = {};
+    if (!name.trim()) problems.name = formText("required");
+    if (!scopes.length) problems.scopes = t("scopesRequired");
+    setErrors(problems);
+    if (problems.name || problems.scopes) {
+      requestAnimationFrame(() => focusFirstInvalid(formRef.current));
+      return;
+    }
     try {
-      const created = await create.mutateAsync({ name: name.trim() || "API key", scopes });
+      const created = await create.mutateAsync({ name: name.trim(), scopes });
       setSecret(created.secret);
       setName("");
     } catch (error) {
@@ -158,20 +170,37 @@ function ApiKeysPanel() {
           </div>
         </Callout>
       ) : null}
-      <form onSubmit={submit} className="flex flex-col gap-3">
-        <div className="flex gap-2">
-          <label htmlFor="key-name" className="sr-only">
-            {t("keyName")}
-          </label>
-          <Input
-            id="key-name"
-            placeholder={t("keyName")}
-            value={name}
-            maxLength={80}
-            onChange={(event) => setName(event.target.value)}
-            className="h-10"
-          />
-          <Button type="submit" variant="solid" loading={create.isPending}>
+      <form ref={formRef} onSubmit={submit} className="flex flex-col gap-3" noValidate>
+        <div className="flex items-start gap-2">
+          <Field
+            label={t("keyName")}
+            required
+            error={errors.name}
+            counter={{ value: name.length, max: 80 }}
+            className="flex-1"
+          >
+            {(props) => (
+              <Input
+                id={props.id}
+                aria-describedby={props.describedBy}
+                invalid={props.invalid}
+                icon={<KeyRound />}
+                enterKeyHint="done"
+                autoComplete="off"
+                placeholder={t("keyNamePlaceholder")}
+                value={name}
+                maxLength={80}
+                onChange={(event) => setName(event.target.value)}
+              />
+            )}
+          </Field>
+          <Button
+            type="submit"
+            variant="solid"
+            icon={<Plus />}
+            loading={create.isPending}
+            className="mt-[1.65rem]"
+          >
             {t("createKey")}
           </Button>
         </div>
@@ -181,6 +210,7 @@ function ApiKeysPanel() {
             <label key={scope} className="flex items-center gap-2 text-xs">
               <input
                 type="checkbox"
+                aria-invalid={errors.scopes ? true : undefined}
                 checked={scopes.includes(scope)}
                 onChange={(event) =>
                   setScopes(
@@ -193,6 +223,11 @@ function ApiKeysPanel() {
               <code dir="ltr">{scope}</code>
             </label>
           ))}
+          {errors.scopes ? (
+            <p role="alert" className="col-span-2 text-xs font-medium text-danger">
+              {errors.scopes}
+            </p>
+          ) : null}
         </fieldset>
       </form>
       {keys.isPending ? (

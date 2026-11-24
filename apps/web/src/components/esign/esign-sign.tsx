@@ -7,7 +7,7 @@ import { useMemo, useRef, useState, type PointerEvent } from "react";
 import { usePdfDocument, PdfPageCanvas } from "@/components/tools/pdf-page-canvas";
 import { Callout } from "@/components/ui/blocks";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Input, Textarea } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toastError } from "@/components/ui/toaster";
 import {
@@ -122,6 +122,9 @@ function SignaturePad({
             value={typed}
             onChange={(event) => setTyped(event.target.value)}
             placeholder={t("typeHere")}
+            aria-label={t("typeHere")}
+            maxLength={120}
+            enterKeyHint="done"
             autoFocus
             data-esign-typed
           />
@@ -365,14 +368,17 @@ export function EsignSign({ token }: { token: string }) {
           <label className="text-sm font-medium" htmlFor="esign-reason">
             {t("declineReason")}
           </label>
-          <textarea
+          <Textarea
             id="esign-reason"
             rows={3}
             value={reason}
             onChange={(event) => setReason(event.target.value)}
             maxLength={500}
-            className="w-full rounded-md border border-border bg-surface p-2 text-sm"
+            placeholder={t("declinePlaceholder")}
           />
+          <p className="text-end text-xs text-muted tabular-nums" aria-hidden>
+            {reason.length}/500
+          </p>
           <div className="flex gap-2">
             <Button
               type="button"

@@ -7,9 +7,9 @@ import { useState } from "react";
 import { EmptyState } from "@/components/ui/blocks";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Field, Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toastError } from "@/components/ui/toaster";
+import { toast, toastError } from "@/components/ui/toaster";
 import { Link } from "@/i18n/navigation";
 import { useSession } from "@/lib/session";
 import { useTeamMutations, useTeams } from "@/lib/teams";
@@ -20,7 +20,9 @@ export function TeamsPage() {
   const session = useSession();
   const teams = useTeams(Boolean(session.data));
   const mutations = useTeamMutations(null);
+  const form = useTranslations("form");
   const [name, setName] = useState("");
+  const [nameError, setNameError] = useState<string | null>(null);
 
   if (session.isPending) return <Skeleton className="h-40 w-full" />;
   if (!session.data) {
@@ -41,32 +43,56 @@ export function TeamsPage() {
   return (
     <div className="flex flex-col gap-6" data-teams>
       <form
-        className="flex max-w-xl gap-2"
+        className="flex max-w-xl items-start gap-2"
+        noValidate
         onSubmit={(event) => {
           event.preventDefault();
           const trimmed = name.trim();
-          if (!trimmed) return;
+          if (!trimmed) {
+            setNameError(form("required"));
+            return;
+          }
+          setNameError(null);
           mutations.create.mutate(trimmed, {
-            onSuccess: () => setName(""),
+            onSuccess: () => {
+              setName("");
+              toast.success(t("created", { name: trimmed }));
+            },
             onError: toastError,
           });
         }}
       >
-        <Input
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder={t("newTeam")}
-          aria-label={t("newTeam")}
-          maxLength={120}
-          data-team-name
-        />
+        <Field
+          label={t("newTeam")}
+          required
+          error={nameError}
+          counter={{ value: name.length, max: 120 }}
+          className="flex-1"
+        >
+          {(props) => (
+            <Input
+              id={props.id}
+              aria-describedby={props.describedBy}
+              invalid={props.invalid}
+              icon={<Users />}
+              enterKeyHint="done"
+              autoComplete="off"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              placeholder={t("newTeamPlaceholder")}
+              maxLength={120}
+              data-team-name
+            />
+          )}
+        </Field>
         <Button
           type="submit"
           variant="primary"
+          icon={<Plus />}
           loading={mutations.create.isPending}
+          className="mt-[1.65rem]"
           data-team-create
         >
-          <Plus aria-hidden />
           {t("create")}
         </Button>
       </form>

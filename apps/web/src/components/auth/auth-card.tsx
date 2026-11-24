@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,7 @@ function GithubMark() {
 }
 
 export function OAuthButtons() {
+  const t = useTranslations("auth");
   const providers = useQuery({
     queryKey: ["auth-providers"],
     queryFn: () => apiJson<{ providers: string[] }>("/api/v1/auth/providers"),
@@ -72,7 +74,10 @@ export function OAuthButtons() {
       <div className="grid gap-2 sm:grid-cols-2">
         {configured.includes("google") ? (
           <Button asChild variant="outline">
-            <a href="/api/v1/auth/oauth/google/start">
+            <a
+              href="/api/v1/auth/oauth/google/start"
+              aria-label={t("continueWith", { provider: "Google" })}
+            >
               <GoogleMark />
               Google
             </a>
@@ -80,7 +85,10 @@ export function OAuthButtons() {
         ) : null}
         {configured.includes("github") ? (
           <Button asChild variant="outline">
-            <a href="/api/v1/auth/oauth/github/start">
+            <a
+              href="/api/v1/auth/oauth/github/start"
+              aria-label={t("continueWith", { provider: "GitHub" })}
+            >
               <GithubMark />
               GitHub
             </a>
@@ -89,7 +97,7 @@ export function OAuthButtons() {
       </div>
       <div className="flex items-center gap-3 text-xs text-muted">
         <span className="h-px flex-1 bg-border" />
-        or with email
+        {t("orEmail")}
         <span className="h-px flex-1 bg-border" />
       </div>
     </div>

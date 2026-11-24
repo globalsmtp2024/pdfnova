@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Callout, EmptyState } from "@/components/ui/blocks";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Input, Select } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast, toastError } from "@/components/ui/toaster";
 import { Link } from "@/i18n/navigation";
@@ -124,52 +124,48 @@ export function SchedulesPage() {
           <Input
             value={name}
             onChange={(event) => setName(event.target.value)}
+            placeholder={t("namePlaceholder")}
+            enterKeyHint="done"
             maxLength={120}
             data-schedule-name
           />
         </label>
         <label className="flex flex-col gap-1 text-sm font-medium">
           {t("workflow")}
-          <select
-            value={template}
-            onChange={(event) => setTemplate(event.target.value)}
-            className="h-11 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
-          >
+          <Select value={template} onChange={(event) => setTemplate(event.target.value)}>
             {WORKFLOW_TEMPLATES.map((entry) => (
               <option key={entry.slug} value={entry.slug}>
                 {wt(`template.${entry.slug}.name`)}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <label className="flex flex-col gap-1 text-sm font-medium">
           {t("frequency")}
-          <select
+          <Select
             value={frequency}
             onChange={(event) => setFrequency(event.target.value as typeof frequency)}
-            className="h-11 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
           >
             <option value="hourly">{t("hourly")}</option>
             <option value="daily">{t("daily")}</option>
             <option value="weekly">{t("weekly")}</option>
-          </select>
+          </Select>
         </label>
         {frequency !== "hourly" ? (
           <div className="flex gap-2">
             {frequency === "weekly" ? (
               <label className="flex flex-1 flex-col gap-1 text-sm font-medium">
                 {t("weekday")}
-                <select
+                <Select
                   value={weekday}
                   onChange={(event) => setWeekday(Number(event.target.value))}
-                  className="h-11 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
                 >
                   {WEEKDAYS.map((day) => (
                     <option key={day} value={day}>
                       {t(`day.${day}`)}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
             ) : null}
             <label className="flex flex-1 flex-col gap-1 text-sm font-medium">
@@ -188,38 +184,31 @@ export function SchedulesPage() {
         ) : null}
         <label className="flex flex-col gap-1 text-sm font-medium">
           {t("source")}
-          <select
-            value={source}
-            onChange={(event) => setSource(event.target.value)}
-            className="h-11 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
-          >
+          <Select value={source} onChange={(event) => setSource(event.target.value)}>
             <option value="">{t("rootFolder")}</option>
             {(folders.data ?? []).map((folder) => (
               <option key={folder.id} value={folder.id}>
                 {folder.name}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <label className="flex flex-col gap-1 text-sm font-medium">
           {t("destination")}
-          <select
-            value={destination}
-            onChange={(event) => setDestination(event.target.value)}
-            className="h-11 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
-          >
+          <Select value={destination} onChange={(event) => setDestination(event.target.value)}>
             <option value="">{t("rootFolder")}</option>
             {(folders.data ?? []).map((folder) => (
               <option key={folder.id} value={folder.id}>
                 {folder.name}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <Button
           type="submit"
           variant="primary"
           className="self-end sm:col-span-2 sm:justify-self-start"
+          icon={<CalendarClock />}
           loading={mutations.create.isPending}
           data-schedule-create
         >

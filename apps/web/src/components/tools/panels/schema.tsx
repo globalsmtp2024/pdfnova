@@ -7,7 +7,7 @@ import { useMemo, useState, type ChangeEvent } from "react";
 import { ToggleRow } from "@/components/tools/option-panels";
 import type { ToolPanelView } from "@/components/tools/panels/registry";
 import type { LocalFile } from "@/components/tools/use-tool-session";
-import { Input } from "@/components/ui/input";
+import { Input, Select } from "@/components/ui/input";
 import { apiJson } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -260,9 +260,9 @@ export function useSchemaPanel(
           </fieldset>
         ) : null}
         {kind === "enum" ? (
-          <select
+          <Select
             id={id}
-            className="h-10 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
+
             value={String(current(name, fallback) ?? "")}
             onChange={(event) => set(name, event.target.value)}
           >
@@ -271,7 +271,7 @@ export function useSchemaPanel(
                 {optionLabel(name, option)}
               </option>
             ))}
-          </select>
+          </Select>
         ) : null}
         {kind === "number" || kind === "integer" ? (
           <Input

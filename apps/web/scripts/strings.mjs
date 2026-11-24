@@ -1,0 +1,306 @@
+import { readFileSync, writeFileSync } from "node:fs";
+
+const ADDITIONS = {
+  schedules: [
+    { namePlaceholder: "e.g. Weekly scan cleanup" },
+    { namePlaceholder: "مثلاً ہفتہ وار اسکین کی صفائی" },
+  ],
+  library: [
+    { folderCreated: "Folder “{name}” created.", folderPlaceholder: "e.g. Contracts 2026" },
+    { folderCreated: "فولڈر “{name}” بن گیا۔", folderPlaceholder: "مثلاً معاہدے 2026" },
+  ],
+  admin: [
+    {
+      messageEnPlaceholder: "e.g. Scheduled maintenance on Sunday 02:00 UTC",
+      messageUrPlaceholder: "مثلاً اتوار کو 02:00 UTC پر طے شدہ دیکھ بھال",
+      hrefHint: "Optional. A path such as /status or a full https:// address.",
+      hrefInvalid: "Use a path that starts with / or an https:// address.",
+    },
+    {
+      messageEnPlaceholder: "e.g. Scheduled maintenance on Sunday 02:00 UTC",
+      messageUrPlaceholder: "مثلاً اتوار کو 02:00 UTC پر طے شدہ دیکھ بھال",
+      hrefHint: "اختیاری۔ جیسے /status یا مکمل https:// ایڈریس۔",
+      hrefInvalid: "ایسا راستہ دیں جو / سے شروع ہو یا https:// ایڈریس۔",
+    },
+  ],
+  settings: [
+    { displayNamePlaceholder: "Your name", newPasswordHint: "At least 10 characters." },
+    { displayNamePlaceholder: "آپ کا نام", newPasswordHint: "کم از کم 10 حروف۔" },
+  ],
+  contact: [
+    {
+      namePlaceholder: "Your full name",
+      emailPlaceholder: "you@example.com",
+      messagePlaceholder: "Tell us what you need help with. Include the tool name and what you expected.",
+    },
+    {
+      namePlaceholder: "آپ کا پورا نام",
+      emailPlaceholder: "you@example.com",
+      messagePlaceholder: "بتائیں کہ آپ کو کس چیز میں مدد چاہیے۔ ٹول کا نام اور آپ کی توقع بھی لکھیں۔",
+    },
+  ],
+  esign: [
+    {
+      declinePlaceholder: "Tell the sender why you are declining (optional)",
+      titlePlaceholder: "e.g. Service agreement 2026",
+      messagePlaceholder: "Add a short note for your signers (optional)",
+      expiresHint: "Signers can no longer sign after this many days (1-60).",
+      signerNamePlaceholder: "Full name",
+      signerEmailPlaceholder: "signer@example.com",
+    },
+    {
+      declinePlaceholder: "بھیجنے والے کو بتائیں کہ آپ کیوں انکار کر رہے ہیں (اختیاری)",
+      titlePlaceholder: "مثلاً سروس معاہدہ 2026",
+      messagePlaceholder: "دستخط کنندگان کے لیے مختصر پیغام لکھیں (اختیاری)",
+      expiresHint: "اتنے دنوں کے بعد دستخط کنندگان دستخط نہیں کر سکیں گے (1 سے 60)۔",
+      signerNamePlaceholder: "پورا نام",
+      signerEmailPlaceholder: "signer@example.com",
+    },
+  ],
+  dashboard: [
+    { keyNamePlaceholder: "e.g. Invoice automation", scopesRequired: "Choose at least one permission for this key." },
+    { keyNamePlaceholder: "مثلاً انوائس آٹومیشن", scopesRequired: "اس کلید کے لیے کم از کم ایک اجازت منتخب کریں۔" },
+  ],
+  teams: [
+    {
+      created: "Team “{name}” created.",
+      newTeamPlaceholder: "e.g. Legal team",
+      invitePlaceholder: "colleague@company.com",
+    },
+    {
+      created: "ٹیم “{name}” بن گئی۔",
+      newTeamPlaceholder: "مثلاً قانونی ٹیم",
+      invitePlaceholder: "colleague@company.com",
+    },
+  ],
+  webhooks: [
+    {
+      created: "Webhook added. Copy its signing secret now; it is only shown once.",
+      urlHint: "Must be a public https address. We send signed POST requests to it.",
+      descriptionPlaceholder: "e.g. Notify our billing system",
+      eventsRequired: "Choose at least one event.",
+    },
+    {
+      created: "ویب ہک شامل ہو گیا۔ اس کا دستخطی راز ابھی کاپی کر لیں؛ یہ صرف ایک بار دکھایا جاتا ہے۔",
+      urlHint: "عوامی https ایڈریس ہونا ضروری ہے۔ ہم اس پر دستخط شدہ POST درخواستیں بھیجتے ہیں۔",
+      descriptionPlaceholder: "مثلاً ہمارے بلنگ سسٹم کو اطلاع دیں",
+      eventsRequired: "کم از کم ایک ایونٹ منتخب کریں۔",
+    },
+  ],
+  auth: [
+    {
+      orEmail: "or with email",
+      continueWith: "Continue with {provider}",
+      mfa: {
+        title: "Two-step verification",
+        subtitle: "Enter the 6-digit code from your authenticator app, or a recovery code.",
+        codeLabel: "Verification code",
+        codeHint: "Codes refresh every 30 seconds.",
+        short: "Enter the full 6-digit code or a recovery code.",
+        submit: "Verify and sign in",
+        useDifferent: "Use a different account",
+      },
+      login: {
+        title: "Welcome back",
+        subtitle: "Sign in to keep your files, limits and settings in one place.",
+        newHere: "New here?",
+        createAccount: "Create a free account",
+        oauthFailed: "We couldn't sign you in with that provider.",
+        oauthHint: "Try again, or use your email and password.",
+        email: "Email",
+        emailPlaceholder: "you@example.com",
+        password: "Password",
+        passwordPlaceholder: "Your password",
+        forgot: "Forgot password?",
+        submit: "Sign in",
+      },
+      register: {
+        title: "Create your free account",
+        subtitle: "Higher daily limits, larger files and your settings saved.",
+        haveAccount: "Already have an account?",
+        signIn: "Sign in",
+        name: "Name",
+        nameHint: "Optional. Shown in your workspace.",
+        namePlaceholder: "Your name",
+        email: "Email",
+        emailPlaceholder: "you@example.com",
+        password: "Password",
+        passwordHint: "At least 10 characters. A short phrase works well.",
+        passwordPlaceholder: "Choose a password",
+        submit: "Create account",
+      },
+      forgot: {
+        sentTitle: "Check your inbox",
+        sentSubtitle: "If an account exists for {email}, a reset link is on its way. It works for one hour.",
+        back: "Back to sign in",
+        title: "Reset your password",
+        subtitle: "We'll email you a secure link to choose a new one.",
+        email: "Email",
+        emailPlaceholder: "you@example.com",
+        submit: "Send reset link",
+      },
+      reset: {
+        incompleteTitle: "Link incomplete",
+        incompleteSubtitle: "This reset link is missing its code. Open the link from your email again, or request a new one.",
+        requestNew: "Request a new link",
+        doneTitle: "Password updated",
+        doneSubtitle: "You've been signed out everywhere. Sign in with your new password.",
+        signIn: "Sign in",
+        title: "Choose a new password",
+        newPassword: "New password",
+        passwordHint: "At least 10 characters.",
+        passwordPlaceholder: "New password",
+        confirm: "Confirm new password",
+        confirmPlaceholder: "Type it again",
+        submit: "Update password",
+      },
+      verify: {
+        pendingTitle: "Confirming your email…",
+        pendingSubtitle: "This only takes a moment.",
+        doneTitle: "Email confirmed",
+        doneSubtitle: "Thanks! Your account is fully set up.",
+        start: "Start using your account",
+        failedTitle: "We couldn't confirm your email",
+        failedGeneric: "We couldn't confirm your email.",
+        missingCode: "This link is missing its code.",
+        failedHint: "Sign in and request a new confirmation link from your account.",
+      },
+      expired: {
+        title: "Sign-in expired",
+        subtitle: "Start signing in again to continue.",
+        signIn: "Sign in",
+      },
+    },
+    {
+      orEmail: "یا ای میل کے ساتھ",
+      continueWith: "{provider} کے ساتھ جاری رکھیں",
+      mfa: {
+        title: "دو مرحلہ توثیق",
+        subtitle: "اپنی تصدیقی ایپ کا 6 ہندسوں والا کوڈ یا ریکوری کوڈ درج کریں۔",
+        codeLabel: "تصدیقی کوڈ",
+        codeHint: "کوڈ ہر 30 سیکنڈ بعد بدلتے ہیں۔",
+        short: "پورا 6 ہندسوں کا کوڈ یا ریکوری کوڈ درج کریں۔",
+        submit: "تصدیق کریں اور سائن اِن کریں",
+        useDifferent: "دوسرا اکاؤنٹ استعمال کریں",
+      },
+      login: {
+        title: "خوش آمدید",
+        subtitle: "اپنی فائلیں، حدود اور سیٹنگز ایک جگہ رکھنے کے لیے سائن اِن کریں۔",
+        newHere: "نئے ہیں؟",
+        createAccount: "مفت اکاؤنٹ بنائیں",
+        oauthFailed: "اس فراہم کنندہ کے ذریعے سائن اِن نہیں ہو سکا۔",
+        oauthHint: "دوبارہ کوشش کریں، یا ای میل اور پاس ورڈ استعمال کریں۔",
+        email: "ای میل",
+        emailPlaceholder: "you@example.com",
+        password: "پاس ورڈ",
+        passwordPlaceholder: "آپ کا پاس ورڈ",
+        forgot: "پاس ورڈ بھول گئے؟",
+        submit: "سائن اِن کریں",
+      },
+      register: {
+        title: "اپنا مفت اکاؤنٹ بنائیں",
+        subtitle: "روزانہ زیادہ حدیں، بڑی فائلیں اور آپ کی سیٹنگز محفوظ۔",
+        haveAccount: "پہلے سے اکاؤنٹ ہے؟",
+        signIn: "سائن اِن کریں",
+        name: "نام",
+        nameHint: "اختیاری۔ آپ کے ورک اسپیس میں دکھایا جائے گا۔",
+        namePlaceholder: "آپ کا نام",
+        email: "ای میل",
+        emailPlaceholder: "you@example.com",
+        password: "پاس ورڈ",
+        passwordHint: "کم از کم 10 حروف۔ ایک مختصر جملہ بھی اچھا رہتا ہے۔",
+        passwordPlaceholder: "پاس ورڈ منتخب کریں",
+        submit: "اکاؤنٹ بنائیں",
+      },
+      forgot: {
+        sentTitle: "اپنا ان باکس دیکھیں",
+        sentSubtitle: "اگر {email} کے لیے اکاؤنٹ موجود ہے تو ری سیٹ لنک بھیجا جا رہا ہے۔ یہ ایک گھنٹے تک کارآمد ہے۔",
+        back: "سائن اِن پر واپس جائیں",
+        title: "اپنا پاس ورڈ ری سیٹ کریں",
+        subtitle: "ہم آپ کو نیا پاس ورڈ چننے کے لیے محفوظ لنک ای میل کریں گے۔",
+        email: "ای میل",
+        emailPlaceholder: "you@example.com",
+        submit: "ری سیٹ لنک بھیجیں",
+      },
+      reset: {
+        incompleteTitle: "لنک نامکمل ہے",
+        incompleteSubtitle: "اس ری سیٹ لنک میں کوڈ موجود نہیں۔ اپنی ای میل سے لنک دوبارہ کھولیں یا نیا لنک منگوائیں۔",
+        requestNew: "نیا لنک منگوائیں",
+        doneTitle: "پاس ورڈ تبدیل ہو گیا",
+        doneSubtitle: "آپ ہر جگہ سے سائن آؤٹ ہو گئے ہیں۔ نئے پاس ورڈ سے سائن اِن کریں۔",
+        signIn: "سائن اِن کریں",
+        title: "نیا پاس ورڈ منتخب کریں",
+        newPassword: "نیا پاس ورڈ",
+        passwordHint: "کم از کم 10 حروف۔",
+        passwordPlaceholder: "نیا پاس ورڈ",
+        confirm: "نئے پاس ورڈ کی تصدیق",
+        confirmPlaceholder: "دوبارہ لکھیں",
+        submit: "پاس ورڈ تبدیل کریں",
+      },
+      verify: {
+        pendingTitle: "آپ کی ای میل کی تصدیق ہو رہی ہے…",
+        pendingSubtitle: "بس ایک لمحہ لگے گا۔",
+        doneTitle: "ای میل کی تصدیق ہو گئی",
+        doneSubtitle: "شکریہ! آپ کا اکاؤنٹ مکمل طور پر تیار ہے۔",
+        start: "اپنا اکاؤنٹ استعمال کرنا شروع کریں",
+        failedTitle: "ہم آپ کی ای میل کی تصدیق نہیں کر سکے",
+        failedGeneric: "ہم آپ کی ای میل کی تصدیق نہیں کر سکے۔",
+        missingCode: "اس لنک میں کوڈ موجود نہیں۔",
+        failedHint: "سائن اِن کریں اور اپنے اکاؤنٹ سے نئی تصدیقی لنک منگوائیں۔",
+      },
+      expired: {
+        title: "سائن اِن کی مدت ختم ہو گئی",
+        subtitle: "جاری رکھنے کے لیے دوبارہ سائن اِن شروع کریں۔",
+        signIn: "سائن اِن کریں",
+      },
+    },
+  ],
+  form: [
+    {
+      showPassword: "Show password",
+      hidePassword: "Hide password",
+      required: "This field is required.",
+      invalidEmail: "Enter a valid email address.",
+      passwordShort: "Use at least {min} characters.",
+      passwordsDiffer: "The two passwords don't match.",
+      invalidUrl: "Enter a full web address that starts with https://",
+      saved: "Saved.",
+      sending: "Sending…",
+      tryAgain: "Something went wrong. Please try again.",
+      chars: "{count} of {max} characters",
+    },
+    {
+      showPassword: "پاس ورڈ دکھائیں",
+      hidePassword: "پاس ورڈ چھپائیں",
+      required: "یہ خانہ پُر کرنا ضروری ہے۔",
+      invalidEmail: "درست ای میل ایڈریس درج کریں۔",
+      passwordShort: "کم از کم {min} حروف استعمال کریں۔",
+      passwordsDiffer: "دونوں پاس ورڈ مختلف ہیں۔",
+      invalidUrl: "مکمل ویب ایڈریس درج کریں جو https:// سے شروع ہو۔",
+      saved: "محفوظ ہو گیا۔",
+      sending: "بھیجا جا رہا ہے…",
+      tryAgain: "کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔",
+      chars: "{max} میں سے {count} حروف",
+    },
+  ],
+};
+
+function merge(target, source) {
+  for (const [key, value] of Object.entries(source)) {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      target[key] = merge(target[key] ?? {}, value);
+    } else {
+      target[key] = value;
+    }
+  }
+  return target;
+}
+
+for (const [locale, index] of [["en", 0], ["ur", 1]]) {
+  const file = `messages/${locale}.json`;
+  const messages = JSON.parse(readFileSync(file, "utf8"));
+  for (const [namespace, pair] of Object.entries(ADDITIONS)) {
+    messages[namespace] = merge(messages[namespace] ?? {}, pair[index]);
+  }
+  writeFileSync(file, `${JSON.stringify(messages, null, 2)}\n`);
+}

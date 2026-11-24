@@ -511,7 +511,88 @@
   },
   "auth": {
     "panelTitle": "Your documents, handled.",
-    "panelBody": "An account is optional. It adds history, API keys, 24-hour retention and access from every device. Everything stays free."
+    "panelBody": "An account is optional. It adds history, API keys, 24-hour retention and access from every device. Everything stays free.",
+    "mfa": {
+      "title": "Two-step verification",
+      "subtitle": "Enter the 6-digit code from your authenticator app, or a recovery code.",
+      "codeLabel": "Verification code",
+      "codeHint": "Codes refresh every 30 seconds.",
+      "short": "Enter the full 6-digit code or a recovery code.",
+      "submit": "Verify and sign in",
+      "useDifferent": "Use a different account"
+    },
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to keep your files, limits and settings in one place.",
+      "newHere": "New here?",
+      "createAccount": "Create a free account",
+      "oauthFailed": "We couldn't sign you in with that provider.",
+      "oauthHint": "Try again, or use your email and password.",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Your password",
+      "forgot": "Forgot password?",
+      "submit": "Sign in"
+    },
+    "register": {
+      "title": "Create your free account",
+      "subtitle": "Higher daily limits, larger files and your settings saved.",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "name": "Name",
+      "nameHint": "Optional. Shown in your workspace.",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordHint": "At least 10 characters. A short phrase works well.",
+      "passwordPlaceholder": "Choose a password",
+      "submit": "Create account"
+    },
+    "forgot": {
+      "sentTitle": "Check your inbox",
+      "sentSubtitle": "If an account exists for {email}, a reset link is on its way. It works for one hour.",
+      "back": "Back to sign in",
+      "title": "Reset your password",
+      "subtitle": "We'll email you a secure link to choose a new one.",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "submit": "Send reset link"
+    },
+    "reset": {
+      "incompleteTitle": "Link incomplete",
+      "incompleteSubtitle": "This reset link is missing its code. Open the link from your email again, or request a new one.",
+      "requestNew": "Request a new link",
+      "doneTitle": "Password updated",
+      "doneSubtitle": "You've been signed out everywhere. Sign in with your new password.",
+      "signIn": "Sign in",
+      "title": "Choose a new password",
+      "newPassword": "New password",
+      "passwordHint": "At least 10 characters.",
+      "passwordPlaceholder": "New password",
+      "confirm": "Confirm new password",
+      "confirmPlaceholder": "Type it again",
+      "submit": "Update password"
+    },
+    "verify": {
+      "pendingTitle": "Confirming your email…",
+      "pendingSubtitle": "This only takes a moment.",
+      "doneTitle": "Email confirmed",
+      "doneSubtitle": "Thanks! Your account is fully set up.",
+      "start": "Start using your account",
+      "failedTitle": "We couldn't confirm your email",
+      "failedGeneric": "We couldn't confirm your email.",
+      "missingCode": "This link is missing its code.",
+      "failedHint": "Sign in and request a new confirmation link from your account."
+    },
+    "expired": {
+      "title": "Sign-in expired",
+      "subtitle": "Start signing in again to continue.",
+      "signIn": "Sign in"
+    },
+    "orEmail": "or with email",
+    "continueWith": "Continue with {provider}"
   },
   "dashboard": {
     "metaTitle": "Dashboard",
@@ -554,7 +635,9 @@
     "filesDeleted": "Files deleted",
     "expiresIn": "Deletes in {time}",
     "keyScopes": "Scopes",
-    "keyAllScopes": "All scopes (created before scopes existed)"
+    "keyAllScopes": "All scopes (created before scopes existed)",
+    "keyNamePlaceholder": "e.g. Invoice automation",
+    "scopesRequired": "Choose at least one permission for this key."
   },
   "settings": {
     "metaTitle": "Settings",
@@ -601,7 +684,9 @@
     "theme": "Theme",
     "aiTest": "Test connection",
     "aiTestOk": "Connected. The key works.",
-    "aiTestFailed": "The key did not work: {reason}"
+    "aiTestFailed": "The key did not work: {reason}",
+    "displayNamePlaceholder": "Your name",
+    "newPasswordHint": "At least 10 characters."
   },
   "contact": {
     "metaTitle": "Contact",
@@ -622,7 +707,10 @@
       "security": "Security report",
       "other": "Something else"
     },
-    "website": "Leave this field empty"
+    "website": "Leave this field empty",
+    "namePlaceholder": "Your full name",
+    "emailPlaceholder": "you@example.com",
+    "messagePlaceholder": "Tell us what you need help with. Include the tool name and what you expected."
   },
   "status": {
     "metaTitle": "System status",
@@ -1903,7 +1991,13 @@
       "declined": "Declined to sign",
       "completed": "All signatures collected",
       "cancelled": "Request cancelled"
-    }
+    },
+    "titlePlaceholder": "e.g. Service agreement 2026",
+    "messagePlaceholder": "Add a short note for your signers (optional)",
+    "expiresHint": "Signers can no longer sign after this many days (1-60).",
+    "signerNamePlaceholder": "Full name",
+    "signerEmailPlaceholder": "signer@example.com",
+    "declinePlaceholder": "Tell the sender why you are declining (optional)"
   },
   "aiBudget": {
     "title": "Shared AI allowance today",
@@ -2023,7 +2117,9 @@
     "restore": "Restore",
     "deleteForever": "Delete forever",
     "space": "Space",
-    "personal": "Personal"
+    "personal": "Personal",
+    "folderCreated": "Folder “{name}” created.",
+    "folderPlaceholder": "e.g. Contracts 2026"
   },
   "teams": {
     "title": "Teams",
@@ -2064,7 +2160,10 @@
       "admin": "Admin",
       "member": "Member",
       "viewer": "Viewer"
-    }
+    },
+    "created": "Team “{name}” created.",
+    "newTeamPlaceholder": "e.g. Legal team",
+    "invitePlaceholder": "colleague@company.com"
   },
   "webhooks": {
     "title": "Webhooks",
@@ -2098,7 +2197,11 @@
       "pending": "Retrying",
       "delivered": "Delivered",
       "failed": "Failed"
-    }
+    },
+    "created": "Webhook added. Copy its signing secret now; it is only shown once.",
+    "urlHint": "Must be a public https address. We send signed POST requests to it.",
+    "descriptionPlaceholder": "e.g. Notify our billing system",
+    "eventsRequired": "Choose at least one event."
   },
   "cloud": {
     "pickFile": "Choose a file from {service}",
@@ -2228,7 +2331,8 @@
       "4": "Friday",
       "5": "Saturday",
       "6": "Sunday"
-    }
+    },
+    "namePlaceholder": "e.g. Weekly scan cleanup"
   },
   "admin": {
     "title": "Admin",
@@ -2291,6 +2395,23 @@
       "open": "Open",
       "actioned": "Handled",
       "dismissed": "Dismissed"
-    }
+    },
+    "messageEnPlaceholder": "e.g. Scheduled maintenance on Sunday 02:00 UTC",
+    "messageUrPlaceholder": "مثلاً اتوار کو 02:00 UTC پر طے شدہ دیکھ بھال",
+    "hrefHint": "Optional. A path such as /status or a full https:// address.",
+    "hrefInvalid": "Use a path that starts with / or an https:// address."
+  },
+  "form": {
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "required": "This field is required.",
+    "invalidEmail": "Enter a valid email address.",
+    "passwordShort": "Use at least {min} characters.",
+    "passwordsDiffer": "The two passwords don't match.",
+    "invalidUrl": "Enter a full web address that starts with https://",
+    "saved": "Saved.",
+    "sending": "Sending…",
+    "tryAgain": "Something went wrong. Please try again.",
+    "chars": "{count} of {max} characters"
   }
 }

@@ -1,13 +1,14 @@
 "use client";
 
-import { ShieldAlert } from "lucide-react";
+import { Link2, Megaphone, ShieldAlert } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Callout, EmptyState } from "@/components/ui/blocks";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Field, Input } from "@/components/ui/input";
+import { isWebUrl } from "@/lib/validate";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast, toastError } from "@/components/ui/toaster";
 import {
@@ -405,11 +406,18 @@ function AnnouncementEditor() {
   const value = draft ?? current.data;
   if (!value) return <Skeleton className="h-32 w-full" />;
   const update = (patch: Partial<AnnouncementSettings>) => setDraft({ ...value, ...patch });
+  const target = value.href.trim();
+  const hrefError =
+    target && !(target.startsWith("/") && !target.startsWith("//")) && !isWebUrl(target, true)
+      ? t("hrefInvalid")
+      : null;
   return (
     <form
       className="flex max-w-xl flex-col gap-3"
+      noValidate
       onSubmit={(event) => {
         event.preventDefault();
+        if (hrefError) return;
         mutations.saveAnnouncement.mutate(value, {
           onSuccess: () => {
             setDraft(null);
@@ -427,31 +435,47 @@ function AnnouncementEditor() {
         />
         {t("showBar")}
       </label>
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        {t("messageEn")}
-        <Input
-          value={value.message_en}
-          maxLength={200}
-          onChange={(event) => update({ message_en: event.target.value })}
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        {t("messageUr")}
-        <Input
-          value={value.message_ur}
-          maxLength={200}
-          dir="rtl"
-          onChange={(event) => update({ message_ur: event.target.value })}
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm font-medium">
-        {t("href")}
-        <Input
-          value={value.href}
-          dir="ltr"
-          onChange={(event) => update({ href: event.target.value })}
-        />
-      </label>
+      <Field label={t("messageEn")} counter={{ value: value.message_en.length, max: 200 }}>
+        {(props) => (
+          <Input
+            id={props.id}
+            icon={<Megaphone />}
+            placeholder={t("messageEnPlaceholder")}
+            value={value.message_en}
+            maxLength={200}
+            onChange={(event) => update({ message_en: event.target.value })}
+          />
+        )}
+      </Field>
+      <Field label={t("messageUr")} counter={{ value: value.message_ur.length, max: 200 }}>
+        {(props) => (
+          <Input
+            id={props.id}
+            icon={<Megaphone />}
+            placeholder={t("messageUrPlaceholder")}
+            value={value.message_ur}
+            maxLength={200}
+            dir="rtl"
+            onChange={(event) => update({ message_ur: event.target.value })}
+          />
+        )}
+      </Field>
+      <Field label={t("href")} hint={t("hrefHint")} error={hrefError}>
+        {(props) => (
+          <Input
+            id={props.id}
+            aria-describedby={props.describedBy}
+            invalid={props.invalid}
+            icon={<Link2 />}
+            inputMode="url"
+            enterKeyHint="done"
+            placeholder="/features"
+            value={value.href}
+            dir="ltr"
+            onChange={(event) => update({ href: event.target.value })}
+          />
+        )}
+      </Field>
       <Button
         type="submit"
         variant="primary"

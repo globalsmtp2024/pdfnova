@@ -1,14 +1,18 @@
 "use client";
 
 import {
+  CalendarClock,
   CalendarDays,
   CheckSquare,
+  FileText,
+  Mail,
   PenLine,
   Plus,
   Signature,
   TextCursorInput,
   Trash2,
   Type,
+  User as UserIcon,
 } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -18,11 +22,12 @@ import { FieldPlacer, type PlacedBox } from "@/components/tools/field-placer";
 import { usePdfDocument } from "@/components/tools/pdf-page-canvas";
 import { Callout } from "@/components/ui/blocks";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Field, Input, Textarea } from "@/components/ui/input";
 import { toastError } from "@/components/ui/toaster";
 import { newId } from "@/lib/editor-ops";
 import { asLocalFile, useCreateSignRequest } from "@/lib/esign";
 import { cn } from "@/lib/utils";
+import { isEmail } from "@/lib/validate";
 
 type SignKind = "signature" | "initials" | "date" | "text" | "checkbox";
 type SignField = PlacedBox & {
@@ -53,6 +58,7 @@ const SIZES: Record<SignKind, { width: number; height: number }> = {
 
 export function EsignNew() {
   const t = useTranslations("esign");
+  const form = useTranslations("form");
   const router = useRouter();
   const create = useCreateSignRequest();
   const [step, setStep] = useState(1);
@@ -163,36 +169,51 @@ export function EsignNew() {
             </p>
           ) : null}
           {file ? <p className="text-sm text-muted">{file.name}</p> : null}
-          <label className="flex flex-col gap-1.5 text-sm font-medium">
-            {t("documentTitle")}
-            <Input
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              maxLength={200}
-            />
-          </label>
-          <label className="flex flex-col gap-1.5 text-sm font-medium">
-            {t("messageLabel")}
-            <textarea
-              value={message}
-              onChange={(event) => setMessage(event.target.value)}
-              rows={3}
-              maxLength={2000}
-              className="w-full rounded-md border border-border bg-surface p-2 text-sm"
-            />
-          </label>
-          <label className="flex flex-col gap-1.5 text-sm font-medium">
-            {t("expiresIn")}
-            <Input
-              type="number"
-              min={1}
-              max={60}
-              value={days}
-              onChange={(event) =>
-                setDays(Math.min(Math.max(Number(event.target.value) || 14, 1), 60))
-              }
-            />
-          </label>
+          <Field label={t("documentTitle")} counter={{ value: title.length, max: 200 }}>
+            {(props) => (
+              <Input
+                id={props.id}
+                aria-describedby={props.describedBy}
+                icon={<FileText />}
+                enterKeyHint="next"
+                placeholder={t("titlePlaceholder")}
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                maxLength={200}
+              />
+            )}
+          </Field>
+          <Field label={t("messageLabel")} counter={{ value: message.length, max: 2000 }}>
+            {(props) => (
+              <Textarea
+                id={props.id}
+                aria-describedby={props.describedBy}
+                value={message}
+                onChange={(event) => setMessage(event.target.value)}
+                rows={3}
+                maxLength={2000}
+                placeholder={t("messagePlaceholder")}
+              />
+            )}
+          </Field>
+          <Field label={t("expiresIn")} hint={t("expiresHint")}>
+            {(props) => (
+              <Input
+                id={props.id}
+                aria-describedby={props.describedBy}
+                icon={<CalendarClock />}
+                dir="ltr"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={60}
+                value={days}
+                onChange={(event) =>
+                  setDays(Math.min(Math.max(Number(event.target.value) || 14, 1), 60))
+                }
+              />
+            )}
+          </Field>
         </section>
       ) : null}
 
@@ -205,35 +226,56 @@ export function EsignNew() {
                 style={{ background: PALETTE[index % PALETTE.length] }}
                 aria-hidden
               />
-              <label className="flex min-w-40 flex-1 flex-col gap-1 text-sm font-medium">
-                {t("signerName")}
-                <Input
-                  value={signer.name}
-                  onChange={(event) =>
-                    setSigners(
-                      signers.map((entry, i) =>
-                        i === index ? { ...entry, name: event.target.value } : entry,
-                      ),
-                    )
-                  }
-                  data-esign-signer-name
-                />
-              </label>
-              <label className="flex min-w-48 flex-1 flex-col gap-1 text-sm font-medium">
-                {t("signerEmail")}
-                <Input
-                  type="email"
-                  value={signer.email}
-                  onChange={(event) =>
-                    setSigners(
-                      signers.map((entry, i) =>
-                        i === index ? { ...entry, email: event.target.value } : entry,
-                      ),
-                    )
-                  }
-                  data-esign-signer-email
-                />
-              </label>
+              <Field label={t("signerName")} required className="min-w-40 flex-1">
+                {(props) => (
+                  <Input
+                    id={props.id}
+                    icon={<UserIcon />}
+                    enterKeyHint="next"
+                    autoComplete="off"
+                    placeholder={t("signerNamePlaceholder")}
+                    value={signer.name}
+                    onChange={(event) =>
+                      setSigners(
+                        signers.map((entry, i) =>
+                          i === index ? { ...entry, name: event.target.value } : entry,
+                        ),
+                      )
+                    }
+                    data-esign-signer-name
+                  />
+                )}
+              </Field>
+              <Field
+                label={t("signerEmail")}
+                required
+                className="min-w-48 flex-1"
+                error={signer.email && !isEmail(signer.email) ? form("invalidEmail") : null}
+              >
+                {(props) => (
+                  <Input
+                    id={props.id}
+                    aria-describedby={props.describedBy}
+                    invalid={props.invalid}
+                    icon={<Mail />}
+                    dir="ltr"
+                    type="email"
+                    inputMode="email"
+                    enterKeyHint="next"
+                    autoComplete="off"
+                    placeholder={t("signerEmailPlaceholder")}
+                    value={signer.email}
+                    onChange={(event) =>
+                      setSigners(
+                        signers.map((entry, i) =>
+                          i === index ? { ...entry, email: event.target.value } : entry,
+                        ),
+                      )
+                    }
+                    data-esign-signer-email
+                  />
+                )}
+              </Field>
               {signers.length > 1 ? (
                 <Button
                   type="button"

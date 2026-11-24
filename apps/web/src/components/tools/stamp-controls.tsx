@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { Input } from "@/components/ui/input";
+import { Input, Select } from "@/components/ui/input";
 import { apiJson } from "@/lib/api";
 import {
   ANCHORS,
@@ -209,18 +209,13 @@ export function SelectField<T extends string>({
       <label htmlFor={id} className="text-sm font-medium">
         {label}
       </label>
-      <select
-        id={id}
-        value={value}
-        onChange={(event) => onChange(event.target.value as T)}
-        className="h-9 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
-      >
+      <Select id={id} value={value} onChange={(event) => onChange(event.target.value as T)}>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>
         ))}
-      </select>
+      </Select>
     </div>
   );
 }

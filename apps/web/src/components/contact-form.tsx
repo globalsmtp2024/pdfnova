@@ -1,13 +1,13 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { CircleCheck } from "lucide-react";
+import { CircleCheck, Mail, Send, User as UserIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, type FormEvent } from "react";
 
 import { Callout } from "@/components/ui/blocks";
 import { Button } from "@/components/ui/button";
-import { Field, Input } from "@/components/ui/input";
+import { Field, Input, Select, Textarea } from "@/components/ui/input";
 import { ApiError, apiJson } from "@/lib/api";
 
 const TOPICS = ["support", "bug", "feature", "privacy", "security", "other"] as const;
@@ -88,6 +88,10 @@ export function ContactForm() {
               name="name"
               aria-describedby={props.describedBy}
               invalid={props.invalid}
+              icon={<UserIcon />}
+              enterKeyHint="next"
+              placeholder={t("namePlaceholder")}
+              maxLength={120}
               autoComplete="name"
               required
               value={values.name}
@@ -103,6 +107,11 @@ export function ContactForm() {
               type="email"
               aria-describedby={props.describedBy}
               invalid={props.invalid}
+              icon={<Mail />}
+              dir="ltr"
+              inputMode="email"
+              enterKeyHint="next"
+              placeholder={t("emailPlaceholder")}
               autoComplete="email"
               required
               value={values.email}
@@ -113,34 +122,35 @@ export function ContactForm() {
       </div>
       <Field label={t("topic")}>
         {(props) => (
-          <select
-            id={props.id}
-            name="topic"
-            value={values.topic}
-            onChange={update("topic")}
-            className="h-11 rounded-(--radius-control) border border-border-strong bg-surface px-3 text-sm"
-          >
+          <Select id={props.id} name="topic" value={values.topic} onChange={update("topic")}>
             {TOPICS.map((topic) => (
               <option key={topic} value={topic}>
                 {t(`topics.${topic}`)}
               </option>
             ))}
-          </select>
+          </Select>
         )}
       </Field>
-      <Field label={t("message")} hint={t("messageHint")} error={fieldErrors.message}>
+      <Field
+        label={t("message")}
+        hint={t("messageHint")}
+        error={fieldErrors.message}
+        required
+        counter={{ value: values.message.length, max: 5000 }}
+      >
         {(props) => (
-          <textarea
+          <Textarea
             id={props.id}
             name="message"
             aria-describedby={props.describedBy}
-            aria-invalid={props.invalid || undefined}
+            invalid={props.invalid}
             required
             minLength={10}
+            maxLength={5000}
             rows={6}
+            placeholder={t("messagePlaceholder")}
             value={values.message}
             onChange={update("message")}
-            className="w-full rounded-(--radius-control) border border-border-strong bg-surface px-3.5 py-3 text-sm shadow-soft focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/15 focus-visible:outline-none aria-invalid:border-danger"
           />
         )}
       </Field>
@@ -160,6 +170,8 @@ export function ContactForm() {
         variant="primary"
         loading={pending}
         disabled={!token.data}
+        icon={<Send />}
+        mirrorIcon
         className="w-fit"
       >
         {t("send")}

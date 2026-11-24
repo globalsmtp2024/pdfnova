@@ -1,21 +1,44 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { CircleCheck } from "lucide-react";
+import {
+  ArrowRight,
+  CircleCheck,
+  KeyRound,
+  LogIn,
+  Mail,
+  RotateCcw,
+  Send,
+  ShieldCheck,
+  User as UserIcon,
+  UserPlus,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { Link, useRouter } from "@/i18n/navigation";
-import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type FormEvent,
+  type RefObject,
+} from "react";
 
 import { AuthCard, OAuthButtons } from "@/components/auth/auth-card";
 import { Button } from "@/components/ui/button";
-import { Field, Input } from "@/components/ui/input";
+import { Field, focusFirstInvalid, Input, PasswordInput } from "@/components/ui/input";
+import { Link, useRouter } from "@/i18n/navigation";
 import { ApiError, apiJson } from "@/lib/api";
 import { SESSION_KEY } from "@/lib/session";
 import type { LoginResponse, User } from "@/lib/types";
 
 type FieldErrors = Record<string, string>;
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const MIN_PASSWORD = 10;
+
 function useSubmit() {
+  const t = useTranslations("form");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
   const run = async <T,>(action: () => Promise<T>): Promise<T | null> => {
@@ -29,8 +52,8 @@ function useSubmit() {
           ? failure
           : new ApiError(0, {
               code: "unknown",
-              message: "Something went wrong.",
-              hint: "Please try again.",
+              message: t("tryAgain"),
+              hint: null,
               details: {},
             }),
       );
@@ -40,6 +63,19 @@ function useSubmit() {
     }
   };
   return { pending, error, run };
+}
+
+function useClientErrors(form: RefObject<HTMLFormElement | null>) {
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const show = (next: FieldErrors): boolean => {
+    setErrors(next);
+    if (Object.keys(next).length) {
+      requestAnimationFrame(() => focusFirstInvalid(form.current));
+      return false;
+    }
+    return true;
+  };
+  return { errors, show };
 }
 
 function FormError({ error }: { error: ApiError | null }) {
@@ -75,47 +111,54 @@ function useAfterLogin(defaultPath = "/") {
 }
 
 function MfaStep({ token, onBack }: { token: string; onBack?: () => void }) {
+  const t = useTranslations("auth.mfa");
+  const form = useRef<HTMLFormElement>(null);
   const [code, setCode] = useState("");
   const { pending, error, run } = useSubmit();
+  const client = useClientErrors(form);
   const afterLogin = useAfterLogin();
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    const trimmed = code.trim();
+    if (!client.show(trimmed.length < 6 ? { code: t("short") } : {})) return;
     const result = await run(() =>
       apiJson<LoginResponse>("/api/v1/auth/mfa/login", {
         method: "POST",
-        json: { mfa_token: token, code },
+        json: { mfa_token: token, code: trimmed },
       }),
     );
     if (result?.user) afterLogin(result.user);
   };
   return (
-    <AuthCard
-      title="Two-step verification"
-      subtitle="Enter the 6-digit code from your authenticator app, or a recovery code."
-    >
-      <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
+    <AuthCard title={t("title")} subtitle={t("subtitle")}>
+      <form ref={form} className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
         <FormError error={error} />
-        <Field label="Verification code">
+        <Field label={t("codeLabel")} required hint={t("codeHint")} error={client.errors.code}>
           {(props) => (
             <Input
               id={props.id}
               aria-describedby={props.describedBy}
+              invalid={props.invalid}
+              icon={<ShieldCheck />}
+              dir="ltr"
               inputMode="text"
+              enterKeyHint="done"
               autoComplete="one-time-code"
               autoFocus
               value={code}
               onChange={(event) => setCode(event.target.value)}
               placeholder="123456"
+              maxLength={24}
               required
             />
           )}
         </Field>
-        <Button type="submit" variant="primary" loading={pending} disabled={code.trim().length < 6}>
-          Verify and sign in
+        <Button type="submit" variant="primary" loading={pending} icon={<ShieldCheck />}>
+          {t("submit")}
         </Button>
         {onBack ? (
-          <Button type="button" variant="ghost" onClick={onBack}>
-            Use a different account
+          <Button type="button" variant="ghost" icon={<RotateCcw />} mirrorIcon onClick={onBack}>
+            {t("useDifferent")}
           </Button>
         ) : null}
       </form>
@@ -124,18 +167,29 @@ function MfaStep({ token, onBack }: { token: string; onBack?: () => void }) {
 }
 
 export function LoginForm() {
+  const t = useTranslations("auth.login");
+  const form = useTranslations("form");
   const params = useSearchParams();
+  const formRef = useRef<HTMLFormElement>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mfaToken, setMfaToken] = useState<string | null>(null);
   const { pending, error, run } = useSubmit();
+  const client = useClientErrors(formRef);
   const afterLogin = useAfterLogin();
   const oauthFailed = params.get("error") === "oauth";
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    const problems: FieldErrors = {};
+    if (!EMAIL_PATTERN.test(email.trim())) problems.email = form("invalidEmail");
+    if (!password) problems.password = form("required");
+    if (!client.show(problems)) return;
     const result = await run(() =>
-      apiJson<LoginResponse>("/api/v1/auth/login", { method: "POST", json: { email, password } }),
+      apiJson<LoginResponse>("/api/v1/auth/login", {
+        method: "POST",
+        json: { email: email.trim(), password },
+      }),
     );
     if (!result) return;
     if (result.mfa_required && result.mfa_token) setMfaToken(result.mfa_token);
@@ -143,17 +197,17 @@ export function LoginForm() {
   };
 
   if (mfaToken) return <MfaStep token={mfaToken} onBack={() => setMfaToken(null)} />;
-  const fieldErrors = fieldErrorsFrom(error);
+  const fieldErrors = { ...fieldErrorsFrom(error), ...client.errors };
 
   return (
     <AuthCard
-      title="Welcome back"
-      subtitle="Sign in to keep your files, limits and settings in one place."
+      title={t("title")}
+      subtitle={t("subtitle")}
       footer={
         <>
-          New here?{" "}
+          {t("newHere")}{" "}
           <Link href="/auth/register" className="font-medium text-primary hover:underline">
-            Create a free account
+            {t("createAccount")}
           </Link>
         </>
       }
@@ -164,38 +218,45 @@ export function LoginForm() {
             error={
               new ApiError(0, {
                 code: "oauth",
-                message: "We couldn't sign you in with that provider.",
-                hint: "Try again, or use your email and password.",
+                message: t("oauthFailed"),
+                hint: t("oauthHint"),
                 details: {},
               })
             }
           />
         ) : null}
         <OAuthButtons />
-        <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
+        <form ref={formRef} className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
           {fieldErrors.email || fieldErrors.password ? null : <FormError error={error} />}
-          <Field label="Email" error={fieldErrors.email}>
+          <Field label={t("email")} required error={fieldErrors.email}>
             {(props) => (
               <Input
                 id={props.id}
                 aria-describedby={props.describedBy}
                 invalid={props.invalid}
+                icon={<Mail />}
+                dir="ltr"
                 type="email"
+                inputMode="email"
+                enterKeyHint="next"
                 autoComplete="email"
+                placeholder={t("emailPlaceholder")}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required
               />
             )}
           </Field>
-          <Field label="Password" error={fieldErrors.password}>
+          <Field label={t("password")} required error={fieldErrors.password}>
             {(props) => (
-              <Input
+              <PasswordInput
                 id={props.id}
                 aria-describedby={props.describedBy}
                 invalid={props.invalid}
-                type="password"
+                icon={<KeyRound />}
+                enterKeyHint="go"
                 autoComplete="current-password"
+                placeholder={t("passwordPlaceholder")}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 required
@@ -207,11 +268,11 @@ export function LoginForm() {
               href="/auth/forgot-password"
               className="text-sm font-medium text-primary hover:underline"
             >
-              Forgot password?
+              {t("forgot")}
             </Link>
           </div>
-          <Button type="submit" variant="primary" loading={pending}>
-            Sign in
+          <Button type="submit" variant="primary" loading={pending} icon={<LogIn />} mirrorIcon>
+            {t("submit")}
           </Button>
         </form>
       </div>
@@ -220,20 +281,31 @@ export function LoginForm() {
 }
 
 export function RegisterForm() {
+  const t = useTranslations("auth.register");
+  const form = useTranslations("form");
+  const formRef = useRef<HTMLFormElement>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { pending, error, run } = useSubmit();
+  const client = useClientErrors(formRef);
   const afterLogin = useAfterLogin("/onboarding");
-  const fieldErrors = fieldErrorsFrom(error);
-  const passwordError = error?.code === "weak_password" ? error.message : fieldErrors.password;
+  const fieldErrors = { ...fieldErrorsFrom(error), ...client.errors };
+  const passwordError =
+    client.errors.password ??
+    (error?.code === "weak_password" ? error.message : fieldErrors.password);
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    const problems: FieldErrors = {};
+    if (!EMAIL_PATTERN.test(email.trim())) problems.email = form("invalidEmail");
+    if (password.length < MIN_PASSWORD)
+      problems.password = form("passwordShort", { min: MIN_PASSWORD });
+    if (!client.show(problems)) return;
     const result = await run(() =>
       apiJson<LoginResponse>("/api/v1/auth/register", {
         method: "POST",
-        json: { email, password, display_name: name },
+        json: { email: email.trim(), password, display_name: name.trim() },
       }),
     );
     if (result?.user) afterLogin(result.user);
@@ -241,72 +313,79 @@ export function RegisterForm() {
 
   return (
     <AuthCard
-      title="Create your free account"
-      subtitle="Higher daily limits, larger files and your settings saved."
+      title={t("title")}
+      subtitle={t("subtitle")}
       footer={
         <>
-          Already have an account?{" "}
+          {t("haveAccount")}{" "}
           <Link href="/auth/login" className="font-medium text-primary hover:underline">
-            Sign in
+            {t("signIn")}
           </Link>
         </>
       }
     >
       <div className="flex flex-col gap-5">
         <OAuthButtons />
-        <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
+        <form ref={formRef} className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
           {error &&
           error.code !== "weak_password" &&
           !fieldErrors.email &&
           !fieldErrors.password ? (
             <FormError error={error} />
           ) : null}
-          <Field label="Name" hint="Optional. Shown in your workspace.">
+          <Field label={t("name")} hint={t("nameHint")} counter={{ value: name.length, max: 80 }}>
             {(props) => (
               <Input
                 id={props.id}
                 aria-describedby={props.describedBy}
+                icon={<UserIcon />}
                 autoComplete="name"
+                enterKeyHint="next"
+                placeholder={t("namePlaceholder")}
+                maxLength={80}
                 value={name}
                 onChange={(event) => setName(event.target.value)}
               />
             )}
           </Field>
-          <Field label="Email" error={fieldErrors.email}>
+          <Field label={t("email")} required error={fieldErrors.email}>
             {(props) => (
               <Input
                 id={props.id}
                 aria-describedby={props.describedBy}
                 invalid={props.invalid}
+                icon={<Mail />}
+                dir="ltr"
                 type="email"
+                inputMode="email"
+                enterKeyHint="next"
                 autoComplete="email"
+                placeholder={t("emailPlaceholder")}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 required
               />
             )}
           </Field>
-          <Field
-            label="Password"
-            hint="At least 10 characters. A short phrase works well."
-            error={passwordError}
-          >
+          <Field label={t("password")} required hint={t("passwordHint")} error={passwordError}>
             {(props) => (
-              <Input
+              <PasswordInput
                 id={props.id}
                 aria-describedby={props.describedBy}
                 invalid={props.invalid}
-                type="password"
+                icon={<KeyRound />}
+                enterKeyHint="go"
                 autoComplete="new-password"
+                placeholder={t("passwordPlaceholder")}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 required
-                minLength={10}
+                minLength={MIN_PASSWORD}
               />
             )}
           </Field>
-          <Button type="submit" variant="primary" loading={pending}>
-            Create account
+          <Button type="submit" variant="primary" loading={pending} icon={<UserPlus />}>
+            {t("submit")}
           </Button>
         </form>
       </div>
@@ -315,56 +394,62 @@ export function RegisterForm() {
 }
 
 export function ForgotPasswordForm() {
+  const t = useTranslations("auth.forgot");
+  const form = useTranslations("form");
+  const formRef = useRef<HTMLFormElement>(null);
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const { pending, error, run } = useSubmit();
+  const client = useClientErrors(formRef);
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    if (!client.show(EMAIL_PATTERN.test(email.trim()) ? {} : { email: form("invalidEmail") }))
+      return;
     const result = await run(() =>
       apiJson<{ message: string }>("/api/v1/auth/password/forgot", {
         method: "POST",
-        json: { email },
+        json: { email: email.trim() },
       }),
     );
     if (result) setSent(true);
   };
   if (sent) {
     return (
-      <AuthCard
-        title="Check your inbox"
-        subtitle={`If an account exists for ${email}, a reset link is on its way. It works for one hour.`}
-      >
+      <AuthCard title={t("sentTitle")} subtitle={t("sentSubtitle", { email })}>
         <Button asChild variant="outline" className="w-full">
-          <Link href="/auth/login">Back to sign in</Link>
+          <Link href="/auth/login">{t("back")}</Link>
         </Button>
       </AuthCard>
     );
   }
   return (
-    <AuthCard
-      title="Reset your password"
-      subtitle="We'll email you a secure link to choose a new one."
-    >
-      <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
+    <AuthCard title={t("title")} subtitle={t("subtitle")}>
+      <form ref={formRef} className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
         <FormError error={error} />
-        <Field label="Email">
+        <Field label={t("email")} required error={client.errors.email}>
           {(props) => (
             <Input
               id={props.id}
               aria-describedby={props.describedBy}
+              invalid={props.invalid}
+              icon={<Mail />}
+              dir="ltr"
               type="email"
+              inputMode="email"
+              enterKeyHint="send"
               autoComplete="email"
+              placeholder={t("emailPlaceholder")}
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required
             />
           )}
         </Field>
-        <Button type="submit" variant="primary" loading={pending}>
-          Send reset link
+        <Button type="submit" variant="primary" loading={pending} icon={<Send />} mirrorIcon>
+          {t("submit")}
         </Button>
         <Button asChild variant="ghost">
-          <Link href="/auth/login">Back to sign in</Link>
+          <Link href="/auth/login">{t("back")}</Link>
         </Button>
       </form>
     </AuthCard>
@@ -372,13 +457,23 @@ export function ForgotPasswordForm() {
 }
 
 export function ResetPasswordForm() {
+  const t = useTranslations("auth.reset");
+  const form = useTranslations("form");
   const params = useSearchParams();
   const token = params.get("token") ?? "";
+  const formRef = useRef<HTMLFormElement>(null);
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [done, setDone] = useState(false);
   const { pending, error, run } = useSubmit();
+  const client = useClientErrors(formRef);
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    const problems: FieldErrors = {};
+    if (password.length < MIN_PASSWORD)
+      problems.password = form("passwordShort", { min: MIN_PASSWORD });
+    else if (password !== confirm) problems.confirm = form("passwordsDiffer");
+    if (!client.show(problems)) return;
     const result = await run(() =>
       apiJson<{ message: string }>("/api/v1/auth/password/reset", {
         method: "POST",
@@ -389,52 +484,66 @@ export function ResetPasswordForm() {
   };
   if (!token) {
     return (
-      <AuthCard
-        title="Link incomplete"
-        subtitle="This reset link is missing its code. Open the link from your email again, or request a new one."
-      >
+      <AuthCard title={t("incompleteTitle")} subtitle={t("incompleteSubtitle")}>
         <Button asChild variant="outline" className="w-full">
-          <Link href="/auth/forgot-password">Request a new link</Link>
+          <Link href="/auth/forgot-password">{t("requestNew")}</Link>
         </Button>
       </AuthCard>
     );
   }
   if (done) {
     return (
-      <AuthCard
-        title="Password updated"
-        subtitle="You've been signed out everywhere. Sign in with your new password."
-      >
+      <AuthCard title={t("doneTitle")} subtitle={t("doneSubtitle")}>
         <Button asChild variant="primary" className="w-full">
-          <Link href="/auth/login">Sign in</Link>
+          <Link href="/auth/login">{t("signIn")}</Link>
         </Button>
       </AuthCard>
     );
   }
+  const weak = error?.code === "weak_password" ? error.message : null;
   return (
-    <AuthCard title="Choose a new password">
-      <form className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
-        {error?.code === "weak_password" ? null : <FormError error={error} />}
+    <AuthCard title={t("title")}>
+      <form ref={formRef} className="flex flex-col gap-4" onSubmit={onSubmit} noValidate>
+        {weak ? null : <FormError error={error} />}
         <Field
-          label="New password"
-          hint="At least 10 characters."
-          error={error?.code === "weak_password" ? error.message : null}
+          label={t("newPassword")}
+          required
+          hint={t("passwordHint")}
+          error={client.errors.password ?? weak}
         >
           {(props) => (
-            <Input
+            <PasswordInput
               id={props.id}
               aria-describedby={props.describedBy}
               invalid={props.invalid}
-              type="password"
+              icon={<KeyRound />}
+              enterKeyHint="next"
               autoComplete="new-password"
+              placeholder={t("passwordPlaceholder")}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
             />
           )}
         </Field>
-        <Button type="submit" variant="primary" loading={pending}>
-          Update password
+        <Field label={t("confirm")} required error={client.errors.confirm}>
+          {(props) => (
+            <PasswordInput
+              id={props.id}
+              aria-describedby={props.describedBy}
+              invalid={props.invalid}
+              icon={<KeyRound />}
+              enterKeyHint="go"
+              autoComplete="new-password"
+              placeholder={t("confirmPlaceholder")}
+              value={confirm}
+              onChange={(event) => setConfirm(event.target.value)}
+              required
+            />
+          )}
+        </Field>
+        <Button type="submit" variant="primary" loading={pending} icon={<ArrowRight />} mirrorIcon>
+          {t("submit")}
         </Button>
       </form>
     </AuthCard>
@@ -442,11 +551,12 @@ export function ResetPasswordForm() {
 }
 
 export function VerifyEmail() {
+  const t = useTranslations("auth.verify");
   const params = useSearchParams();
   const token = params.get("token") ?? "";
   const queryClient = useQueryClient();
   const [state, setState] = useState<"pending" | "done" | "failed">(token ? "pending" : "failed");
-  const [message, setMessage] = useState("This link is missing its code.");
+  const [message, setMessage] = useState<string | null>(token ? null : t("missingCode"));
   const started = useRef(false);
   useEffect(() => {
     if (!token || started.current) return;
@@ -459,35 +569,31 @@ export function VerifyEmail() {
         setState("done");
       })
       .catch((failure: unknown) => {
-        setMessage(
-          failure instanceof ApiError ? failure.message : "We couldn't confirm your email.",
-        );
+        setMessage(failure instanceof ApiError ? failure.message : t("failedGeneric"));
         setState("failed");
       });
-  }, [queryClient, token]);
+  }, [queryClient, t, token]);
   if (state === "pending")
     return (
-      <AuthCard title="Confirming your email…" subtitle="This only takes a moment.">
+      <AuthCard title={t("pendingTitle")} subtitle={t("pendingSubtitle")}>
         {null}
       </AuthCard>
     );
   if (state === "done") {
     return (
-      <AuthCard title="Email confirmed" subtitle="Thanks! Your account is fully set up.">
+      <AuthCard title={t("doneTitle")} subtitle={t("doneSubtitle")}>
         <div className="flex flex-col items-center gap-4">
           <CircleCheck className="size-12 text-success" aria-hidden />
           <Button asChild variant="primary" className="w-full">
-            <Link href="/">Start using your account</Link>
+            <Link href="/">{t("start")}</Link>
           </Button>
         </div>
       </AuthCard>
     );
   }
   return (
-    <AuthCard title="We couldn't confirm your email" subtitle={message}>
-      <p className="text-sm text-muted">
-        Sign in and request a new confirmation link from your account.
-      </p>
+    <AuthCard title={t("failedTitle")} subtitle={message ?? t("failedGeneric")}>
+      <p className="text-sm text-muted">{t("failedHint")}</p>
     </AuthCard>
   );
 }
@@ -506,13 +612,14 @@ function readMfaTokenFromHash(): string | null {
 const subscribeToNothing = () => () => undefined;
 
 export function OAuthMfa() {
+  const t = useTranslations("auth");
   const token = useSyncExternalStore(subscribeToNothing, readMfaTokenFromHash, () => undefined);
-  if (token === undefined) return <AuthCard title="Two-step verification">{null}</AuthCard>;
+  if (token === undefined) return <AuthCard title={t("mfa.title")}>{null}</AuthCard>;
   if (!token) {
     return (
-      <AuthCard title="Sign-in expired" subtitle="Start signing in again to continue.">
+      <AuthCard title={t("expired.title")} subtitle={t("expired.subtitle")}>
         <Button asChild variant="primary" className="w-full">
-          <Link href="/auth/login">Sign in</Link>
+          <Link href="/auth/login">{t("expired.signIn")}</Link>
         </Button>
       </AuthCard>
     );

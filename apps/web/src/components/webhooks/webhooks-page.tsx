@@ -1,19 +1,30 @@
 "use client";
 
-import { Check, Copy, LogIn, Send, Trash2, Webhook as WebhookIcon } from "lucide-react";
+import {
+  Check,
+  Copy,
+  FileText,
+  Link2,
+  LogIn,
+  Plus,
+  Send,
+  Trash2,
+  Webhook as WebhookIcon,
+} from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Callout, EmptyState } from "@/components/ui/blocks";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Field, focusFirstInvalid, Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast, toastError } from "@/components/ui/toaster";
 import { Link } from "@/i18n/navigation";
 import { useSession } from "@/lib/session";
 import { useDeliveries, useWebhookEvents, useWebhookMutations, useWebhooks } from "@/lib/webhooks";
 import { cn } from "@/lib/utils";
+import { isWebUrl } from "@/lib/validate";
 
 function DeliveryLog({ id }: { id: string }) {
   const t = useTranslations("webhooks");
@@ -82,6 +93,9 @@ export function WebhooksPage() {
   const [secret, setSecret] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
+  const form = useTranslations("form");
+  const formRef = useRef<HTMLFormElement>(null);
+  const [errors, setErrors] = useState<{ url?: string; events?: string }>({});
 
   if (session.isPending) return <Skeleton className="h-40 w-full" />;
   if (!session.data) {
@@ -128,8 +142,19 @@ export function WebhooksPage() {
 
       <form
         className="flex max-w-2xl flex-col gap-3 rounded-(--radius-card) border border-border bg-surface p-5"
+        noValidate
+        ref={formRef}
         onSubmit={(event) => {
           event.preventDefault();
+          const problems: { url?: string; events?: string } = {};
+          if (!url.trim() || url.trim() === "https://") problems.url = form("required");
+          else if (!isWebUrl(url, true)) problems.url = form("invalidUrl");
+          if (!selected.length) problems.events = t("eventsRequired");
+          setErrors(problems);
+          if (problems.url || problems.events) {
+            requestAnimationFrame(() => focusFirstInvalid(formRef.current));
+            return;
+          }
           mutations.create.mutate(
             { url: url.trim(), events: selected, description },
             {
@@ -138,6 +163,7 @@ export function WebhooksPage() {
                 setCopied(false);
                 setUrl("https://");
                 setDescription("");
+                toast.success(t("created"));
               },
               onError: toastError,
             },
@@ -145,29 +171,49 @@ export function WebhooksPage() {
         }}
       >
         <h2 className="font-display text-lg font-semibold">{t("addTitle")}</h2>
-        <label className="flex flex-col gap-1 text-sm font-medium">
-          {t("url")}
-          <Input
-            value={url}
-            onChange={(event) => setUrl(event.target.value)}
-            dir="ltr"
-            data-webhook-url
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-sm font-medium">
-          {t("description")}
-          <Input
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            maxLength={200}
-          />
-        </label>
-        <fieldset className="flex flex-wrap gap-x-4 gap-y-1">
+        <Field label={t("url")} required hint={t("urlHint")} error={errors.url}>
+          {(props) => (
+            <Input
+              id={props.id}
+              aria-describedby={props.describedBy}
+              invalid={props.invalid}
+              icon={<Link2 />}
+              type="url"
+              inputMode="url"
+              enterKeyHint="next"
+              autoComplete="off"
+              placeholder="https://example.com/hooks/pdfnova"
+              value={url}
+              onChange={(event) => setUrl(event.target.value)}
+              dir="ltr"
+              data-webhook-url
+            />
+          )}
+        </Field>
+        <Field label={t("description")} counter={{ value: description.length, max: 200 }}>
+          {(props) => (
+            <Input
+              id={props.id}
+              aria-describedby={props.describedBy}
+              icon={<FileText />}
+              enterKeyHint="done"
+              placeholder={t("descriptionPlaceholder")}
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              maxLength={200}
+            />
+          )}
+        </Field>
+        <fieldset
+          className="flex flex-wrap gap-x-4 gap-y-1"
+          aria-describedby={errors.events ? "webhook-events-error" : undefined}
+        >
           <legend className="mb-1 text-sm font-medium">{t("events")}</legend>
           {(events.data?.events ?? []).map((event) => (
             <label key={event} className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
+                aria-invalid={errors.events ? true : undefined}
                 checked={selected.includes(event)}
                 onChange={(change) =>
                   setSelected(
@@ -180,13 +226,22 @@ export function WebhooksPage() {
               <code dir="ltr">{event}</code>
             </label>
           ))}
+          {errors.events ? (
+            <p
+              id="webhook-events-error"
+              role="alert"
+              className="w-full text-xs font-medium text-danger"
+            >
+              {errors.events}
+            </p>
+          ) : null}
         </fieldset>
         <Button
           type="submit"
           variant="primary"
           className="self-start"
+          icon={<Plus />}
           loading={mutations.create.isPending}
-          disabled={!selected.length}
           data-webhook-create
         >
           {t("add")}

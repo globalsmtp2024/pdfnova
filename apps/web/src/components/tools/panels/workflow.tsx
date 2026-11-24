@@ -25,7 +25,7 @@ import type { ToolPanelView } from "@/components/tools/panels/registry";
 import { ToolIcon } from "@/components/tools/tool-icon";
 import type { LocalFile } from "@/components/tools/use-tool-session";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Input, Select } from "@/components/ui/input";
 import { findTool } from "@/config/tools";
 import { useAvailableTools, useSession } from "@/lib/session";
 import { useTeamMutations, useTeams, useTeamWorkflows } from "@/lib/teams";
@@ -443,11 +443,10 @@ export function useWorkflowPanel(files: LocalFile[]): ToolPanelView {
       {session.data && (teams.data?.length ?? 0) > 0 ? (
         <section className="flex flex-col gap-2" data-workflow-team>
           <h3 className="text-sm font-medium">{t("teamWorkflows")}</h3>
-          <select
+          <Select
             value={teamId ?? ""}
             onChange={(event) => setTeamId(event.target.value || null)}
             aria-label={t("team")}
-            className="h-10 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
           >
             <option value="">{t("chooseTeam")}</option>
             {(teams.data ?? []).map((team) => (
@@ -455,7 +454,7 @@ export function useWorkflowPanel(files: LocalFile[]): ToolPanelView {
                 {team.name}
               </option>
             ))}
-          </select>
+          </Select>
           {teamId ? (
             <>
               {(teamWorkflows.data ?? []).map((workflow) => (

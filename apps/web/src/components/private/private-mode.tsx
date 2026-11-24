@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Dropzone, partitionFiles } from "@/components/ui/dropzone";
-import { Input } from "@/components/ui/input";
+import { Input, Select } from "@/components/ui/input";
 import { toast } from "@/components/ui/toaster";
 import {
   extractPages,
@@ -254,30 +254,28 @@ export function PrivateMode() {
           {operation === "rotate" ? (
             <label className="flex flex-col gap-1.5 text-sm font-medium">
               {t("angle")}
-              <select
+              <Select
                 value={angle}
                 onChange={(event) => setAngle(Number(event.target.value) as 90 | 180 | 270)}
-                className="h-10 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
               >
                 <option value={90}>90°</option>
                 <option value={180}>180°</option>
                 <option value={270}>270°</option>
-              </select>
+              </Select>
             </label>
           ) : null}
           {operation === "split" ? (
             <>
               <label className="flex flex-col gap-1.5 text-sm font-medium">
                 {t("splitBy")}
-                <select
+                <Select
                   value={splitMode}
                   onChange={(event) => setSplitMode(event.target.value as SplitMode)}
-                  className="h-10 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
                 >
                   <option value="ranges">{t("splitRanges")}</option>
                   <option value="every">{t("splitEvery")}</option>
                   <option value="each">{t("splitEach")}</option>
-                </select>
+                </Select>
               </label>
               {splitMode !== "each" ? (
                 <label className="flex flex-col gap-1.5 text-sm font-medium">
@@ -295,15 +293,14 @@ export function PrivateMode() {
             <>
               <label className="flex flex-col gap-1.5 text-sm font-medium">
                 {t("pageSize")}
-                <select
+                <Select
                   value={pageSize}
                   onChange={(event) => setPageSize(event.target.value as ImagePageSize)}
-                  className="h-10 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
                 >
                   <option value="a4">A4</option>
                   <option value="letter">Letter</option>
                   <option value="fit">{t("fitImage")}</option>
-                </select>
+                </Select>
               </label>
               <label className="flex flex-col gap-1.5 text-sm font-medium">
                 {t("margin")}

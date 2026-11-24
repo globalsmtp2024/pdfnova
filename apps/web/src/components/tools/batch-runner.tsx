@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@/components/ui/input";
 import {
   Archive,
   CircleAlert,
@@ -185,10 +186,9 @@ export function BatchRunner() {
         <h2 className="font-display text-lg font-semibold">{t("settings")}</h2>
         <label className="flex flex-col gap-1.5 text-sm font-medium">
           {t("tool")}
-          <select
+          <Select
             value={tool?.slug ?? ""}
             onChange={(event) => setSlug(event.target.value)}
-            className="h-10 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
             data-batch-tool
           >
             {tools.map((entry) => (
@@ -196,7 +196,7 @@ export function BatchRunner() {
                 {name(entry.slug)}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <label className="flex flex-col gap-1.5 text-sm font-medium">
           {t("optionsJson")}

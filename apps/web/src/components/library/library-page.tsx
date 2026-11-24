@@ -19,10 +19,10 @@ import { CloudExportButtons } from "@/components/cloud/cloud-actions";
 import { CloudConnections } from "@/components/cloud/cloud-connections";
 import { EmptyState } from "@/components/ui/blocks";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Field, Input, Select } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toastError } from "@/components/ui/toaster";
+import { toastError, toast } from "@/components/ui/toaster";
 import { Link } from "@/i18n/navigation";
 import {
   useLibraryFiles,
@@ -165,7 +165,7 @@ function FileRow({
             aria-label={t("tags")}
             className="min-w-48 flex-1"
           />
-          <select
+          <Select
             aria-label={t("moveTo")}
             value={file.folder_id ?? ""}
             onChange={(event) =>
@@ -174,7 +174,6 @@ function FileRow({
                 { onError: toastError },
               )
             }
-            className="h-10 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
           >
             <option value="">{t("rootFolder")}</option>
             {folders.map((folder) => (
@@ -182,7 +181,7 @@ function FileRow({
                 {folder.name}
               </option>
             ))}
-          </select>
+          </Select>
           <Button size="sm" variant="solid" onClick={save} loading={actions.updateFile.isPending}>
             {t("save")}
           </Button>
@@ -204,6 +203,8 @@ export function LibraryPage() {
   const [search, setSearch] = useState("");
   const [tag, setTag] = useState("");
   const [folderName, setFolderName] = useState("");
+  const form = useTranslations("form");
+  const [folderError, setFolderError] = useState<string | null>(null);
   const picker = useRef<HTMLInputElement>(null);
   const trash = view.kind === "trash";
   const folderId = view.kind === "folder" ? view.id : null;
@@ -239,14 +240,13 @@ export function LibraryPage() {
       <aside className="flex flex-col gap-4">
         <label className="flex flex-col gap-1 text-sm font-medium">
           {t("space")}
-          <select
+          <Select
             value={teamId ?? ""}
             onChange={(event) => {
               setTeamId(event.target.value || null);
               setView({ kind: "folder", id: null });
               setTag("");
             }}
-            className="h-10 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
             data-library-space
           >
             <option value="">{t("personal")}</option>
@@ -255,7 +255,7 @@ export function LibraryPage() {
                 {team.name}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <nav aria-label={t("folders")} className="flex flex-col gap-1">
           <button
@@ -322,26 +322,53 @@ export function LibraryPage() {
         </nav>
         <form
           hidden={readOnly}
-          className="flex gap-2"
+          className="flex items-start gap-2"
+          noValidate
           onSubmit={(event) => {
             event.preventDefault();
             const name = folderName.trim();
-            if (!name) return;
+            if (!name) {
+              setFolderError(form("required"));
+              return;
+            }
+            setFolderError(null);
             actions.createFolder.mutate(
               { name, parent_id: null },
-              { onSuccess: () => setFolderName(""), onError: toastError },
+              {
+                onSuccess: () => {
+                  setFolderName("");
+                  toast.success(t("folderCreated", { name }));
+                },
+                onError: toastError,
+              },
             );
           }}
         >
-          <Input
-            value={folderName}
-            onChange={(event) => setFolderName(event.target.value)}
-            placeholder={t("newFolder")}
-            aria-label={t("newFolder")}
-            maxLength={120}
-          />
-          <Button type="submit" size="sm" variant="outline" aria-label={t("createFolder")}>
-            <FolderPlus aria-hidden />
+          <Field label={t("newFolder")} error={folderError} className="flex-1">
+            {(props) => (
+              <Input
+                id={props.id}
+                aria-describedby={props.describedBy}
+                invalid={props.invalid}
+                icon={<FolderPlus />}
+                enterKeyHint="done"
+                autoComplete="off"
+                value={folderName}
+                onChange={(event) => setFolderName(event.target.value)}
+                placeholder={t("folderPlaceholder")}
+                maxLength={120}
+              />
+            )}
+          </Field>
+          <Button
+            type="submit"
+            size="md"
+            variant="outline"
+            icon={<FolderPlus />}
+            loading={actions.createFolder.isPending}
+            className="mt-[1.65rem]"
+          >
+            {t("createFolder")}
           </Button>
         </form>
         <div className="flex flex-col gap-2 rounded-xl border border-border p-3">

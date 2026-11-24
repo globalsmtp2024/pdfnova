@@ -21,7 +21,7 @@ import {
 } from "@/components/tools/panels/merge-state";
 import type { ToolPanelView } from "@/components/tools/panels/registry";
 import type { LocalFile } from "@/components/tools/use-tool-session";
-import { Input } from "@/components/ui/input";
+import { Input, Select } from "@/components/ui/input";
 import { cn, formatBytes } from "@/lib/utils";
 
 function Choice<T extends string>({
@@ -105,9 +105,8 @@ function MergePerFileControls({
         <label htmlFor={rotateId} className="sr-only">
           {t("rotateLabel", { name: file.name })}
         </label>
-        <select
+        <Select
           id={rotateId}
-          className="h-9 rounded-(--radius-control) border border-border-strong bg-surface px-2 text-sm"
           value={value.rotate}
           onChange={(event) =>
             onChange({ ...value, rotate: Number(event.target.value) as Rotation })
@@ -119,7 +118,7 @@ function MergePerFileControls({
               {t("rotateDegrees", { degrees })}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
-import type { ButtonHTMLAttributes, Ref } from "react";
+import type { ButtonHTMLAttributes, ReactNode, Ref } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -35,6 +35,9 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
     loading?: boolean;
+    icon?: ReactNode;
+    iconEnd?: ReactNode;
+    mirrorIcon?: boolean;
     ref?: Ref<HTMLButtonElement>;
   };
 
@@ -44,6 +47,9 @@ export function Button({
   size,
   asChild = false,
   loading = false,
+  icon,
+  iconEnd,
+  mirrorIcon = false,
   disabled,
   children,
   type,
@@ -56,6 +62,7 @@ export function Button({
       </Slot>
     );
   }
+  const mirror = mirrorIcon ? "flip-rtl" : undefined;
   return (
     <button
       type={type ?? "button"}
@@ -64,8 +71,14 @@ export function Button({
       aria-busy={loading || undefined}
       {...props}
     >
-      {loading ? <Loader2 className="animate-spin" aria-hidden /> : null}
-      {children}
+      {loading ? (
+        <Loader2 className={cn("animate-spin", icon || children ? "absolute" : null)} aria-hidden />
+      ) : null}
+      <span className={cn("inline-flex items-center justify-center gap-2", loading && "invisible")}>
+        {icon ? <span className={cn("inline-flex", mirror)}>{icon}</span> : null}
+        {children}
+        {iconEnd ? <span className={cn("inline-flex", mirror)}>{iconEnd}</span> : null}
+      </span>
     </button>
   );
 }
