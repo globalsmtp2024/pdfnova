@@ -293,7 +293,7 @@ export function AdminProfileMenu() {
               </span>
             </span>
           </div>
-          <Link
+          {/* <Link
             role="menuitem"
             href="/settings"
             onClick={() => setOpen(false)}
@@ -301,7 +301,7 @@ export function AdminProfileMenu() {
           >
             <UserCog className="size-4 text-muted" aria-hidden />
             {t("profile.account")}
-          </Link>
+          </Link> */}
           <Link
             role="menuitem"
             href="/"
