@@ -1,6 +1,7 @@
 import io
 import sys
 import time
+from pathlib import Path
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
@@ -10,6 +11,7 @@ from PIL import Image
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
+FONT_PATH = Path(__file__).resolve().parent.parent / "apps/api/app/assets/fonts/notosans/NotoSans-Regular.ttf"
 BASE = "http://127.0.0.1:8000"
 PASSWORD = "smoke-pass-123"
 Upload = tuple[str, bytes, str]
@@ -52,7 +54,7 @@ def embedded_font_pdf() -> bytes:
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
 
-    pdfmetrics.registerFont(TTFont("DejaVuSans", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
+    pdfmetrics.registerFont(TTFont("DejaVuSans", str(FONT_PATH)))
     buffer = io.BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4, initialFontName="DejaVuSans", initialFontSize=14)
     pdf.drawString(72, 760, "Archive smoke page")
@@ -465,6 +467,9 @@ def redacted_ok(outputs: list[tuple[str, bytes]]) -> str | None:
 
 
 CASES: list[Case] = [
+    Case("remove-pages", pdf_upload(), {"pages": "2"}),
+    Case("extract-pages", pdf_upload(), {"pages": "1-2"}),
+    Case("organize", pdf_upload(), {"pages": [{"page": 3}, {"page": 1, "rotate": 90}, {"source": "blank"}]}),
     Case("compress", pdf_upload(), {"level": "recommended"}),
     Case("repair", [("sample.pdf", damaged(sample_pdf()), "application/pdf")]),
     Case("page-numbers", pdf_upload(), {"format": "page_n_of_total"}),
