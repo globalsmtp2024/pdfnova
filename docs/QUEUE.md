@@ -108,6 +108,6 @@ Phase 7
 - [x] 12 Accessibility and SEO code-level pass
 - [x] 13 Performance code-level pass
 - [x] 14 Security code-level recheck
-- [ ] 15 Fix STATUS.md (Live, Coming soon, Unverified)
+- [x] 15 Fix STATUS.md (Live, Coming soon, Unverified)
 - [ ] 16 Clean ruff and mypy; eslint warnings in touched files
 - [ ] 17 FINAL CHECK (typecheck, i18n:check, production build, smoke all tools)
