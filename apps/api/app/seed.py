@@ -42,7 +42,7 @@ async def seed(email: str, password: str, display_name: str, admin: bool) -> str
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Create a local development account")
-    parser.add_argument("--email", default="demo@pdfnova.local")
+    parser.add_argument("--email", default="demo@example.com")
     parser.add_argument("--password", default="Sample-Passphrase-2026!")
     parser.add_argument("--name", default="Demo")
     parser.add_argument("--admin", action="store_true")

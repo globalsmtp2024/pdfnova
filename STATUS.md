@@ -18,6 +18,7 @@ Nothing in the catalogue. The three OCR conversions (`pdf-to-word-ocr`, `pdf-to-
 - Keyboard-only and screen reader testing of every tool has not been done.
 
 ## Notes
+- Admin area lives under `/admin` with its own login (`/admin/login`, endpoint `POST /api/v1/admin/auth/login`, admins only), its own shell and pages: dashboard with analytics, users, tool usage, jobs and failures, abuse reports, settings (flags, fair use, announcement) and system health. It uses the same session cookie as the website; non-admin accounts are refused at login and at every admin endpoint. Create a local admin with `python -m app.seed --admin --email you@example.com --password ...`.
 - OCR on Windows: if `apps/api/var/tessdata` exists the API uses it automatically (copy `*.traineddata`, `configs` and `pdf.ttf` from the Tesseract install, plus `urd.traineddata` for Urdu). A tessdata folder without `configs` makes Tesseract produce no PDF output.
 - Chrome-based tools skip the sandbox address-space cap and run with a short TMPDIR, because Chrome fails under RLIMIT_AS and with long socket paths.
 - Editor find and replace works at text-object level and can miss text split across objects.

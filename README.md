@@ -33,7 +33,7 @@ make dev
 
 Open http://localhost:8080. The first run creates `.env` with fresh secrets. The API validates its configuration at startup and refuses to start with a clear message if a setting is missing or inconsistent (for example `QUEUE_BACKEND=arq` without `REDIS_URL`, or insecure defaults in production).
 
-For local development without Docker, create an API virtualenv, run `make seed` to apply migrations and create `demo@pdfnova.local` (admin, password `Sample-Passphrase-2026!`, refused in production), then run `make api` and `make web`.
+For local development without Docker, create an API virtualenv, run `make seed` to apply migrations and create `demo@example.com` (admin, password `Sample-Passphrase-2026!`, refused in production), then run `make api` and `make web`.
 
 | Target | Does |
 |---|---|

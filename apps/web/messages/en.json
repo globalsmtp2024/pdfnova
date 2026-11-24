@@ -2570,5 +2570,82 @@
     "noPlans": "No plans or paywalls",
     "noWatermarks": "No watermarks",
     "noAccount": "No account needed"
+  },
+  "adminPanel": {
+    "prefix": "Admin",
+    "console": "Admin console",
+    "signOut": "Sign out",
+    "backToSite": "Back to the website",
+    "noAccessTitle": "Admins only",
+    "noAccessBody": "This account is not an administrator. Sign out and use an admin account.",
+    "loadFailed": "The admin data could not be loaded.",
+    "noData": "No data yet.",
+    "range": "Time range",
+    "lastDays": "Last {days} days",
+    "dashboardNote": "Live numbers from the database. Guest and signed-in tasks are both counted.",
+    "toolsNote": "How often each tool ran, how often it worked and how long it took.",
+    "unusedHint": "These tools did not run once in this period. Keep them, or move them to an advanced section later.",
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "tools": "Tool usage",
+      "jobs": "Jobs and failures",
+      "reports": "Abuse reports",
+      "settings": "Settings",
+      "system": "System health"
+    },
+    "login": {
+      "title": "Admin sign in",
+      "subtitle": "Only administrators can sign in here.",
+      "email": "Admin email",
+      "password": "Password",
+      "submit": "Sign in to admin",
+      "mfaTitle": "Two-step verification",
+      "mfaSubtitle": "Enter the code from your authenticator app or a recovery code.",
+      "code": "Verification code",
+      "verify": "Verify and continue",
+      "notice": "Accounts without admin rights are refused."
+    },
+    "stats": {
+      "users": "Total users",
+      "usersHint": "{verified} verified, {admins} admins",
+      "newUsers": "New users",
+      "newWeek": "{count} in the last 7 days",
+      "activeUsers": "Active users",
+      "activeHint": "Signed in during the last 7 days",
+      "openReports": "Open abuse reports",
+      "tasks": "Tasks in this period",
+      "tasksAll": "{count} all time",
+      "successRate": "Success rate",
+      "failedCount": "{count} failed",
+      "avgTime": "Average run time",
+      "p95": "95th percentile {seconds}s",
+      "dataProcessed": "Data processed",
+      "dataOut": "{size} produced",
+      "guestTasks": "Guest tasks",
+      "signedInTasks": "{count} by signed-in users",
+      "apiTasks": "Tasks through the API",
+      "aiRequests": "AI requests",
+      "toolsUnused": "Tools never used",
+      "toolsUnusedHint": "In the last {days} days"
+    },
+    "charts": {
+      "tasks": "Tasks per day",
+      "failedNote": "{count} tasks failed in this period.",
+      "signups": "New users per day",
+      "topTools": "Most used tools",
+      "categories": "Usage by category",
+      "recentUsers": "Newest users",
+      "unusedTools": "Tools not used in the last {days} days"
+    },
+    "cols": {
+      "tool": "Tool",
+      "total": "Runs",
+      "succeeded": "Succeeded",
+      "failed": "Failed",
+      "successRate": "Success rate",
+      "avg": "Average time",
+      "p95": "95th percentile"
+    }
   }
 }

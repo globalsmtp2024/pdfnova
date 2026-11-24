@@ -68,6 +68,39 @@ export type AnnouncementSettings = {
   href: string;
 };
 
+export type AdminAnalytics = {
+  days: number;
+  users: {
+    total: number;
+    verified: number;
+    admins: number;
+    new_in_period: number;
+    new_this_week: number;
+    active_this_week: number;
+  };
+  tasks: {
+    total: number;
+    in_period: number;
+    succeeded: number;
+    failed: number;
+    success_rate: number | null;
+    signed_in: number;
+    guest: number;
+    via_api: number;
+    avg_seconds: number;
+    p95_seconds: number;
+    input_bytes: number;
+    output_bytes: number;
+  };
+  ai_requests: number;
+  open_reports: number;
+  series: { date: string; tasks: number; failed: number; signups: number }[];
+  top_tools: { tool: string; total: number }[];
+  categories: { category: string; total: number }[];
+  unused_tools: string[];
+  recent_users: { id: string; email: string; display_name: string; created_at: string }[];
+};
+
 const ROOT = ["admin"] as const;
 
 export const useHealth = () =>
@@ -75,6 +108,12 @@ export const useHealth = () =>
     queryKey: [...ROOT, "health"],
     queryFn: () => apiJson<HealthReport>("/api/v1/admin/health"),
     refetchInterval: 30000,
+  });
+export const useAnalytics = (days: number) =>
+  useQuery({
+    queryKey: [...ROOT, "analytics", days],
+    queryFn: () => apiJson<AdminAnalytics>(`/api/v1/admin/analytics?days=${days}`),
+    refetchInterval: 60000,
   });
 export const useJobMetrics = (days: number) =>
   useQuery({

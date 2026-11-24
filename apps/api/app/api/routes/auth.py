@@ -76,7 +76,7 @@ def _clear_session_cookies(response: Response, settings: Settings) -> None:
     response.delete_cookie(REFRESH_COOKIE, path=REFRESH_PATH, domain=settings.cookie_domain)
 
 
-async def _complete_login(
+async def complete_login(
     service: AuthService,
     session: SessionDep,
     user: User,
@@ -103,7 +103,7 @@ async def register(
 ) -> LoginResponse:
     await require_flag(session, "signups")
     user = await service.register(body.email, body.password, body.display_name)
-    return await _complete_login(service, session, user, request, response, settings)
+    return await complete_login(service, session, user, request, response, settings)
 
 
 @router.post("/login", response_model=LoginResponse, dependencies=[Depends(auth_attempt_limit)])
@@ -119,7 +119,7 @@ async def login(
     if user.totp_enabled:
         await session.commit()
         return LoginResponse(mfa_required=True, mfa_token=service.issue_mfa_challenge(user))
-    return await _complete_login(service, session, user, request, response, settings)
+    return await complete_login(service, session, user, request, response, settings)
 
 
 @router.post("/mfa/login", response_model=LoginResponse, dependencies=[Depends(auth_attempt_limit)])
@@ -139,7 +139,7 @@ async def mfa_login(
         raise AuthenticationError(
             "That code is not correct.", hint="Use the current code from your authenticator app."
         )
-    return await _complete_login(service, session, user, request, response, settings)
+    return await complete_login(service, session, user, request, response, settings)
 
 
 @router.post("/refresh", response_model=LoginResponse)
@@ -265,7 +265,7 @@ async def change_password(
     settings: SettingsDep,
 ) -> LoginResponse:
     await service.change_password(user, body.current_password, body.new_password)
-    return await _complete_login(service, session, user, request, response, settings)
+    return await complete_login(service, session, user, request, response, settings)
 
 
 @router.post("/mfa/setup", response_model=MfaSetupResponse)

@@ -1,11 +1,10 @@
 "use client";
 
-import { Check, Link2, Megaphone, Save, ShieldAlert, X } from "lucide-react";
+import { Check, Link2, Megaphone, Save, X } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import { Callout, EmptyState } from "@/components/ui/blocks";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/input";
 import { isWebUrl } from "@/lib/validate";
@@ -23,21 +22,9 @@ import {
   useJobMetrics,
   type AnnouncementSettings,
 } from "@/lib/admin";
-import { useSession } from "@/lib/session";
 import { cn, formatBytes } from "@/lib/utils";
 
-const TABS = [
-  "overview",
-  "failures",
-  "users",
-  "flags",
-  "fairUse",
-  "abuse",
-  "announcement",
-] as const;
-type Tab = (typeof TABS)[number];
-
-function Overview() {
+export function Overview() {
   const t = useTranslations("admin");
   const health = useHealth();
   const jobs = useJobMetrics(7);
@@ -135,7 +122,7 @@ function Overview() {
   );
 }
 
-function Failures() {
+export function Failures() {
   const t = useTranslations("admin");
   const format = useFormatter();
   const [tool, setTool] = useState("");
@@ -186,7 +173,7 @@ function Failures() {
   );
 }
 
-function Users() {
+export function Users() {
   const t = useTranslations("admin");
   const [query, setQuery] = useState("");
   const users = useAdminUsers(query);
@@ -243,7 +230,7 @@ function Users() {
   );
 }
 
-function Flags() {
+export function Flags() {
   const t = useTranslations("admin");
   const flags = useFlags();
   const mutations = useAdminMutations();
@@ -275,7 +262,7 @@ function Flags() {
   );
 }
 
-function FairUseEditor() {
+export function FairUseEditor() {
   const t = useTranslations("admin");
   const values = useFairUse();
   const mutations = useAdminMutations();
@@ -322,7 +309,7 @@ function FairUseEditor() {
   );
 }
 
-function Abuse() {
+export function Abuse() {
   const t = useTranslations("admin");
   const format = useFormatter();
   const [status, setStatus] = useState("open");
@@ -401,7 +388,7 @@ function Abuse() {
   );
 }
 
-function AnnouncementEditor() {
+export function AnnouncementEditor() {
   const t = useTranslations("admin");
   const current = useAnnouncementSettings();
   const mutations = useAdminMutations();
@@ -489,47 +476,5 @@ function AnnouncementEditor() {
         {t("save")}
       </Button>
     </form>
-  );
-}
-
-export function AdminPage() {
-  const t = useTranslations("admin");
-  const session = useSession();
-  const [tab, setTab] = useState<Tab>("overview");
-  if (session.isPending) return <Skeleton className="h-40 w-full" />;
-  if (!session.data?.is_admin) {
-    return <EmptyState icon={ShieldAlert} title={t("noAccessTitle")} body={t("noAccessBody")} />;
-  }
-  return (
-    <div className="flex flex-col gap-6" data-admin>
-      <Callout tone="warning">{t("careful")}</Callout>
-      <div role="tablist" aria-label={t("title")} className="flex flex-wrap gap-2">
-        {TABS.map((entry) => (
-          <button
-            key={entry}
-            type="button"
-            role="tab"
-            aria-selected={tab === entry}
-            data-admin-tab={entry}
-            onClick={() => setTab(entry)}
-            className={cn(
-              "rounded-full border px-3 py-1.5 text-sm",
-              tab === entry
-                ? "border-primary bg-primary-subtle text-primary"
-                : "border-border hover:border-primary/50",
-            )}
-          >
-            {t(`tab.${entry}`)}
-          </button>
-        ))}
-      </div>
-      {tab === "overview" ? <Overview /> : null}
-      {tab === "failures" ? <Failures /> : null}
-      {tab === "users" ? <Users /> : null}
-      {tab === "flags" ? <Flags /> : null}
-      {tab === "fairUse" ? <FairUseEditor /> : null}
-      {tab === "abuse" ? <Abuse /> : null}
-      {tab === "announcement" ? <AnnouncementEditor /> : null}
-    </div>
   );
 }
