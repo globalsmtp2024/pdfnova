@@ -83,7 +83,7 @@ export type User = {
   created_at: string;
   retention_extended: boolean;
   retention_seconds: number;
-  ai_key: { provider: string; last4: string } | null;
+  ai_key: { provider: string; last4: string; base_url: string | null; model: string | null } | null;
 };
 
 export type LoginResponse = {

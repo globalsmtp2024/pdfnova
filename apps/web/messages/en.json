@@ -686,7 +686,16 @@
     "aiTestOk": "Connected. The key works.",
     "aiTestFailed": "The key did not work: {reason}",
     "displayNamePlaceholder": "Your name",
-    "newPasswordHint": "At least 10 characters."
+    "newPasswordHint": "At least 10 characters.",
+    "aiProviderCustom": "Custom (OpenAI-compatible)",
+    "aiKeyOptional": "Optional. Leave empty for local servers such as Ollama.",
+    "aiKeyPlaceholder": "Paste your provider key",
+    "aiKeyPlaceholderCustom": "Optional API key",
+    "aiBaseUrl": "Server base URL",
+    "aiBaseUrlHint": "Any server that offers /v1/chat/completions, for example Ollama, vLLM or LM Studio.",
+    "aiModel": "Model name",
+    "aiModelHint": "The model your server expects, for example llama3.1.",
+    "aiSavedCustom": "Using your custom server {host} with model {model}"
   },
   "contact": {
     "metaTitle": "Contact",

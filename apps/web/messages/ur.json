@@ -1998,7 +1998,16 @@
     "language": "زبان",
     "theme": "تھیم",
     "displayNamePlaceholder": "آپ کا نام",
-    "newPasswordHint": "کم از کم 10 حروف۔"
+    "newPasswordHint": "کم از کم 10 حروف۔",
+    "aiProviderCustom": "حسب ضرورت (OpenAI سے ہم آہنگ)",
+    "aiKeyOptional": "اختیاری۔ Ollama جیسے مقامی سرورز کے لیے خالی چھوڑ دیں۔",
+    "aiKeyPlaceholder": "اپنے فراہم کنندہ کی کلید یہاں چسپاں کریں",
+    "aiKeyPlaceholderCustom": "اختیاری API کلید",
+    "aiBaseUrl": "سرور کا بنیادی URL",
+    "aiBaseUrlHint": "ایسا کوئی بھی سرور جو /v1/chat/completions فراہم کرے، مثلاً Ollama، vLLM یا LM Studio۔",
+    "aiModel": "ماڈل کا نام",
+    "aiModelHint": "وہ ماڈل جو آپ کا سرور مانگتا ہے، مثلاً llama3.1۔",
+    "aiSavedCustom": "آپ کا حسب ضرورت سرور {host} ماڈل {model} کے ساتھ استعمال ہو رہا ہے"
   },
   "workflowBuilder": {
     "input": "آپ کی PDFs",

@@ -3,24 +3,29 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Bot,
+  Cpu,
   Database,
   KeyRound,
+  Link2,
   LogIn,
   Mail,
   Monitor,
+  PlugZap,
+  Save,
   ShieldCheck,
   SlidersHorizontal,
+  Trash2,
   User as UserIcon,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 
 import { Panel } from "@/components/account/dashboard";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { ThemeSelect } from "@/components/layout/theme-toggle";
 import { Callout, EmptyState } from "@/components/ui/blocks";
 import { Button } from "@/components/ui/button";
-import { Field, Input, PasswordInput, Select } from "@/components/ui/input";
+import { Field, focusFirstInvalid, Input, PasswordInput, Select } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast, toastError } from "@/components/ui/toaster";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -28,6 +33,7 @@ import { useSessions, useUpdateProfile } from "@/lib/account";
 import { apiFetch, apiJson } from "@/lib/api";
 import { SESSION_KEY, useSession } from "@/lib/session";
 import type { User } from "@/lib/types";
+import { isWebUrl } from "@/lib/validate";
 
 function ProfileSection({ user }: { user: User }) {
   const t = useTranslations("settings");
@@ -381,16 +387,42 @@ function Sessions() {
 
 function AiKeySection({ user }: { user: User }) {
   const t = useTranslations("settings");
+  const form = useTranslations("form");
   const queryClient = useQueryClient();
+  const formRef = useRef<HTMLFormElement>(null);
   const providers = useQuery({
     queryKey: ["ai-providers"],
     queryFn: () => apiJson<{ providers: string[] }>("/api/v1/me/ai-providers"),
   });
   const [provider, setProvider] = useState(user.ai_key?.provider ?? "anthropic");
   const [key, setKey] = useState("");
+  const [baseUrl, setBaseUrl] = useState(user.ai_key?.base_url ?? "");
+  const [model, setModel] = useState(user.ai_key?.model ?? "");
+  const [errors, setErrors] = useState<{ baseUrl?: string; model?: string; key?: string }>({});
+  const custom = provider === "custom";
+  const payload = {
+    provider,
+    api_key: key,
+    ...(custom ? { base_url: baseUrl.trim(), model: model.trim() } : {}),
+  };
+  const validate = (): boolean => {
+    const problems: { baseUrl?: string; model?: string; key?: string } = {};
+    if (custom) {
+      if (!baseUrl.trim()) problems.baseUrl = form("required");
+      else if (!isWebUrl(baseUrl)) problems.baseUrl = form("invalidUrl");
+      if (!model.trim()) problems.model = form("required");
+    } else if (key.trim().length < 16) {
+      problems.key = form("passwordShort", { min: 16 });
+    }
+    setErrors(problems);
+    if (Object.keys(problems).length) {
+      requestAnimationFrame(() => focusFirstInvalid(formRef.current));
+      return false;
+    }
+    return true;
+  };
   const save = useMutation({
-    mutationFn: () =>
-      apiJson<User>("/api/v1/me/ai-key", { method: "PUT", json: { provider, api_key: key } }),
+    mutationFn: () => apiJson<User>("/api/v1/me/ai-key", { method: "PUT", json: payload }),
     onSuccess: (updated) => {
       queryClient.setQueryData(SESSION_KEY, updated);
       setKey("");
@@ -403,7 +435,7 @@ function AiKeySection({ user }: { user: User }) {
     mutationFn: () =>
       apiJson<{ ok: boolean; message: string }>("/api/v1/me/ai-key/test", {
         method: "POST",
-        json: key.trim() ? { provider, api_key: key } : { provider: user.ai_key?.provider },
+        json: custom || key.trim() ? payload : { provider: user.ai_key?.provider },
       }),
     onSuccess: setTestResult,
     onError: toastError,
@@ -413,17 +445,26 @@ function AiKeySection({ user }: { user: User }) {
     onSuccess: (updated) => queryClient.setQueryData(SESSION_KEY, updated),
     onError: toastError,
   });
+  const canTest = custom
+    ? Boolean(baseUrl.trim() && model.trim())
+    : Boolean(key.trim() || user.ai_key);
   return (
     <Panel title={t("ai")} icon={Bot}>
       <p className="text-sm text-muted">{t("aiHint")}</p>
       {user.ai_key ? (
         <div className="flex items-center justify-between gap-3 rounded-xl border border-border p-3">
           <span className="text-sm">
-            {t("aiSaved", { provider: user.ai_key.provider, last4: user.ai_key.last4 })}
+            {user.ai_key.provider === "custom"
+              ? t("aiSavedCustom", {
+                  model: user.ai_key.model ?? "",
+                  host: user.ai_key.base_url ?? "",
+                })
+              : t("aiSaved", { provider: user.ai_key.provider, last4: user.ai_key.last4 })}
           </span>
           <Button
             variant="ghost"
             size="sm"
+            icon={<Trash2 />}
             loading={remove.isPending}
             onClick={() => remove.mutate()}
           >
@@ -432,10 +473,12 @@ function AiKeySection({ user }: { user: User }) {
         </div>
       ) : null}
       <form
-        className="grid gap-3 sm:grid-cols-[10rem_1fr_auto] sm:items-end"
+        ref={formRef}
+        noValidate
+        className="grid gap-3 sm:grid-cols-2"
         onSubmit={(event) => {
           event.preventDefault();
-          save.mutate();
+          if (validate()) save.mutate();
         }}
       >
         <Field label={t("aiProvider")}>
@@ -443,17 +486,26 @@ function AiKeySection({ user }: { user: User }) {
             <Select
               id={props.id}
               value={provider}
-              onChange={(event) => setProvider(event.target.value)}
+              onChange={(event) => {
+                setProvider(event.target.value);
+                setErrors({});
+                setTestResult(null);
+              }}
             >
               {(providers.data?.providers ?? ["anthropic"]).map((entry) => (
                 <option key={entry} value={entry}>
-                  {entry}
+                  {entry === "custom" ? t("aiProviderCustom") : entry}
                 </option>
               ))}
             </Select>
           )}
         </Field>
-        <Field label={t("aiKey")}>
+        <Field
+          label={t("aiKey")}
+          hint={custom ? t("aiKeyOptional") : undefined}
+          error={errors.key}
+          required={!custom}
+        >
           {(props) => (
             <PasswordInput
               id={props.id}
@@ -461,17 +513,60 @@ function AiKeySection({ user }: { user: User }) {
               invalid={props.invalid}
               icon={<KeyRound />}
               autoComplete="off"
+              enterKeyHint={custom ? "next" : "done"}
+              placeholder={custom ? t("aiKeyPlaceholderCustom") : t("aiKeyPlaceholder")}
               value={key}
               onChange={(event) => setKey(event.target.value)}
             />
           )}
         </Field>
-        <div className="flex gap-2">
+        {custom ? (
+          <>
+            <Field label={t("aiBaseUrl")} hint={t("aiBaseUrlHint")} error={errors.baseUrl} required>
+              {(props) => (
+                <Input
+                  id={props.id}
+                  aria-describedby={props.describedBy}
+                  invalid={props.invalid}
+                  icon={<Link2 />}
+                  dir="ltr"
+                  type="url"
+                  inputMode="url"
+                  enterKeyHint="next"
+                  autoComplete="off"
+                  placeholder="https://my-server.example.com/v1"
+                  value={baseUrl}
+                  onChange={(event) => setBaseUrl(event.target.value)}
+                  maxLength={300}
+                />
+              )}
+            </Field>
+            <Field label={t("aiModel")} hint={t("aiModelHint")} error={errors.model} required>
+              {(props) => (
+                <Input
+                  id={props.id}
+                  aria-describedby={props.describedBy}
+                  invalid={props.invalid}
+                  icon={<Cpu />}
+                  dir="ltr"
+                  enterKeyHint="done"
+                  autoComplete="off"
+                  placeholder="llama3.1"
+                  value={model}
+                  onChange={(event) => setModel(event.target.value)}
+                  maxLength={120}
+                />
+              )}
+            </Field>
+          </>
+        ) : null}
+        <div className="flex flex-wrap gap-2 sm:col-span-2">
           <Button
             type="button"
             variant="outline"
+            icon={<PlugZap />}
             loading={test.isPending}
-            disabled={!key.trim() && !user.ai_key}
+            disabled={!canTest}
             onClick={() => {
               setTestResult(null);
               test.mutate();
@@ -480,12 +575,7 @@ function AiKeySection({ user }: { user: User }) {
           >
             {t("aiTest")}
           </Button>
-          <Button
-            type="submit"
-            variant="solid"
-            loading={save.isPending}
-            disabled={key.trim().length < 16}
-          >
+          <Button type="submit" variant="solid" icon={<Save />} loading={save.isPending}>
             {t("save")}
           </Button>
         </div>

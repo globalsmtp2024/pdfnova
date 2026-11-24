@@ -371,10 +371,28 @@ class TaskService:
         user = self._principal.user
         if user is not None and user.ai_api_key_encrypted is not None:
             key = load_key(self._settings.storage_encryption_key.get_secret_value())
-            return {
+            secrets = {
                 "ai_provider": user.ai_provider or "anthropic",
                 "ai_key": open_text(key, user.ai_api_key_encrypted),
             }
+            if user.ai_provider == "custom" and user.ai_base_url and user.ai_model:
+                secrets["ai_base_url"] = user.ai_base_url
+                secrets["ai_model"] = user.ai_model
+                if self._settings.ai_custom_allow_private:
+                    secrets["ai_private_ok"] = "1"
+            return secrets
+        if self._settings.ai_shared_provider == "custom" and self._settings.ai_shared_base_url:
+            secrets = {
+                "ai_provider": "custom",
+                "ai_key": self._settings.ai_shared_api_key.get_secret_value()
+                if self._settings.ai_shared_api_key
+                else "",
+                "ai_base_url": self._settings.ai_shared_base_url,
+                "ai_model": self._settings.ai_shared_model or "",
+            }
+            if self._settings.ai_custom_allow_private:
+                secrets["ai_private_ok"] = "1"
+            return secrets
         shared = self._settings.ai_shared_api_key
         if shared is None:
             raise ToolInputError(

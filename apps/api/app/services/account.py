@@ -18,7 +18,7 @@ from app.services.api_scopes import clean_scopes
 from app.services.erasure import erase_prefix
 from app.storage.base import task_prefix
 
-AI_PROVIDERS = ("anthropic", "openai", "google", "mistral")
+AI_PROVIDERS = ("anthropic", "openai", "google", "mistral", "custom")
 API_KEY_PREFIX = "pnk_"
 MAX_ACTIVE_API_KEYS = 20
 
@@ -28,22 +28,58 @@ class AccountService:
         self._session = session
         self._container = container
 
-    async def set_ai_key(self, user: User, provider: str, api_key: str) -> None:
+    async def _custom_endpoint(self, base_url: str | None, model: str | None) -> tuple[str, str]:
+        from app.ai.endpoint import EndpointError, assert_allowed_host, normalize_base_url
+
+        try:
+            url = normalize_base_url(base_url or "")
+            await asyncio.to_thread(
+                assert_allowed_host, url, self._container.settings.ai_custom_allow_private
+            )
+        except EndpointError as exc:
+            raise AppError(str(exc), hint="Example: https://my-server.example.com/v1") from exc
+        chosen = (model or "").strip()
+        if not chosen or len(chosen) > 120 or any(char.isspace() for char in chosen):
+            raise AppError("Enter the model name your server expects.", hint="Example: llama3.1 or gpt-4o-mini")
+        return url, chosen
+
+    async def set_ai_key(
+        self,
+        user: User,
+        provider: str,
+        api_key: str,
+        base_url: str | None = None,
+        model: str | None = None,
+    ) -> None:
         if provider not in AI_PROVIDERS:
             raise AppError(
                 f"Unsupported AI provider '{provider}'.", hint=f"Choose one of: {', '.join(AI_PROVIDERS)}."
             )
         cleaned = api_key.strip()
-        if len(cleaned) < 16 or any(char.isspace() for char in cleaned):
-            raise AppError(
-                "This does not look like a valid API key.", hint="Paste the full key from your provider."
-            )
+        if provider == "custom":
+            if cleaned and (len(cleaned) < 4 or any(char.isspace() for char in cleaned)):
+                raise AppError("This does not look like a valid API key.", hint="Leave it empty for servers without a key.")
+            user.ai_base_url, user.ai_model = await self._custom_endpoint(base_url, model)
+        else:
+            if len(cleaned) < 16 or any(char.isspace() for char in cleaned):
+                raise AppError(
+                    "This does not look like a valid API key.", hint="Paste the full key from your provider."
+                )
+            user.ai_base_url = None
+            user.ai_model = None
         key = load_key(self._container.settings.storage_encryption_key.get_secret_value())
         user.ai_provider = provider
         user.ai_api_key_encrypted = seal_text(key, cleaned)
-        user.ai_key_last4 = cleaned[-4:]
+        user.ai_key_last4 = cleaned[-4:] if len(cleaned) >= 8 else ""
 
-    async def test_ai_key(self, user: User, provider: str | None, api_key: str | None) -> tuple[bool, str]:
+    async def test_ai_key(
+        self,
+        user: User,
+        provider: str | None,
+        api_key: str | None,
+        base_url: str | None = None,
+        model: str | None = None,
+    ) -> tuple[bool, str]:
         import asyncio
         import os
 
@@ -54,6 +90,30 @@ class AccountService:
         if name not in AI_PROVIDERS:
             return False, f"Unsupported AI provider '{name}'."
         secret = api_key.strip() if api_key else None
+        if name == "custom":
+            try:
+                url, chosen_model = await self._custom_endpoint(
+                    base_url or user.ai_base_url, model or user.ai_model
+                )
+            except AppError as exc:
+                return False, exc.message
+            if secret is None and user.ai_api_key_encrypted is not None and user.ai_provider == "custom":
+                secret = open_text(
+                    load_key(self._container.settings.storage_encryption_key.get_secret_value()),
+                    user.ai_api_key_encrypted,
+                )
+            probe = HttpProvider(
+                name="custom",
+                key=secret or "",
+                model=chosen_model,
+                base_url=url,
+                allow_private=self._container.settings.ai_custom_allow_private,
+            )
+            try:
+                await asyncio.to_thread(probe.complete, "Reply with the single word OK.", "Say OK.", 8)
+            except ToolFailedError as exc:
+                return False, exc.message
+            return True, "The connection works."
         if secret is None:
             if user.ai_api_key_encrypted is None:
                 return False, "No AI key is saved yet."
@@ -74,6 +134,8 @@ class AccountService:
         user.ai_provider = None
         user.ai_api_key_encrypted = None
         user.ai_key_last4 = None
+        user.ai_base_url = None
+        user.ai_model = None
 
     async def list_api_keys(self, user: User) -> list[ApiKey]:
         rows = await self._session.scalars(

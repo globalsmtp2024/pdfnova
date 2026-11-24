@@ -49,6 +49,9 @@ class Settings(BaseSettings):
     job_timeout_seconds: int = 300
     ai_shared_provider: str = "anthropic"
     ai_shared_api_key: SecretStr | None = None
+    ai_shared_base_url: str | None = None
+    ai_shared_model: str | None = None
+    ai_custom_allow_private: bool = False
     job_memory_limit_mb: int = 2048
     sweeper_interval_seconds: int = 60
 
@@ -125,6 +128,13 @@ class Settings(BaseSettings):
         ):
             if bool(first) != bool(second):
                 problems.append(f"{label} must be set together")
+        if self.ai_shared_provider not in {"anthropic", "openai", "google", "mistral", "custom"}:
+            problems.append("AI_SHARED_PROVIDER must be anthropic, openai, google, mistral or custom")
+        if self.ai_shared_provider == "custom":
+            if not self.ai_shared_base_url:
+                problems.append("AI_SHARED_BASE_URL is required when AI_SHARED_PROVIDER=custom")
+            if not self.ai_shared_model:
+                problems.append("AI_SHARED_MODEL is required when AI_SHARED_PROVIDER=custom")
         try:
             key = base64.b64decode(self.storage_encryption_key.get_secret_value(), validate=True)
         except ValueError:

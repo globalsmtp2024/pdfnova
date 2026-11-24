@@ -38,6 +38,8 @@ class ProfileUpdate(BaseModel):
 class AiKeyTest(BaseModel):
     provider: str | None = Field(default=None, max_length=32)
     api_key: str | None = Field(default=None, max_length=400)
+    base_url: str | None = Field(default=None, max_length=300)
+    model: str | None = Field(default=None, max_length=120)
 
 
 class AiKeyTestResult(BaseModel):
@@ -47,7 +49,9 @@ class AiKeyTestResult(BaseModel):
 
 class AiKeyRequest(BaseModel):
     provider: str = Field(default="anthropic", max_length=32)
-    api_key: str = Field(min_length=1, max_length=400)
+    api_key: str = Field(default="", max_length=400)
+    base_url: str | None = Field(default=None, max_length=300)
+    model: str | None = Field(default=None, max_length=120)
 
 
 class ApiKeyCreate(BaseModel):
@@ -107,7 +111,7 @@ async def ai_providers() -> dict[str, list[str]]:
 async def set_ai_key(
     body: AiKeyRequest, user: CurrentUser, service: AccountDep, session: SessionDep
 ) -> UserResponse:
-    await service.set_ai_key(user, body.provider, body.api_key)
+    await service.set_ai_key(user, body.provider, body.api_key, body.base_url, body.model)
     await session.commit()
     return UserResponse.from_user(user)
 
@@ -117,7 +121,9 @@ async def test_ai_key(
     body: AiKeyTest, request: Request, user: CurrentUser, service: AccountDep, container: ContainerDep
 ) -> AiKeyTestResult:
     await limit_by_ip(request, container, "ai-key-test", limit=10, window=60)
-    ok, message = await service.test_ai_key(user, body.provider, body.api_key)
+    ok, message = await service.test_ai_key(
+        user, body.provider, body.api_key, body.base_url, body.model
+    )
     return AiKeyTestResult(ok=ok, message=message)
 
 

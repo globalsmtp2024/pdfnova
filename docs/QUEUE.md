@@ -100,7 +100,7 @@ Phase 7
 - [x] 4 PDF to EPUB (reflowable, TOC, cover, valid structure)
 - [x] 5 PDF to Word/PowerPoint/Excel (OCR) with language selector
 - [x] 6 Forms review at code level (validation, states, labels, CSRF-safe submit)
-- [ ] 7 Custom (OpenAI-compatible) AI provider in Settings
+- [x] 7 Custom (OpenAI-compatible) AI provider in Settings
 - [ ] 8 Urdu for every remaining English-only page and string; i18n:check passes
 - [ ] 9 Features section redesign (home bento grid and /features)
 - [ ] 10 Forms polish (placeholders, icons, show/hide password, inline validation)

@@ -25,6 +25,8 @@ class User(IdMixin, TimestampMixin, Base):
     ai_provider: Mapped[str | None] = mapped_column(String(32), nullable=True)
     ai_api_key_encrypted: Mapped[str | None] = mapped_column(String(1024), nullable=True)
     ai_key_last4: Mapped[str | None] = mapped_column(String(8), nullable=True)
+    ai_base_url: Mapped[str | None] = mapped_column(String(300), nullable=True)
+    ai_model: Mapped[str | None] = mapped_column(String(120), nullable=True)
 
     oauth_accounts: Mapped[list["OAuthAccount"]] = relationship(
         back_populates="user", cascade="all, delete-orphan", lazy="selectin"

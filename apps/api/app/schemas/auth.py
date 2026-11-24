@@ -61,6 +61,8 @@ class RecoveryCodesResponse(BaseModel):
 class AiKeySummary(BaseModel):
     provider: str
     last4: str
+    base_url: str | None = None
+    model: str | None = None
 
 
 class UserResponse(BaseModel):
@@ -97,7 +99,12 @@ class UserResponse(BaseModel):
                 limits.extended_retention_seconds if user.retention_extended else limits.retention_seconds
             ),
             ai_key=(
-                AiKeySummary(provider=user.ai_provider or "anthropic", last4=user.ai_key_last4 or "")
+                AiKeySummary(
+                    provider=user.ai_provider or "anthropic",
+                    last4=user.ai_key_last4 or "",
+                    base_url=user.ai_base_url,
+                    model=user.ai_model,
+                )
                 if user.ai_api_key_encrypted
                 else None
             ),

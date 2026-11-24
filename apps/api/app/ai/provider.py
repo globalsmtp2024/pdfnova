@@ -6,6 +6,7 @@ from typing import Any, Protocol
 
 import httpx
 
+from app.ai.endpoint import EndpointError, assert_allowed_host, chat_completions_url
 from app.tools.base import JobContext, ToolFailedError
 
 REQUEST_TIMEOUT_SECONDS = 120.0
@@ -36,8 +37,14 @@ class HttpProvider:
     key: str
     model: str
     base_url: str
+    allow_private: bool = False
 
     def complete(self, system: str, prompt: str, max_tokens: int = MAX_OUTPUT_TOKENS) -> str:
+        if self.name == "custom":
+            try:
+                assert_allowed_host(self.base_url, self.allow_private)
+            except EndpointError as exc:
+                raise ToolFailedError(str(exc), code="ai_endpoint_blocked") from exc
         try:
             with httpx.Client(timeout=REQUEST_TIMEOUT_SECONDS) as client:
                 response = self._request(client, system, prompt, max_tokens)
@@ -85,9 +92,11 @@ class HttpProvider:
                     "generationConfig": {"maxOutputTokens": max_tokens},
                 },
             )
+        url = chat_completions_url(self.base_url) if self.name == "custom" else f"{self.base_url}/v1/chat/completions"
+        headers = {"authorization": f"Bearer {self.key}"} if self.key else {}
         return client.post(
-            f"{self.base_url}/v1/chat/completions",
-            headers={"authorization": f"Bearer {self.key}"},
+            url,
+            headers=headers,
             json={
                 "model": self.model,
                 "max_tokens": max_tokens,
@@ -103,7 +112,7 @@ class HttpProvider:
         if isinstance(error, dict):
             message = error.get("message")
             if isinstance(message, str) and message:
-                return message[:200].replace(self.key, "***")
+                return message[:200].replace(self.key, "***") if self.key else message[:200]
         return "no details"
 
     def _text(self, payload: dict[str, Any]) -> str:
@@ -121,6 +130,15 @@ class HttpProvider:
 
 def provider_for(ctx: JobContext[Any]) -> Provider:
     name = ctx.optional_secret("ai_provider") or "anthropic"
+    if name == "custom":
+        base_url = ctx.secret("ai_base_url")
+        return HttpProvider(
+            name=name,
+            key=ctx.optional_secret("ai_key") or "",
+            model=ctx.secret("ai_model"),
+            base_url=base_url.rstrip("/"),
+            allow_private=ctx.optional_secret("ai_private_ok") == "1",
+        )
     key = ctx.secret("ai_key")
     base = os.environ.get("AI_BASE_URL_OVERRIDE") or BASE_URLS.get(name, BASE_URLS["anthropic"])
     model = os.environ.get("AI_MODEL_OVERRIDE") or DEFAULT_MODELS.get(name, DEFAULT_MODELS["anthropic"])

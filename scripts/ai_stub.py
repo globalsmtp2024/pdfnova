@@ -26,8 +26,13 @@ def answer(prompt: str) -> str:
 class Handler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:
         body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
-        prompt = body["messages"][0]["content"]
-        payload = json.dumps({"content": [{"type": "text", "text": answer(prompt)}]}).encode()
+        if self.path.endswith("/chat/completions"):
+            prompt = body["messages"][-1]["content"]
+            reply = {"choices": [{"message": {"role": "assistant", "content": answer(prompt)}}]}
+        else:
+            prompt = body["messages"][0]["content"]
+            reply = {"content": [{"type": "text", "text": answer(prompt)}]}
+        payload = json.dumps(reply).encode()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(payload)))
