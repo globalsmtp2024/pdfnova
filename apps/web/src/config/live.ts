@@ -79,4 +79,5 @@ export const LIVE_TOOL_SLUGS: ReadonlySet<string> = new Set([
   "ai-key-dates",
   "remove-metadata",
   "epub-to-pdf",
+  "pdf-to-epub",
 ]);

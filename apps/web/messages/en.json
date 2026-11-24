@@ -1536,7 +1536,17 @@
     "remove_javascript": "Remove scripts",
     "remove_thumbnails": "Remove page thumbnails",
     "font_size_pt": "Font size (pt)",
-    "add_bookmarks": "Add a bookmark for each chapter"
+    "add_bookmarks": "Add a bookmark for each chapter",
+    "include_cover": "Use page 1 as the cover",
+    "title": "Book title (optional)",
+    "author": "Author (optional)",
+    "language_auto": "Detect automatically",
+    "language_ar": "Arabic",
+    "language_fr": "French",
+    "language_de": "German",
+    "language_es": "Spanish",
+    "language_en": "English",
+    "language_ur": "Urdu"
   },
   "tools": {
     "remove-annotations": {

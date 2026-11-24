@@ -263,6 +263,16 @@ const FIELDS = {
   remove_thumbnails: ["Remove page thumbnails", "صفحے کے تھمب نیل ہٹائیں"],
   font_size_pt: ["Font size (pt)", "فونٹ کا سائز (pt)"],
   add_bookmarks: ["Add a bookmark for each chapter", "ہر باب کے لیے بُک مارک شامل کریں"],
+  include_cover: ["Use page 1 as the cover", "صفحہ 1 کو سرورق بنائیں"],
+  title: ["Book title (optional)", "کتاب کا عنوان (اختیاری)"],
+  author: ["Author (optional)", "مصنف (اختیاری)"],
+  language_auto: ["Detect automatically", "خودکار پہچانیں"],
+  language_ar: ["Arabic", "عربی"],
+  language_fr: ["French", "فرانسیسی"],
+  language_de: ["German", "جرمن"],
+  language_es: ["Spanish", "ہسپانوی"],
+  language_en: ["English", "انگریزی"],
+  language_ur: ["Urdu", "اردو"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 

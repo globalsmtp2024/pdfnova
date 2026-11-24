@@ -1668,7 +1668,17 @@
     "remove_javascript": "اسکرپٹس ہٹائیں",
     "remove_thumbnails": "صفحے کے تھمب نیل ہٹائیں",
     "font_size_pt": "فونٹ کا سائز (pt)",
-    "add_bookmarks": "ہر باب کے لیے بُک مارک شامل کریں"
+    "add_bookmarks": "ہر باب کے لیے بُک مارک شامل کریں",
+    "include_cover": "صفحہ 1 کو سرورق بنائیں",
+    "title": "کتاب کا عنوان (اختیاری)",
+    "author": "مصنف (اختیاری)",
+    "language_auto": "خودکار پہچانیں",
+    "language_ar": "عربی",
+    "language_fr": "فرانسیسی",
+    "language_de": "جرمن",
+    "language_es": "ہسپانوی",
+    "language_en": "انگریزی",
+    "language_ur": "اردو"
   },
   "tool_sign": {
     "modeLabel": "دستخط کی قسم",

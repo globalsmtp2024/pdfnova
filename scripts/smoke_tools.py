@@ -510,6 +510,49 @@ def has_bookmarks(count: int) -> Check:
     return check
 
 
+def outlined_pdf() -> bytes:
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    for number, title in ((1, "Alpha"), (2, "Beta"), (3, "Gamma")):
+        pdf.setFont("Helvetica-Bold", 28)
+        pdf.drawString(72, 760, f"{title} heading")
+        pdf.setFont("Helvetica", 12)
+        pdf.drawString(72, 720, "Body text for the chapter.")
+        pdf.bookmarkPage(f"p{number}")
+        if number != 3:
+            pdf.addOutlineEntry(title, f"p{number}", level=0)
+        pdf.showPage()
+    pdf.save()
+    return buffer.getvalue()
+
+
+def epub_valid(chapters: int) -> Check:
+    def check(outputs: list[tuple[str, bytes]]) -> str | None:
+        import zipfile
+
+        from lxml import etree
+
+        try:
+            with zipfile.ZipFile(io.BytesIO(outputs[0][1])) as archive:
+                names = archive.namelist()
+                info = archive.infolist()[0]
+                if names[0] != "mimetype" or info.compress_type != zipfile.ZIP_STORED:
+                    return "mimetype must be the first stored entry"
+                for name in names:
+                    if name.endswith((".xhtml", ".opf", ".ncx", ".xml")):
+                        etree.fromstring(archive.read(name))
+                found = sum(1 for name in names if name.startswith("OEBPS/chapter-"))
+                if found != chapters:
+                    return f"expected {chapters} chapters, found {found}"
+                if "OEBPS/nav.xhtml" not in names or "OEBPS/cover.jpg" not in names:
+                    return "missing navigation or cover"
+        except (zipfile.BadZipFile, etree.XMLSyntaxError) as exc:
+            return f"invalid epub: {type(exc).__name__}"
+        return None
+
+    return check
+
+
 CASES: list[Case] = [
     Case("remove-pages", pdf_upload(), {"pages": "2"}),
     Case("extract-pages", pdf_upload(), {"pages": "1-2"}),
@@ -517,6 +560,8 @@ CASES: list[Case] = [
     Case("remove-metadata", pdf_upload(), {}),
     Case("epub-to-pdf", [("book.epub", epub_sample(), "application/epub+zip")], check=has_bookmarks(2)),
     Case("epub-to-pdf", [("evil.epub", epub_sample(True), "application/epub+zip")], check=has_bookmarks(2)),
+    Case("pdf-to-epub", pdf_upload(), {}, check=epub_valid(1)),
+    Case("pdf-to-epub", [("book.pdf", outlined_pdf(), "application/pdf")], {}, check=epub_valid(2)),
     Case("compress", pdf_upload(), {"level": "recommended"}),
     Case("repair", [("sample.pdf", damaged(sample_pdf()), "application/pdf")]),
     Case("page-numbers", pdf_upload(), {"format": "page_n_of_total"}),
