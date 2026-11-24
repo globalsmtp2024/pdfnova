@@ -56,6 +56,12 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async redirects() {
+    return [
+      { source: "/tools/create-forms", destination: "/tools/create-form", permanent: true },
+      { source: "/:locale(ur)/tools/create-forms", destination: "/:locale/tools/create-form", permanent: true },
+    ];
+  },
   async rewrites() {
     return [
       { source: "/api/:path*", destination: `${apiOrigin}/api/:path*` },

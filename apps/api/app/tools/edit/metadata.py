@@ -161,3 +161,38 @@ class EditMetadataTool(Tool[MetadataOptions]):
             return [output_pdf(target)]
 
         return run_each(ctx, handle, "Updating file")
+
+
+class RemoveMetadataOptions(ToolOptions):
+    remove_attachments: bool = False
+    remove_javascript: bool = True
+    remove_thumbnails: bool = True
+
+
+class RemoveMetadataTool(Tool[RemoveMetadataOptions]):
+    slug = "remove-metadata"
+    name = "Remove metadata"
+    category = ToolCategory.OPTIMIZE
+    summary = "Strip author, software, dates and XMP data, plus optional hidden data such as scripts."
+    input_spec = EditMetadataTool.input_spec
+    options_schema = RemoveMetadataOptions
+    seconds_per_page = 0.001
+
+    def run(self, ctx: JobContext[RemoveMetadataOptions]) -> list[OutputFile]:
+        chosen = ctx.options
+        options = MetadataOptions(
+            remove_all=True,
+            remove_attachments=chosen.remove_attachments,
+            remove_javascript=chosen.remove_javascript,
+            remove_thumbnails=chosen.remove_thumbnails,
+        )
+
+        def handle(item: InputFile, _: int) -> list[OutputFile]:
+            with open_pdf(item) as pdf:
+                counts = edit_metadata(pdf, options)
+                target = ctx.output_path(pdf_name(f"{item.stem}-clean", "clean"))
+                save_pdf(pdf, target)
+            ctx.report(0.95, _describe(counts))
+            return [output_pdf(target)]
+
+        return run_each(ctx, handle, "Cleaning file")

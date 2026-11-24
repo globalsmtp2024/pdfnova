@@ -469,14 +469,6 @@ export const TOOLS: ToolDefinition[] = [
     ["form"],
   ),
   tool(
-    "create-forms",
-    "Create PDF forms",
-    "edit",
-    "Add text fields, checkboxes and dropdowns.",
-    ["pdf"],
-    ["form builder"],
-  ),
-  tool(
     "header-footer",
     "Header and footer",
     "edit",

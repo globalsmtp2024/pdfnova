@@ -95,7 +95,7 @@ Phase 7
 ## QUEUE 3
 
 - [x] 1 Catalog consistency script (scripts/audit_catalog.py) and fix every reported gap
-- [ ] 2 Remove duplicate "Create PDF forms" entry; "Remove metadata" alias opens metadata tool in remove-all mode, Live, redirects kept
+- [x] 2 Remove duplicate "Create PDF forms" entry; "Remove metadata" alias opens metadata tool in remove-all mode, Live, redirects kept
 - [ ] 3 EPUB to PDF (own zipfile reader, bookmarks, malicious EPUB handling)
 - [ ] 4 PDF to EPUB (reflowable, TOC, cover, valid structure)
 - [ ] 5 PDF to Word/PowerPoint/Excel (OCR) with language selector

@@ -470,6 +470,7 @@ CASES: list[Case] = [
     Case("remove-pages", pdf_upload(), {"pages": "2"}),
     Case("extract-pages", pdf_upload(), {"pages": "1-2"}),
     Case("organize", pdf_upload(), {"pages": [{"page": 3}, {"page": 1, "rotate": 90}, {"source": "blank"}]}),
+    Case("remove-metadata", pdf_upload(), {}),
     Case("compress", pdf_upload(), {"level": "recommended"}),
     Case("repair", [("sample.pdf", damaged(sample_pdf()), "application/pdf")]),
     Case("page-numbers", pdf_upload(), {"format": "page_n_of_total"}),

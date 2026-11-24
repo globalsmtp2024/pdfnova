@@ -271,7 +271,7 @@ export const SOLUTIONS: Solution[] = [
       "Forms are printed, filled and scanned again",
       "Budgets for software are tight",
     ],
-    tools: ["merge", "ocr", "create-forms", "fill-forms", "compress", "ai-summarize"],
+    tools: ["merge", "ocr", "create-form", "fill-forms", "compress", "ai-summarize"],
     workflow: "scan-ocr-compress",
     faq: [
       {

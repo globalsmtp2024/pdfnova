@@ -258,6 +258,9 @@ const FIELDS = {
   "include_past": ["Include past dates", "گزری ہوئی تاریخیں شامل کریں"],
   "output_all": ["Calendar, JSON and CSV", "کیلنڈر، JSON اور CSV"],
   "output_ics": ["Calendar (.ics)", "کیلنڈر (.ics)"],
+  remove_attachments: ["Remove attached files", "منسلک فائلیں ہٹائیں"],
+  remove_javascript: ["Remove scripts", "اسکرپٹس ہٹائیں"],
+  remove_thumbnails: ["Remove page thumbnails", "صفحے کے تھمب نیل ہٹائیں"],
   pages: ["Pages (e.g. 1-3, 5, last)", "صفحات (مثلاً 1-3، 5، last)"],
 };
 
