@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useId, useRef, useState } from "react";
 
 import { ToolIcon } from "@/components/tools/tool-icon";
@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { DEVELOPER_LINKS, RESOURCE_LINKS, type NavLink } from "@/config/navigation";
 import { isPopular, TOOL_CATEGORIES, TOOLS } from "@/config/tools";
 import { NEW_TOOL_SLUGS } from "@/content/changelog";
-import { SOLUTIONS } from "@/content/solutions";
+import { localizedSolution, SOLUTIONS } from "@/content/solutions";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useAvailableTools } from "@/lib/session";
 import { toolText } from "@/lib/tool-text";
@@ -127,11 +127,12 @@ function ToolsPanel({ onNavigate }: { onNavigate: () => void }) {
 
 function SolutionsPanel({ onNavigate }: { onNavigate: () => void }) {
   const t = useTranslations("nav");
+  const locale = useLocale();
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-muted">{t("solutionsIntro")}</p>
       <ul className="grid gap-1 sm:grid-cols-2 lg:grid-cols-4">
-        {SOLUTIONS.map((solution) => (
+        {SOLUTIONS.map((entry) => localizedSolution(entry, locale)).map((solution) => (
           <li key={solution.slug}>
             <Link
               href={`/solutions/${solution.slug}`}

@@ -36,7 +36,8 @@
     "relatedTools": "Related tools",
     "dismiss": "Dismiss",
     "dashboard": "Dashboard",
-    "settings": "Settings"
+    "settings": "Settings",
+    "breadcrumb": "Breadcrumb"
   },
   "theme": {
     "light": "Light",
@@ -386,7 +387,6 @@
     "allCategories": "All categories",
     "allFormats": "All formats",
     "offlineOnly": "Works offline in your browser",
-    "offlineEmpty": "On-device tools arrive in a later release. Until then every tool runs on our secure servers.",
     "availableOnly": "Available now",
     "sort": "Sort",
     "sortPopular": "Most popular",
@@ -793,12 +793,9 @@
     "eyebrow": "Workflows",
     "title": "Repeatable document pipelines",
     "subtitle": "Ready-made workflows that chain tools together. Open one in the visual builder, adjust it and run it on your PDFs.",
-    "notYet": "Available in a later release",
-    "notYetBody": "Workflows need the tools they chain. As each tool ships, its workflows become runnable here.",
     "builderTitle": "Workflow builder",
     "builderBody": "Drag tools onto a canvas, connect them and branch into several outputs. Open the builder to try it.",
-    "steps": "{count} steps",
-    "useWorkflow": "Use this workflow"
+    "steps": "{count} steps"
   },
   "support": {
     "metaTitle": "Support the project",
@@ -2422,5 +2419,169 @@
     "sending": "Sending…",
     "tryAgain": "Something went wrong. Please try again.",
     "chars": "{count} of {max} characters"
+  },
+  "roadmapPage": {
+    "title": "Roadmap",
+    "subtitle": "What we are building next and the limits of what exists today.",
+    "inProgress": "In progress",
+    "planned": "Planned",
+    "knownTitle": "Known limitations today",
+    "limits": {
+      "pdfa": "PDF/A files carry an embedded color profile but are not yet validated by an independent checker.",
+      "findReplace": "Find and replace in the editor works on text objects and can miss text split across several objects.",
+      "cloud": "Cloud imports are verified against a test provider; live provider checks need real app credentials.",
+      "languages": "Interface languages other than English and Urdu fall back to English until translations are reviewed."
+    }
+  },
+  "changelogPage": {
+    "title": "Changelog and roadmap",
+    "subtitle": "What shipped, what we’re building now and what comes next.",
+    "shipped": "Shipped",
+    "inProgress": "In progress",
+    "planned": "Planned"
+  },
+  "sitePages": {
+    "security": {
+      "metaTitle": "Security and privacy",
+      "title": "Security and privacy, explained plainly",
+      "subtitle": "These are the protections that are built and running today. We don’t claim certifications we don’t have.",
+      "timelineTitle": "The auto-deletion timeline",
+      "timelineSubtitle": "Every file follows the same short lifecycle.",
+      "reportTitle": "Found a vulnerability?",
+      "reportBefore": "Please report it privately through the",
+      "reportLink": "contact form",
+      "reportAfter": "with the topic Security report. We appreciate responsible disclosure."
+    },
+    "about": {
+      "metaTitle": "About",
+      "title": "Why {brand} exists",
+      "subtitle": "Documents shouldn’t be a chore, and fixing them shouldn’t cost money. That’s the whole idea.",
+      "missionTitle": "Our mission",
+      "missionOne": "Everyone handles documents: students submitting coursework, freelancers sending contracts, small businesses filing receipts, schools sharing course packs. Too often the tools are expensive, cluttered or careless with private files.",
+      "missionTwo": "{brand} puts every document tool in one fast, calm place, free for everyone, with privacy treated as a default rather than an upsell.",
+      "principlesTitle": "Principles we build by",
+      "freeTitle": "How it stays free",
+      "freeOne": "Processing is efficient by design: files are handled by small, isolated workers and deleted quickly, so storage costs stay low.",
+      "freeTwo": "Fair-use limits stop abuse without getting in the way of normal use. They are public, generous and the same for everyone.",
+      "freeThree": "Optional contributions help cover servers and development.",
+      "support": "Support the project"
+    },
+    "accessibility": {
+      "metaTitle": "Accessibility statement",
+      "title": "Accessibility statement",
+      "subtitle": "We aim to meet WCAG 2.2 level AA across the whole site. Here is what we do and how to tell us when we fall short.",
+      "limitsTitle": "Known limitations",
+      "limitsBody": "We have not yet had every tool tested by keyboard-only and screen reader users, and some pointer-based tools such as the page editor are harder to use without a mouse. If you hit a barrier, please tell us.",
+      "helpBefore": "If something on {brand} is hard to use with your assistive technology, please tell us through the",
+      "contactLink": "contact form",
+      "helpMiddle": ". We aim to respond within two working days. You can also see every keyboard shortcut on the",
+      "shortcutsLink": "shortcuts page"
+    },
+    "compare": {
+      "metaTitle": "Overview",
+      "title": "{brand} at a glance",
+      "subtitle": "An honest overview of what you get. No comparisons with other products, just facts you can check.",
+      "feature": "Feature",
+      "caption": "{brand} feature overview",
+      "note": "The catalog lists {count} tools. Each one is marked Coming soon until it actually works, and the changelog shows what shipped when."
+    },
+    "help": {
+      "metaTitle": "Help center",
+      "metaDescription": "Answers to common questions about tools, files, privacy, fair use and the API.",
+      "title": "How can we help?",
+      "subtitle": "Search the answers below, or send us a message.",
+      "stuck": "Still stuck?",
+      "searchPlaceholder": "Search help articles",
+      "noMatch": "No answers match “{query}”.",
+      "noMatchBody": "Try different words, or contact us and a person will help."
+    },
+    "howItWorks": {
+      "metaTitle": "How it works",
+      "subtitle": "From the moment you drop a file to the moment it disappears, here is exactly what happens."
+    },
+    "features": {
+      "metaTitle": "Features",
+      "title": "Everything the platform can do",
+      "subtitle": "A free, private document platform built for speed, batches and automation, with an API for everything."
+    },
+    "blog": {
+      "metaTitle": "Blog",
+      "subtitle": "Practical, honest guides to getting documents done.",
+      "all": "All",
+      "englishOnly": "Articles are currently written in English only."
+    },
+    "solutions": {
+      "metaTitle": "Solutions",
+      "title": "Solutions for every kind of work",
+      "subtitle": "Ready-made ways to use every tool, tuned for how different people work.",
+      "pains": "Sound familiar?",
+      "tools": "The tools that help",
+      "workflow": "A sample workflow"
+    }
+  },
+  "devPage": {
+    "metaTitle": "Developers",
+    "built": "Built for real integrations",
+    "keys": {
+      "title": "Free API keys",
+      "body": "Create as many as 20 keys from your dashboard and revoke them any time."
+    },
+    "uploads": {
+      "title": "Resumable uploads",
+      "body": "Send large files in chunks and resume from the server’s offset after a failure."
+    },
+    "progress": {
+      "title": "Live progress",
+      "body": "Follow every task over Server-Sent Events, or poll the task endpoint."
+    },
+    "limits": {
+      "title": "Fair-use limits",
+      "body": "Clear 429 responses with Retry-After and an exact reset time."
+    },
+    "openapi": {
+      "title": "OpenAPI",
+      "body": "A complete interactive reference at /docs and the raw spec at /openapi.json."
+    },
+    "webhooks": {
+      "title": "Webhooks",
+      "body": "Signed HTTPS callbacks with retries and a delivery log when tasks or signature requests finish."
+    },
+    "status": {
+      "title": "Status",
+      "body": "Live health of the API, database and storage."
+    },
+    "samples": "Merge two PDFs in three languages"
+  },
+  "apiPage": {
+    "metaTitle": "API reference",
+    "metaDescription": "Endpoints, authentication, examples, rate limits and error codes for the REST API.",
+    "subtitle": "Base URL {url}/api/v1. Every tool on the site is available here, free, with fair-use limits.",
+    "englishOnly": "",
+    "sections": {
+      "authentication": "Authentication",
+      "quickstart": "Quickstart",
+      "rateLimits": "Rate limits",
+      "scopes": "Key scopes",
+      "webhooks": "Webhooks",
+      "sdks": "SDKs and CLI",
+      "errors": "Errors",
+      "changelog": "API changelog"
+    },
+    "authBody": "Send an API key as a Bearer token. Create keys in your dashboard. Requests made with an API key don’t need CSRF tokens. Without a key, requests are treated as a guest session tied to a cookie.",
+    "quickBody": "Create a task, add files, start it and read the download link. Download links are signed and expire after 15 minutes.",
+    "quickDocs": "The full interactive OpenAPI reference is at",
+    "quickSpec": "and the specification at",
+    "rateBody": "Every caller shares the same public fair-use policy, available at <code>/api/v1/fair-use</code>. Your current usage and reset times are at <code>/api/v1/usage</code>. When a limit is reached the API responds with status 429, a Retry-After header and <code>details.reset_at</code>.",
+    "scopesBody": "Choose what a key may do when you create it. A key without a needed scope receives a 403 response. Keys can never change your account settings or create other keys. Write scopes include the matching read scope.",
+    "webhooksBody": "Add an https endpoint in your dashboard and pick events: task.succeeded, task.failed, esign.completed and esign.declined. Each delivery is a JSON POST signed with your endpoint secret in the X-PDFNova-Signature header (t=timestamp,v1=hex HMAC-SHA256 of “timestamp.body”). Failed deliveries are retried after 30 seconds, 2 minutes, 10 minutes, 1 hour and 6 hours, and every attempt appears in the delivery log.",
+    "sdksBody": "Small official clients wrap upload, start, wait and download. The Python package also installs the pdfnova command. The full interactive reference is at /docs and the raw OpenAPI document at /openapi.json.",
+    "errorsBody": "Every error uses the same envelope with a stable code, a human message and, where useful, a hint on how to fix it.",
+    "code": "Code",
+    "status": "Status",
+    "meaning": "Meaning",
+    "authRequired": "Auth required"
+  },
+  "legalPage": {
+    "englishOnly": "The full text of this document is currently available in English only. The English text is the version that applies."
   }
 }

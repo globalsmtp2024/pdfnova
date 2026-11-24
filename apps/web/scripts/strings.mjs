@@ -1,6 +1,56 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const ADDITIONS = {
+  roadmapPage: [
+    {
+      title: "Roadmap",
+      subtitle: "What we are building next and the limits of what exists today.",
+      inProgress: "In progress",
+      planned: "Planned",
+      knownTitle: "Known limitations today",
+      limits: {
+        pdfa: "PDF/A files carry an embedded color profile but are not yet validated by an independent checker.",
+        findReplace:
+          "Find and replace in the editor works on text objects and can miss text split across several objects.",
+        cloud:
+          "Cloud imports are verified against a test provider; live provider checks need real app credentials.",
+        languages:
+          "Interface languages other than English and Urdu fall back to English until translations are reviewed.",
+      },
+    },
+    {
+      title: "روڈ میپ",
+      subtitle: "ہم آگے کیا بنا رہے ہیں اور آج جو کچھ موجود ہے اس کی حدود۔",
+      inProgress: "جاری ہے",
+      planned: "منصوبہ بند",
+      knownTitle: "آج کی معلوم حدود",
+      limits: {
+        pdfa: "PDF/A فائلوں میں کلر پروفائل شامل ہوتا ہے لیکن ابھی کسی آزاد جانچ کنندہ سے توثیق نہیں ہوئی۔",
+        findReplace:
+          "ایڈیٹر میں تلاش و تبدیلی متن کے آبجیکٹس پر کام کرتی ہے اور کئی آبجیکٹس میں بٹے ہوئے متن کو چھوڑ سکتی ہے۔",
+        cloud:
+          "کلاؤڈ امپورٹ کی جانچ ٹیسٹ فراہم کنندہ کے ساتھ ہوئی ہے؛ اصل فراہم کنندگان کی جانچ کے لیے ایپ کی اصل اسناد درکار ہیں۔",
+        languages:
+          "انگریزی اور اردو کے علاوہ انٹرفیس زبانیں ترجمے کی نظرثانی تک انگریزی پر واپس چلی جاتی ہیں۔",
+      },
+    },
+  ],
+  changelogPage: [
+    {
+      title: "Changelog and roadmap",
+      subtitle: "What shipped, what we’re building now and what comes next.",
+      shipped: "Shipped",
+      inProgress: "In progress",
+      planned: "Planned",
+    },
+    {
+      title: "تبدیلیوں کا ریکارڈ اور روڈ میپ",
+      subtitle: "کیا جاری ہو چکا، ہم اب کیا بنا رہے ہیں اور آگے کیا آ رہا ہے۔",
+      shipped: "جاری ہو چکا",
+      inProgress: "جاری ہے",
+      planned: "منصوبہ بند",
+    },
+  ],
   schedules: [
     { namePlaceholder: "e.g. Weekly scan cleanup" },
     { namePlaceholder: "مثلاً ہفتہ وار اسکین کی صفائی" },
@@ -32,7 +82,8 @@ const ADDITIONS = {
       aiKeyPlaceholder: "Paste your provider key",
       aiKeyPlaceholderCustom: "Optional API key",
       aiBaseUrl: "Server base URL",
-      aiBaseUrlHint: "Any server that offers /v1/chat/completions, for example Ollama, vLLM or LM Studio.",
+      aiBaseUrlHint:
+        "Any server that offers /v1/chat/completions, for example Ollama, vLLM or LM Studio.",
       aiModel: "Model name",
       aiModelHint: "The model your server expects, for example llama3.1.",
       aiSavedCustom: "Using your custom server {host} with model {model}",
@@ -45,7 +96,8 @@ const ADDITIONS = {
       aiKeyPlaceholder: "اپنے فراہم کنندہ کی کلید یہاں چسپاں کریں",
       aiKeyPlaceholderCustom: "اختیاری API کلید",
       aiBaseUrl: "سرور کا بنیادی URL",
-      aiBaseUrlHint: "ایسا کوئی بھی سرور جو /v1/chat/completions فراہم کرے، مثلاً Ollama، vLLM یا LM Studio۔",
+      aiBaseUrlHint:
+        "ایسا کوئی بھی سرور جو /v1/chat/completions فراہم کرے، مثلاً Ollama، vLLM یا LM Studio۔",
       aiModel: "ماڈل کا نام",
       aiModelHint: "وہ ماڈل جو آپ کا سرور مانگتا ہے، مثلاً llama3.1۔",
       aiSavedCustom: "آپ کا حسب ضرورت سرور {host} ماڈل {model} کے ساتھ استعمال ہو رہا ہے",
@@ -55,12 +107,14 @@ const ADDITIONS = {
     {
       namePlaceholder: "Your full name",
       emailPlaceholder: "you@example.com",
-      messagePlaceholder: "Tell us what you need help with. Include the tool name and what you expected.",
+      messagePlaceholder:
+        "Tell us what you need help with. Include the tool name and what you expected.",
     },
     {
       namePlaceholder: "آپ کا پورا نام",
       emailPlaceholder: "you@example.com",
-      messagePlaceholder: "بتائیں کہ آپ کو کس چیز میں مدد چاہیے۔ ٹول کا نام اور آپ کی توقع بھی لکھیں۔",
+      messagePlaceholder:
+        "بتائیں کہ آپ کو کس چیز میں مدد چاہیے۔ ٹول کا نام اور آپ کی توقع بھی لکھیں۔",
     },
   ],
   esign: [
@@ -82,8 +136,14 @@ const ADDITIONS = {
     },
   ],
   dashboard: [
-    { keyNamePlaceholder: "e.g. Invoice automation", scopesRequired: "Choose at least one permission for this key." },
-    { keyNamePlaceholder: "مثلاً انوائس آٹومیشن", scopesRequired: "اس کلید کے لیے کم از کم ایک اجازت منتخب کریں۔" },
+    {
+      keyNamePlaceholder: "e.g. Invoice automation",
+      scopesRequired: "Choose at least one permission for this key.",
+    },
+    {
+      keyNamePlaceholder: "مثلاً انوائس آٹومیشن",
+      scopesRequired: "اس کلید کے لیے کم از کم ایک اجازت منتخب کریں۔",
+    },
   ],
   teams: [
     {
@@ -105,7 +165,8 @@ const ADDITIONS = {
       eventsRequired: "Choose at least one event.",
     },
     {
-      created: "ویب ہک شامل ہو گیا۔ اس کا دستخطی راز ابھی کاپی کر لیں؛ یہ صرف ایک بار دکھایا جاتا ہے۔",
+      created:
+        "ویب ہک شامل ہو گیا۔ اس کا دستخطی راز ابھی کاپی کر لیں؛ یہ صرف ایک بار دکھایا جاتا ہے۔",
       urlHint: "عوامی https ایڈریس ہونا ضروری ہے۔ ہم اس پر دستخط شدہ POST درخواستیں بھیجتے ہیں۔",
       descriptionPlaceholder: "مثلاً ہمارے بلنگ سسٹم کو اطلاع دیں",
       eventsRequired: "کم از کم ایک ایونٹ منتخب کریں۔",
@@ -155,7 +216,8 @@ const ADDITIONS = {
       },
       forgot: {
         sentTitle: "Check your inbox",
-        sentSubtitle: "If an account exists for {email}, a reset link is on its way. It works for one hour.",
+        sentSubtitle:
+          "If an account exists for {email}, a reset link is on its way. It works for one hour.",
         back: "Back to sign in",
         title: "Reset your password",
         subtitle: "We'll email you a secure link to choose a new one.",
@@ -165,7 +227,8 @@ const ADDITIONS = {
       },
       reset: {
         incompleteTitle: "Link incomplete",
-        incompleteSubtitle: "This reset link is missing its code. Open the link from your email again, or request a new one.",
+        incompleteSubtitle:
+          "This reset link is missing its code. Open the link from your email again, or request a new one.",
         requestNew: "Request a new link",
         doneTitle: "Password updated",
         doneSubtitle: "You've been signed out everywhere. Sign in with your new password.",
@@ -238,7 +301,8 @@ const ADDITIONS = {
       },
       forgot: {
         sentTitle: "اپنا ان باکس دیکھیں",
-        sentSubtitle: "اگر {email} کے لیے اکاؤنٹ موجود ہے تو ری سیٹ لنک بھیجا جا رہا ہے۔ یہ ایک گھنٹے تک کارآمد ہے۔",
+        sentSubtitle:
+          "اگر {email} کے لیے اکاؤنٹ موجود ہے تو ری سیٹ لنک بھیجا جا رہا ہے۔ یہ ایک گھنٹے تک کارآمد ہے۔",
         back: "سائن اِن پر واپس جائیں",
         title: "اپنا پاس ورڈ ری سیٹ کریں",
         subtitle: "ہم آپ کو نیا پاس ورڈ چننے کے لیے محفوظ لنک ای میل کریں گے۔",
@@ -248,7 +312,8 @@ const ADDITIONS = {
       },
       reset: {
         incompleteTitle: "لنک نامکمل ہے",
-        incompleteSubtitle: "اس ری سیٹ لنک میں کوڈ موجود نہیں۔ اپنی ای میل سے لنک دوبارہ کھولیں یا نیا لنک منگوائیں۔",
+        incompleteSubtitle:
+          "اس ری سیٹ لنک میں کوڈ موجود نہیں۔ اپنی ای میل سے لنک دوبارہ کھولیں یا نیا لنک منگوائیں۔",
         requestNew: "نیا لنک منگوائیں",
         doneTitle: "پاس ورڈ تبدیل ہو گیا",
         doneSubtitle: "آپ ہر جگہ سے سائن آؤٹ ہو گئے ہیں۔ نئے پاس ورڈ سے سائن اِن کریں۔",
@@ -320,7 +385,10 @@ function merge(target, source) {
   return target;
 }
 
-for (const [locale, index] of [["en", 0], ["ur", 1]]) {
+for (const [locale, index] of [
+  ["en", 0],
+  ["ur", 1],
+]) {
   const file = `messages/${locale}.json`;
   const messages = JSON.parse(readFileSync(file, "utf8"));
   for (const [namespace, pair] of Object.entries(ADDITIONS)) {

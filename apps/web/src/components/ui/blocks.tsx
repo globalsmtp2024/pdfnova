@@ -6,6 +6,7 @@ import {
   TriangleAlert,
   type LucideIcon,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { Link } from "@/i18n/navigation";
@@ -115,6 +116,7 @@ export function Timeline({ entries, className }: { entries: TimelineEntry[]; cla
 export type Crumb = { label: string; href?: string };
 
 export function Breadcrumbs({ items, className }: { items: Crumb[]; className?: string }) {
+  const t = useTranslations("common");
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -126,7 +128,7 @@ export function Breadcrumbs({ items, className }: { items: Crumb[]; className?: 
     })),
   };
   return (
-    <nav aria-label="Breadcrumb" className={cn("text-sm text-muted", className)}>
+    <nav aria-label={t("breadcrumb")} className={cn("text-sm text-muted", className)}>
       <ol className="flex flex-wrap items-center gap-1.5">
         {items.map((crumb, index) => (
           <li key={`${crumb.label}-${index}`} className="flex items-center gap-1.5">

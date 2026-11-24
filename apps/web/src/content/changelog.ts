@@ -126,3 +126,14 @@ export const NEW_TOOL_SLUGS: ReadonlySet<string> = new Set(
     ? SHIPPED_RELEASES[0].tools
     : SHIPPED_RELEASES.flatMap((release) => release.tools).slice(0, 4),
 );
+
+export function localizedReleases(
+  locale: string,
+  urdu: Record<string, { date?: string; title: string; summary: string; highlights: string[] }>,
+): Release[] {
+  if (locale !== "ur") return RELEASES;
+  return RELEASES.map((release) => {
+    const text = urdu[release.version];
+    return text ? { ...release, ...text, date: text.date ?? release.date } : release;
+  });
+}

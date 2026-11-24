@@ -7,30 +7,28 @@ import { BentoGrid, FeatureCard } from "@/components/ui/blocks";
 import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/ui/page-hero";
 import { Section } from "@/components/ui/section";
-import { FEATURES } from "@/content/pages";
+import { localizedFeatures } from "@/content/pages";
 import { Link } from "@/i18n/navigation";
 import { initPage, pageMetadata } from "@/lib/page";
-
-const TITLE = "Everything the platform can do";
-const SUBTITLE =
-  "A free, private document platform built for speed, batches and automation, with an API for everything.";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/features">): Promise<Metadata> {
   const { locale } = await params;
-  return pageMetadata(locale, "/features", "Features", SUBTITLE);
+  const t = await getTranslations({ locale, namespace: "sitePages.features" });
+  return pageMetadata(locale, "/features", t("metaTitle"), t("subtitle"));
 }
 
 export default async function FeaturesPage({ params }: PageProps<"/[locale]/features">) {
-  await initPage(params);
+  const { locale } = await initPage(params);
   const t = await getTranslations();
+  const page = await getTranslations("sitePages.features");
   return (
     <>
       <PageHero
         eyebrow={t("nav.resourcesItems.features.title")}
-        title={TITLE}
-        subtitle={SUBTITLE}
+        title={page("title")}
+        subtitle={page("subtitle")}
         breadcrumbs={[
           { label: t("common.home"), href: "/" },
           { label: t("nav.resourcesItems.features.title") },
@@ -43,7 +41,7 @@ export default async function FeaturesPage({ params }: PageProps<"/[locale]/feat
       </PageHero>
       <Section>
         <BentoGrid>
-          {FEATURES.map((feature) => (
+          {localizedFeatures(locale).map((feature) => (
             <FeatureCard
               key={feature.title}
               icon={feature.icon}

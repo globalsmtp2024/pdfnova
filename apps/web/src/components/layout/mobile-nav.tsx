@@ -2,7 +2,7 @@
 
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { LayoutGrid, Menu, Search, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState, type ReactNode } from "react";
 
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
@@ -11,7 +11,7 @@ import { ToolIcon } from "@/components/tools/tool-icon";
 import { Button } from "@/components/ui/button";
 import { DEVELOPER_LINKS, RESOURCE_LINKS } from "@/config/navigation";
 import { findTool, POPULAR_TOOL_SLUGS, TOOL_CATEGORIES } from "@/config/tools";
-import { SOLUTIONS } from "@/content/solutions";
+import { localizedSolution, SOLUTIONS } from "@/content/solutions";
 import { Link } from "@/i18n/navigation";
 import { toolText } from "@/lib/tool-text";
 import { useUi } from "@/stores/ui";
@@ -29,6 +29,7 @@ function DrawerSection({ title, children }: { title: string; children: ReactNode
 
 export function MobileNav({ account }: { account: ReactNode }) {
   const t = useTranslations();
+  const locale = useLocale();
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
   const linkClass =
@@ -86,7 +87,7 @@ export function MobileNav({ account }: { account: ReactNode }) {
               ))}
             </DrawerSection>
             <DrawerSection title={t("nav.solutions")}>
-              {SOLUTIONS.map((solution) => (
+              {SOLUTIONS.map((entry) => localizedSolution(entry, locale)).map((solution) => (
                 <Link
                   key={solution.slug}
                   href={`/solutions/${solution.slug}`}

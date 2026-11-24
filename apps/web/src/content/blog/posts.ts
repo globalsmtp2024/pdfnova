@@ -1,4 +1,5 @@
 import { brand } from "@/config/brand";
+import { POSTS_UR, TAGS_UR } from "./posts.ur";
 
 export type BlogPost = {
   slug: string;
@@ -45,4 +46,19 @@ export const POSTS: BlogPost[] = [
 
 export function findPost(slug: string): BlogPost | undefined {
   return POSTS.find((post) => post.slug === slug);
+}
+
+export function localizedPost(post: BlogPost, locale: string): BlogPost {
+  if (locale !== "ur") return post;
+  const overlay = POSTS_UR[post.slug];
+  return {
+    ...post,
+    ...overlay,
+    author: `${brand.name} ٹیم`,
+    tags: post.tags.map((tag) => TAGS_UR[tag] ?? tag),
+  };
+}
+
+export function localizedTag(tag: string, locale: string): string {
+  return locale === "ur" ? (TAGS_UR[tag] ?? tag) : tag;
 }

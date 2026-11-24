@@ -4,7 +4,8 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const REQUIRED = ["ur"];
-const PHYSICAL = /\b(?:m[lr]|p[lr])-(?:\d|\[)|\btext-(?:left|right)\b|\brounded-(?:l|r|tl|tr|bl|br)(?:-|\b)|\bborder-(?:l|r)(?:-|\b)|\b(?:float|clear)-(?:left|right)\b/;
+const PHYSICAL =
+  /\b(?:m[lr]|p[lr])-(?:\d|\[)|\btext-(?:left|right)\b|\brounded-(?:l|r|tl|tr|bl|br)(?:-|\b)|\bborder-(?:l|r)(?:-|\b)|\b(?:float|clear)-(?:left|right)\b/;
 const ALLOWED_DIRECTIONAL_FILES = new Set([
   "src/components/ui/backgrounds.tsx",
   "src/components/ui/dialog.tsx",
@@ -32,11 +33,15 @@ const english = new Set(leaves(JSON.parse(readFileSync(join(ROOT, "messages/en.j
 let failed = false;
 
 for (const locale of REQUIRED) {
-  const have = new Set(leaves(JSON.parse(readFileSync(join(ROOT, `messages/${locale}.json`), "utf8"))));
+  const have = new Set(
+    leaves(JSON.parse(readFileSync(join(ROOT, `messages/${locale}.json`), "utf8"))),
+  );
   const missing = [...english].filter((key) => !have.has(key));
   if (missing.length) {
     failed = true;
-    console.error(`${locale}: ${missing.length} missing strings, for example ${missing.slice(0, 5).join(", ")}`);
+    console.error(
+      `${locale}: ${missing.length} missing strings, for example ${missing.slice(0, 5).join(", ")}`,
+    );
   } else {
     console.log(`${locale}: complete (${english.size} strings)`);
   }
@@ -61,7 +66,9 @@ for (const file of walk(join(ROOT, "src"))) {
 }
 if (offenders.length) {
   failed = true;
-  console.error(`Physical left/right classes found (use start/end for RTL):\n${offenders.join("\n")}`);
+  console.error(
+    `Physical left/right classes found (use start/end for RTL):\n${offenders.join("\n")}`,
+  );
 } else {
   console.log("rtl: no physical direction classes outside the allowed files");
 }

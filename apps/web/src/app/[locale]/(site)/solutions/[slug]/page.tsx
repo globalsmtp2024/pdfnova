@@ -9,7 +9,7 @@ import { Accordion } from "@/components/ui/accordion";
 import { PageHero } from "@/components/ui/page-hero";
 import { Section, SectionHeader } from "@/components/ui/section";
 import { findTool, type ToolDefinition } from "@/config/tools";
-import { findSolution, SOLUTIONS } from "@/content/solutions";
+import { findSolution, localizedSolution, SOLUTIONS } from "@/content/solutions";
 import { findWorkflow } from "@/content/workflows";
 import { routing } from "@/i18n/routing";
 import { initPage, pageMetadata } from "@/lib/page";
@@ -24,17 +24,20 @@ export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/solutions/[slug]">): Promise<Metadata> {
   const { locale, slug } = await params;
-  const solution = findSolution(slug);
+  const found = findSolution(slug);
+  const solution = found ? localizedSolution(found, locale) : undefined;
   return solution
     ? pageMetadata(locale, `/solutions/${slug}`, `${solution.title}`, solution.heroBody)
     : {};
 }
 
 export default async function SolutionPage({ params }: PageProps<"/[locale]/solutions/[slug]">) {
-  const { slug } = await initPage(params);
-  const solution = findSolution(slug);
-  if (!solution) notFound();
+  const { locale, slug } = await initPage(params);
+  const found = findSolution(slug);
+  if (!found) notFound();
+  const solution = localizedSolution(found, locale);
   const t = await getTranslations();
+  const page = await getTranslations("sitePages.solutions");
   const tools = solution.tools
     .map((entry) => findTool(entry))
     .filter((tool): tool is ToolDefinition => tool !== undefined);
@@ -73,7 +76,7 @@ export default async function SolutionPage({ params }: PageProps<"/[locale]/solu
         }
       />
       <Section aria-labelledby="pains-heading">
-        <SectionHeader id="pains-heading" title="Sound familiar?" />
+        <SectionHeader id="pains-heading" title={page("pains")} />
         <ul className="mt-8 grid gap-4 md:grid-cols-3">
           {solution.pains.map((pain) => (
             <li
@@ -87,7 +90,7 @@ export default async function SolutionPage({ params }: PageProps<"/[locale]/solu
         </ul>
       </Section>
       <Section tone="surface" aria-labelledby="solution-tools">
-        <SectionHeader id="solution-tools" title="The tools that help" />
+        <SectionHeader id="solution-tools" title={page("tools")} />
         <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {tools.map((tool) => (
             <li key={tool.slug}>
@@ -98,7 +101,7 @@ export default async function SolutionPage({ params }: PageProps<"/[locale]/solu
       </Section>
       {workflow ? (
         <Section aria-labelledby="solution-workflow">
-          <SectionHeader id="solution-workflow" title="A sample workflow" />
+          <SectionHeader id="solution-workflow" title={page("workflow")} />
           <div className="mt-8 max-w-xl">
             <WorkflowCard workflow={workflow} />
           </div>

@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import { Callout } from "@/components/ui/blocks";
 import { PageHero } from "@/components/ui/page-hero";
-import { findLegalDocument, LEGAL_DOCUMENTS } from "@/content/legal";
+import { findLegalDocument, LEGAL_DOCUMENTS, localizedLegalHeader } from "@/content/legal";
 import { routing } from "@/i18n/routing";
 import { initPage, pageMetadata } from "@/lib/page";
 
@@ -18,20 +19,24 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/legal/[doc]">): Promise<Metadata> {
   const { locale, doc } = await params;
   const document = findLegalDocument(doc);
-  return document ? pageMetadata(locale, `/legal/${doc}`, document.title, document.summary) : {};
+  if (!document) return {};
+  const header = localizedLegalHeader(document, locale);
+  return pageMetadata(locale, `/legal/${doc}`, header.title, header.summary);
 }
 
 export default async function LegalPage({ params }: PageProps<"/[locale]/legal/[doc]">) {
-  const { doc } = await initPage(params);
+  const { locale, doc } = await initPage(params);
   const document = findLegalDocument(doc);
   if (!document) notFound();
   const t = await getTranslations("common");
+  const page = await getTranslations("legalPage");
+  const header = localizedLegalHeader(document, locale);
   return (
     <>
       <PageHero
-        title={document.title}
-        subtitle={document.summary}
-        breadcrumbs={[{ label: t("home"), href: "/" }, { label: document.title }]}
+        title={header.title}
+        subtitle={header.summary}
+        breadcrumbs={[{ label: t("home"), href: "/" }, { label: header.title }]}
       />
       <div className="container-page grid gap-10 py-12 lg:grid-cols-[15rem_1fr]">
         <nav aria-label={t("onThisPage")} className="lg:sticky lg:top-24 lg:self-start">
@@ -52,6 +57,7 @@ export default async function LegalPage({ params }: PageProps<"/[locale]/legal/[
           </ol>
         </nav>
         <article className="flex max-w-[70ch] flex-col gap-10">
+          {locale === "ur" ? <Callout tone="info">{page("englishOnly")}</Callout> : null}
           <p className="text-sm text-muted">{t("lastUpdated", { date: document.updated })}</p>
           {document.sections.map((section, index) => (
             <section key={section.id} id={section.id} className="scroll-mt-24">

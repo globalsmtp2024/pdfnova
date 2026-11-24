@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Breadcrumbs } from "@/components/ui/blocks";
 import { brand } from "@/config/brand";
 import { siteUrl } from "@/config/site";
-import { findPost, POSTS } from "@/content/blog/posts";
+import { findPost, localizedPost, POSTS } from "@/content/blog/posts";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { initPage, pageMetadata } from "@/lib/page";
@@ -20,8 +20,9 @@ export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/blog/[slug]">): Promise<Metadata> {
   const { locale, slug } = await params;
-  const post = findPost(slug);
-  if (!post) return {};
+  const found = findPost(slug);
+  if (!found) return {};
+  const post = localizedPost(found, locale);
   return {
     ...pageMetadata(locale, `/blog/${slug}`, post.title, post.description),
     openGraph: {
@@ -34,10 +35,12 @@ export async function generateMetadata({
 }
 
 export default async function BlogPostPage({ params }: PageProps<"/[locale]/blog/[slug]">) {
-  const { slug } = await initPage(params);
-  const post = findPost(slug);
-  if (!post) notFound();
+  const { locale, slug } = await initPage(params);
+  const found = findPost(slug);
+  if (!found) notFound();
+  const post = localizedPost(found, locale);
   const t = await getTranslations("common");
+  const page = await getTranslations("sitePages.blog");
   const { default: Content } = (await import(`@/content/blog/${slug}.mdx`)) as {
     default: ComponentType;
   };
@@ -61,7 +64,7 @@ export default async function BlogPostPage({ params }: PageProps<"/[locale]/blog
       <Breadcrumbs
         items={[
           { label: t("home"), href: "/" },
-          { label: "Blog", href: "/blog" },
+          { label: page("metaTitle"), href: "/blog" },
           { label: post.title },
         ]}
       />

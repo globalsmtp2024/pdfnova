@@ -1,13 +1,15 @@
-import { ArrowRight } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { ArrowRight, Workflow } from "lucide-react";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { ToolIcon } from "@/components/tools/tool-icon";
 import { Badge } from "@/components/ui/badge";
 import { findTool } from "@/config/tools";
-import type { WorkflowRecipe } from "@/content/workflows";
+import { Link } from "@/i18n/navigation";
+import { localizedWorkflow, type WorkflowRecipe } from "@/content/workflows";
 import { toolText } from "@/lib/tool-text";
 
-export async function WorkflowCard({ workflow }: { workflow: WorkflowRecipe }) {
+export async function WorkflowCard({ workflow: source }: { workflow: WorkflowRecipe }) {
+  const workflow = localizedWorkflow(source, await getLocale());
   const t = await getTranslations("workflowsPage");
   const toolT = await getTranslations("tools");
   return (
@@ -37,16 +39,14 @@ export async function WorkflowCard({ workflow }: { workflow: WorkflowRecipe }) {
           );
         })}
       </ol>
-      <div className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-4">
-        <span className="text-xs text-muted">{t("notYet")}</span>
-        <button
-          type="button"
-          disabled
-          aria-disabled
-          className="cursor-not-allowed rounded-(--radius-control) border border-border px-3 py-1.5 text-sm font-medium text-muted"
+      <div className="mt-auto border-t border-border pt-4">
+        <Link
+          href="/tools/workflow"
+          className="inline-flex items-center gap-1.5 rounded-(--radius-control) border border-border px-3 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-surface-muted"
         >
-          {t("useWorkflow")}
-        </button>
+          <Workflow className="size-4" aria-hidden />
+          {t("builderTitle")}
+        </Link>
       </div>
     </article>
   );

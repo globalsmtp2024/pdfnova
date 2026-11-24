@@ -9,7 +9,7 @@ import { ToolCard } from "@/components/tools/tool-card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { findTool, POPULAR_TOOL_SLUGS } from "@/config/tools";
-import { SOLUTIONS } from "@/content/solutions";
+import { localizedSolution, SOLUTIONS } from "@/content/solutions";
 import { Link } from "@/i18n/navigation";
 import { useAvailableTools } from "@/lib/session";
 
@@ -182,7 +182,7 @@ export function UseCasesCarousel() {
         ref={scroller}
         className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-4 pb-4"
       >
-        {SOLUTIONS.map((solution) => (
+        {SOLUTIONS.map((entry) => localizedSolution(entry, locale)).map((solution) => (
           <li key={solution.slug} className="w-72 shrink-0 snap-start sm:w-80">
             <Link
               href={`/solutions/${solution.slug}`}

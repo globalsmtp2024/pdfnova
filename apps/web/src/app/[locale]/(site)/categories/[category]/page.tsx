@@ -16,7 +16,7 @@ import { CategoryPill } from "@/components/ui/blocks";
 import { PageHero } from "@/components/ui/page-hero";
 import { Section } from "@/components/ui/section";
 import { categoryByPath, TOOL_CATEGORIES, TOOLS, type ToolCategoryId } from "@/config/tools";
-import { CATEGORY_FAQ } from "@/content/pages";
+import { localizedCategoryFaq } from "@/content/pages";
 import { WORKFLOWS } from "@/content/workflows";
 import { WorkflowCard } from "@/components/marketing/workflow-card";
 import { routing } from "@/i18n/routing";
@@ -57,7 +57,7 @@ export async function generateMetadata({
 export default async function CategoryPage({
   params,
 }: PageProps<"/[locale]/categories/[category]">) {
-  const { category: path } = await initPage(params);
+  const { locale, category: path } = await initPage(params);
   const category = categoryByPath(path);
   if (!category) notFound();
   const t = await getTranslations();
@@ -120,7 +120,7 @@ export default async function CategoryPage({
             {t("category.faqTitle")}
           </h2>
           <Accordion
-            items={CATEGORY_FAQ[category.id].map((item, index) => ({
+            items={localizedCategoryFaq(locale, category.id).map((item, index) => ({
               id: `faq-${index}`,
               question: item.question,
               answer: item.answer,

@@ -7,29 +7,29 @@ import { PageHero } from "@/components/ui/page-hero";
 import { Section } from "@/components/ui/section";
 import { brand } from "@/config/brand";
 import { TOOLS } from "@/config/tools";
-import { COMPARE_ROWS } from "@/content/pages";
+import { localizedCompareRows } from "@/content/pages";
 import { Link } from "@/i18n/navigation";
 import { initPage, pageMetadata } from "@/lib/page";
-
-const SUBTITLE =
-  "An honest overview of what you get. No comparisons with other products, just facts you can check.";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/compare">): Promise<Metadata> {
   const { locale } = await params;
-  return pageMetadata(locale, "/compare", "Overview", SUBTITLE);
+  const t = await getTranslations({ locale, namespace: "sitePages.compare" });
+  return pageMetadata(locale, "/compare", t("metaTitle"), t("subtitle"));
 }
 
 export default async function ComparePage({ params }: PageProps<"/[locale]/compare">) {
-  await initPage(params);
+  const { locale } = await initPage(params);
   const t = await getTranslations();
+  const page = await getTranslations("sitePages.compare");
+  const rows = localizedCompareRows(locale);
   return (
     <>
       <PageHero
         eyebrow={t("nav.resourcesItems.compare.title")}
-        title={`${brand.name} at a glance`}
-        subtitle={SUBTITLE}
+        title={page("title", { brand: brand.name })}
+        subtitle={page("subtitle")}
         breadcrumbs={[
           { label: t("common.home"), href: "/" },
           { label: t("nav.resourcesItems.compare.title") },
@@ -38,11 +38,11 @@ export default async function ComparePage({ params }: PageProps<"/[locale]/compa
       <Section>
         <div className="overflow-x-auto rounded-(--radius-card) border border-border bg-surface shadow-soft">
           <table className="w-full min-w-[36rem] text-start text-sm">
-            <caption className="sr-only">{`${brand.name} feature overview`}</caption>
+            <caption className="sr-only">{page("caption", { brand: brand.name })}</caption>
             <thead className="bg-surface-muted text-start">
               <tr>
                 <th scope="col" className="px-5 py-3 text-start font-semibold">
-                  Feature
+                  {page("feature")}
                 </th>
                 <th scope="col" className="px-5 py-3 text-start font-semibold">
                   {brand.name}
@@ -50,7 +50,7 @@ export default async function ComparePage({ params }: PageProps<"/[locale]/compa
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {COMPARE_ROWS.map((row) => (
+              {rows.map((row, index) => (
                 <tr key={row.feature}>
                   <th scope="row" className="px-5 py-4 text-start font-medium">
                     {row.feature}
@@ -62,7 +62,7 @@ export default async function ComparePage({ params }: PageProps<"/[locale]/compa
                         aria-hidden
                       />
                       <span>
-                        {row.feature === "Tools available today" ? (
+                        {index === rows.length - 1 ? (
                           <Link href="/tools" className="font-medium text-primary underline">
                             {row.value}
                           </Link>
@@ -81,8 +81,7 @@ export default async function ComparePage({ params }: PageProps<"/[locale]/compa
           </table>
         </div>
         <Callout tone="info" className="mt-6">
-          The catalog lists {TOOLS.length} tools. Each one is marked Coming soon until it actually
-          works, and the changelog shows what shipped when.
+          {page("note", { count: TOOLS.length })}
         </Callout>
       </Section>
     </>

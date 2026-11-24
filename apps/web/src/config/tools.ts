@@ -124,6 +124,15 @@ export const POPULAR_TOOL_SLUGS = [
   "protect",
 ] as const;
 
+export const PRIVATE_MODE_TOOL_SLUGS = [
+  "merge",
+  "split",
+  "rotate",
+  "extract-pages",
+  "image-to-pdf",
+  "edit-metadata",
+] as const;
+
 export function isPopular(slug: string): boolean {
   return (POPULAR_TOOL_SLUGS as readonly string[]).includes(slug);
 }

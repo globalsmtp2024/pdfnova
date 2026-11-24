@@ -25,6 +25,18 @@ import {
 
 import type { ToolCategoryId } from "@/config/tools";
 
+import {
+  ACCESSIBILITY_COMMITMENTS_UR,
+  CATEGORY_FAQ_UR,
+  COMPARE_ROWS_UR,
+  FEATURES_UR,
+  HELP_UR,
+  LIFECYCLE_TIMES_UR,
+  LIFECYCLE_UR,
+  PRINCIPLES_UR,
+  PROTECTIONS_UR,
+} from "./pages.ur";
+
 export type Capability = {
   icon: LucideIcon;
   title: string;
@@ -90,21 +102,21 @@ export const FEATURES: Capability[] = [
     title: "Workflows",
     body: "Chain tools like OCR, compress and protect into a reusable pipeline you can run on many files.",
     color: "#F97316",
-    status: "later",
+    status: "available",
   },
   {
     icon: WifiOff,
     title: "On-device private mode",
     body: "Merge, split, rotate and image to PDF directly in your browser, so files never leave your device.",
     color: "#0EA5E9",
-    status: "later",
+    status: "available",
   },
   {
     icon: Bot,
     title: "AI assistance",
     body: "Summaries, translation, chat with citations and data extraction, with your own provider key if you prefer.",
     color: "#A855F7",
-    status: "later",
+    status: "available",
   },
 ];
 
@@ -224,7 +236,7 @@ export const COMPARE_ROWS: { feature: string; value: string; note?: string }[] =
   {
     feature: "Tools available today",
     value: "See the live list",
-    note: "The full catalog is shipping release by release",
+    note: "Tools not built yet are marked Coming soon",
   },
 ];
 
@@ -390,14 +402,14 @@ export const CATEGORY_FAQ: Record<ToolCategoryId, { question: string; answer: st
     {
       question: "Can I organize password-protected PDFs?",
       answer:
-        "Protected PDFs are detected on upload. Unlock PDF, which ships with the core tools release, removes the password first.",
+        "Protected PDFs are detected on upload. Unlock PDF removes the password first when you know it.",
     },
   ],
   optimize: [
     {
       question: "Are the optimization tools available?",
       answer:
-        "Compress, repair, flatten, OCR and PDF/A are available. PDF/A output is produced with an embedded color profile but is not yet validated by an independent checker.",
+        "Compress, repair, flatten, OCR and PDF/A are available. PDF/A output is produced with an embedded color profile but has not yet been checked by an independent validator.",
     },
     {
       question: "Will OCR support my language?",
@@ -409,65 +421,106 @@ export const CATEGORY_FAQ: Record<ToolCategoryId, { question: string; answer: st
     {
       question: "Can I convert files to PDF?",
       answer:
-        "Yes. Office documents, images, web pages and scans convert to PDF. A tool is marked Coming soon only if it is not working yet.",
+        "Yes. Office documents, images, web pages, ebooks and scans convert to PDF. A tool is marked Coming soon only if it is not built yet.",
     },
     {
-      question: "Will I be able to convert many files at once?",
+      question: "Can I convert many files at once?",
       answer: "Yes. Every tool can accept up to 100 files per task, downloaded together as a ZIP.",
     },
   ],
   convert_from_pdf: [
     {
-      question: "When can I convert PDFs to other formats?",
-      answer: "PDF to Word, Excel, PowerPoint and images ship in the conversion release.",
+      question: "Which formats can I convert a PDF to?",
+      answer:
+        "Word, Excel, PowerPoint, images, EPUB, text and more. Each tool page says what the output contains.",
     },
     {
-      question: "Will scanned PDFs work?",
-      answer: "Yes. The plan is to run OCR first so scanned pages become editable text.",
+      question: "Do scanned PDFs work?",
+      answer:
+        "Yes. The OCR versions of the conversion tools read scanned pages first, using the languages installed on the server.",
     },
   ],
   edit: [
     {
-      question: "Will edits change my original file?",
+      question: "Do edits change my original file?",
       answer: "Never. Every tool produces a new file and your original stays untouched.",
     },
     {
       question: "Can I edit only some pages?",
-      answer:
-        "Edit tools will accept page ranges like 1-3, 7 or 10-last, just like Merge PDF does today.",
+      answer: "Tools that work on pages accept ranges like 1-3, 7 or 10-last.",
     },
   ],
   security: [
     {
       question: "Do you store my passwords?",
-      answer:
-        "No. Passwords will be used for the task only and never stored or logged, in line with how we already treat file contents.",
+      answer: "No. Passwords are used for the task only and are never stored or logged.",
     },
     {
-      question: "Will redaction be permanent?",
-      answer:
-        "Yes. Redaction is designed to remove the underlying content, not just draw boxes over it.",
+      question: "Is redaction permanent?",
+      answer: "Yes. Redaction removes the underlying content, not just draws boxes over it.",
     },
   ],
   ai: [
     {
-      question: "Which AI provider will be used?",
+      question: "Which AI provider is used?",
       answer:
-        "A provider-agnostic layer. You can already save your own provider key in Settings so it is ready when AI tools ship.",
+        "A provider-agnostic layer. Save your own key, or any OpenAI-compatible server, in Settings.",
     },
     {
-      question: "Will there be a limit on AI requests?",
+      question: "Is there a limit on AI requests?",
       answer: "The shared allowance has a daily fair-use cap. Your own key removes it.",
     },
   ],
   image: [
     {
-      question: "Which image formats will be supported?",
+      question: "Which image formats are supported?",
       answer: "JPG, PNG, WebP, TIFF, BMP, GIF and HEIC.",
     },
     {
       question: "Are the image tools available?",
-      answer: "Yes, they are part of the conversion suite and are listed on the tools page.",
+      answer: "Yes. They are listed on the tools page.",
     },
   ],
 };
+
+export function localizedFeatures(locale: string): Capability[] {
+  if (locale !== "ur") return FEATURES;
+  return FEATURES.map((item, index) => ({ ...item, ...FEATURES_UR[index] }));
+}
+
+export function localizedProtections(locale: string) {
+  if (locale !== "ur") return PROTECTIONS;
+  return PROTECTIONS.map((item, index) => ({ ...item, ...PROTECTIONS_UR[index] }));
+}
+
+export function localizedLifecycle(locale: string) {
+  if (locale !== "ur") return LIFECYCLE;
+  return LIFECYCLE.map((item, index) => ({
+    ...item,
+    ...LIFECYCLE_UR[index],
+    time: LIFECYCLE_TIMES_UR[index] ?? item.time,
+  }));
+}
+
+export function localizedPrinciples(locale: string) {
+  if (locale !== "ur") return PRINCIPLES;
+  return PRINCIPLES.map((item, index) => ({ ...item, ...PRINCIPLES_UR[index] }));
+}
+
+export function localizedCompareRows(locale: string) {
+  return locale === "ur" ? COMPARE_ROWS_UR : COMPARE_ROWS;
+}
+
+export function localizedCommitments(locale: string) {
+  return locale === "ur" ? ACCESSIBILITY_COMMITMENTS_UR : ACCESSIBILITY_COMMITMENTS;
+}
+
+export function localizedHelpTopics(locale: string): HelpTopic[] {
+  if (locale !== "ur") return HELP_TOPICS;
+  return HELP_TOPICS.map((topic) => ({ ...topic, ...HELP_UR[topic.id] }));
+}
+
+export function localizedCategoryFaq(locale: string, category: ToolCategoryId) {
+  if (locale === "ur") return CATEGORY_FAQ_UR[category] ?? CATEGORY_FAQ[category];
+  return CATEGORY_FAQ[category];
+}

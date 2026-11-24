@@ -6,29 +6,28 @@ import { Stepper } from "@/components/ui/blocks";
 import { PageHero } from "@/components/ui/page-hero";
 import { Reveal, RevealItem } from "@/components/ui/reveal";
 import { Section, SectionHeader } from "@/components/ui/section";
-import { LIFECYCLE } from "@/content/pages";
+import { localizedLifecycle } from "@/content/pages";
 import { Download, MousePointerClick, Upload } from "lucide-react";
 import { initPage, pageMetadata } from "@/lib/page";
-
-const SUBTITLE =
-  "From the moment you drop a file to the moment it disappears, here is exactly what happens.";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/how-it-works">): Promise<Metadata> {
   const { locale } = await params;
-  return pageMetadata(locale, "/how-it-works", "How it works", SUBTITLE);
+  const t = await getTranslations({ locale, namespace: "sitePages.howItWorks" });
+  return pageMetadata(locale, "/how-it-works", t("metaTitle"), t("subtitle"));
 }
 
 export default async function HowItWorksPage({ params }: PageProps<"/[locale]/how-it-works">) {
-  await initPage(params);
+  const { locale } = await initPage(params);
   const t = await getTranslations();
+  const page = await getTranslations("sitePages.howItWorks");
   return (
     <>
       <PageHero
         eyebrow={t("home.how.eyebrow")}
         title={t("home.how.title")}
-        subtitle={SUBTITLE}
+        subtitle={page("subtitle")}
         breadcrumbs={[{ label: t("common.home"), href: "/" }, { label: t("home.how.eyebrow") }]}
         aside={<MergeIllustration />}
       />
@@ -66,7 +65,7 @@ export default async function HowItWorksPage({ params }: PageProps<"/[locale]/ho
             className="absolute inset-x-6 top-7 hidden h-px bg-gradient-to-r from-primary via-accent to-success md:block"
           />
           <Reveal as="ol" className="relative grid gap-6 md:grid-cols-5">
-            {LIFECYCLE.map((step) => (
+            {localizedLifecycle(locale).map((step) => (
               <RevealItem
                 key={step.title}
                 as="li"

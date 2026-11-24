@@ -10,6 +10,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import { SOLUTIONS_UR } from "./solutions.ur";
+
 export type Solution = {
   slug: string;
   title: string;
@@ -88,7 +90,7 @@ export const SOLUTIONS: Solution[] = [
       {
         question: "Can I automate repetitive steps?",
         answer:
-          "Workflows chain tools into one run. The builder arrives in a later release, and the API is available today.",
+          "Workflows chain tools into one run. Build them in the workflow builder or run them through the API.",
       },
     ],
   },
@@ -144,8 +146,7 @@ export const SOLUTIONS: Solution[] = [
     faq: [
       {
         question: "Are redactions permanent?",
-        answer:
-          "Redact PDF is designed to remove the underlying content, not draw boxes over it. It ships with the editor release.",
+        answer: "Redact PDF removes the underlying content, not just draws boxes over it.",
       },
       {
         question: "Can bookmarks follow the exhibit order?",
@@ -178,8 +179,7 @@ export const SOLUTIONS: Solution[] = [
     faq: [
       {
         question: "Can I remove hidden metadata before sharing CVs?",
-        answer:
-          "Remove metadata strips author, software and history fields. It ships with the core tools release.",
+        answer: "Remove metadata strips author, software and history fields.",
       },
       {
         question: "How long are candidate files kept?",
@@ -217,7 +217,8 @@ export const SOLUTIONS: Solution[] = [
       },
       {
         question: "Can I archive to PDF/A?",
-        answer: "PDF to PDF/A ships with the conversion suite and supports PDF/A-1b, 2b and 3b.",
+        answer:
+          "PDF to PDF/A is available. The output has not yet been checked by an independent validator.",
       },
       {
         question: "Is there a limit on statements per month?",
@@ -249,7 +250,7 @@ export const SOLUTIONS: Solution[] = [
       {
         question: "Can clients sign online?",
         answer:
-          "Sign PDF lets you draw, type or upload a signature. Signature requests to other people arrive in a later release.",
+          "Sign PDF lets you draw, type or upload a signature, and signature requests send other people a link to sign.",
       },
       {
         question: "Will large photo packs upload reliably?",
@@ -295,4 +296,9 @@ export const SOLUTIONS: Solution[] = [
 
 export function findSolution(slug: string): Solution | undefined {
   return SOLUTIONS.find((solution) => solution.slug === slug);
+}
+
+export function localizedSolution(solution: Solution, locale: string): Solution {
+  if (locale !== "ur") return solution;
+  return { ...solution, ...SOLUTIONS_UR[solution.slug] };
 }

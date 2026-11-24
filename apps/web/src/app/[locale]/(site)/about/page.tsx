@@ -7,29 +7,28 @@ import { PageHero } from "@/components/ui/page-hero";
 import { Section, SectionHeader } from "@/components/ui/section";
 import { brand } from "@/config/brand";
 import { supportEnabled } from "@/config/site";
-import { PRINCIPLES } from "@/content/pages";
+import { localizedPrinciples } from "@/content/pages";
 import { Link } from "@/i18n/navigation";
 import { initPage, pageMetadata } from "@/lib/page";
-
-const SUBTITLE =
-  "Documents shouldn’t be a chore, and fixing them shouldn’t cost money. That’s the whole idea.";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/about">): Promise<Metadata> {
   const { locale } = await params;
-  return pageMetadata(locale, "/about", "About", SUBTITLE);
+  const t = await getTranslations({ locale, namespace: "sitePages.about" });
+  return pageMetadata(locale, "/about", t("metaTitle"), t("subtitle"));
 }
 
 export default async function AboutPage({ params }: PageProps<"/[locale]/about">) {
-  await initPage(params);
+  const { locale } = await initPage(params);
   const t = await getTranslations();
+  const page = await getTranslations("sitePages.about");
   return (
     <>
       <PageHero
         eyebrow={t("nav.resourcesItems.about.title")}
-        title={`Why ${brand.name} exists`}
-        subtitle={SUBTITLE}
+        title={page("title", { brand: brand.name })}
+        subtitle={page("subtitle")}
         breadcrumbs={[
           { label: t("common.home"), href: "/" },
           { label: t("nav.resourcesItems.about.title") },
@@ -38,24 +37,17 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
       />
       <Section>
         <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr]">
-          <SectionHeader title="Our mission" />
+          <SectionHeader title={page("missionTitle")} />
           <div className="flex flex-col gap-4 text-lg text-muted">
-            <p>
-              Everyone handles documents: students submitting coursework, freelancers sending
-              contracts, small businesses filing receipts, schools sharing course packs. Too often
-              the tools are expensive, cluttered or careless with private files.
-            </p>
-            <p>
-              {brand.name} puts every document tool in one fast, calm place, free for everyone, with
-              privacy treated as a default rather than an upsell.
-            </p>
+            <p>{page("missionOne")}</p>
+            <p>{page("missionTwo", { brand: brand.name })}</p>
           </div>
         </div>
       </Section>
       <Section tone="surface" aria-labelledby="principles-heading">
-        <SectionHeader id="principles-heading" title="Principles we build by" />
+        <SectionHeader id="principles-heading" title={page("principlesTitle")} />
         <ul className="mt-8 grid gap-4 md:grid-cols-2">
-          {PRINCIPLES.map((principle) => (
+          {localizedPrinciples(locale).map((principle) => (
             <li
               key={principle.title}
               className="flex gap-4 rounded-(--radius-card) border border-border bg-background p-6"
@@ -71,21 +63,15 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
       </Section>
       <Section aria-labelledby="free-heading">
         <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr]">
-          <SectionHeader id="free-heading" title="How it stays free" />
+          <SectionHeader id="free-heading" title={page("freeTitle")} />
           <div className="flex flex-col gap-4 text-muted">
+            <p>{page("freeOne")}</p>
+            <p>{page("freeTwo")}</p>
             <p>
-              Processing is efficient by design: files are handled by small, isolated workers and
-              deleted quickly, so storage costs stay low.
-            </p>
-            <p>
-              Fair-use limits stop abuse without getting in the way of normal use. They are public,
-              generous and the same for everyone.
-            </p>
-            <p>
-              Optional contributions help cover servers and development.{" "}
+              {page("freeThree")}{" "}
               {supportEnabled ? (
                 <Link href="/support" className="font-medium text-primary underline">
-                  Support the project
+                  {page("support")}
                 </Link>
               ) : null}
             </p>

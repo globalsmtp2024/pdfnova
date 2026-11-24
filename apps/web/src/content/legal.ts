@@ -284,3 +284,30 @@ export const LEGAL_DOCUMENTS: LegalDocument[] = [
 export function findLegalDocument(slug: string): LegalDocument | undefined {
   return LEGAL_DOCUMENTS.find((document) => document.slug === slug);
 }
+
+const LEGAL_UR: Record<string, { title: string; summary: string }> = {
+  terms: {
+    title: "سروس کی شرائط",
+    summary:
+      "سروس استعمال کرنے کے قواعد۔ مختصراً: قانونی طور پر استعمال کریں، منصفانہ استعمال کا احترام کریں اور اہم فائلوں کی اپنی کاپیاں رکھیں۔",
+  },
+  privacy: {
+    title: "رازداری کی پالیسی",
+    summary: "ہم کیا جمع کرتے ہیں، کیوں، کتنی دیر رکھتے ہیں اور آپ کے پاس کون سے اختیارات ہیں۔",
+  },
+  cookies: {
+    title: "کوکی پالیسی",
+    summary:
+      "ہم صرف سروس چلانے کے لیے ضروری کوکیز اور براؤزر اسٹوریج استعمال کرتے ہیں۔ کوئی اشتہاری یا ٹریکنگ کوکیز نہیں۔",
+  },
+  "acceptable-use": {
+    title: "قابل قبول استعمال کی پالیسی",
+    summary:
+      "سروس کو قانونی مقاصد کے لیے استعمال کریں اور دوسروں کے لیے اسے توڑنے کی کوشش نہ کریں۔",
+  },
+};
+
+export function localizedLegalHeader(document: LegalDocument, locale: string) {
+  const overlay = locale === "ur" ? LEGAL_UR[document.slug] : undefined;
+  return overlay ?? { title: document.title, summary: document.summary };
+}

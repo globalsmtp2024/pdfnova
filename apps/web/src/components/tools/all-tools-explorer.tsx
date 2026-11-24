@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, LayoutGrid, List, Search, Star, WifiOff } from "lucide-react";
+import { Clock, LayoutGrid, List, Search, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
@@ -13,6 +13,7 @@ import {
   FILE_KINDS,
   findTool,
   POPULAR_TOOL_SLUGS,
+  PRIVATE_MODE_TOOL_SLUGS,
   TOOL_CATEGORIES,
   TOOLS,
   type FileKind,
@@ -51,11 +52,11 @@ export function AllToolsExplorer() {
   const [layout, setLayout] = useState<"grid" | "list">("grid");
 
   const results = useMemo(() => {
-    if (offlineOnly) return [];
     const matches = search(TOOLS, query, category).filter(
       (tool) =>
         (format === "all" || tool.accepts.includes(format)) &&
-        (!availableOnly || live.has(tool.slug)),
+        (!availableOnly || live.has(tool.slug)) &&
+        (!offlineOnly || (PRIVATE_MODE_TOOL_SLUGS as readonly string[]).includes(tool.slug)),
     );
     const sorted = [...matches];
     if (sort === "az")
@@ -219,12 +220,6 @@ export function AllToolsExplorer() {
             <Skeleton key={index} className="h-36" />
           ))}
         </div>
-      ) : offlineOnly ? (
-        <EmptyState
-          icon={WifiOff}
-          title={t("allTools.offlineOnly")}
-          body={t("allTools.offlineEmpty")}
-        />
       ) : results.length === 0 ? (
         <EmptyState
           icon={Search}

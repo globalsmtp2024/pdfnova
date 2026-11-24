@@ -16,12 +16,14 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/developers">): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "home.developers" });
-  return pageMetadata(locale, "/developers", "Developers", t("subtitle"));
+  const page = await getTranslations({ locale, namespace: "devPage" });
+  return pageMetadata(locale, "/developers", page("metaTitle"), t("subtitle"));
 }
 
 export default async function DevelopersPage({ params }: PageProps<"/[locale]/developers">) {
   await initPage(params);
   const t = await getTranslations();
+  const page = await getTranslations("devPage");
   return (
     <>
       <PageHero
@@ -41,55 +43,55 @@ export default async function DevelopersPage({ params }: PageProps<"/[locale]/de
         </div>
       </PageHero>
       <Section>
-        <SectionHeader title="Built for real integrations" />
+        <SectionHeader title={page("built")} />
         <BentoGrid className="mt-8">
           <FeatureCard
             icon={KeyRound}
-            title="Free API keys"
-            body="Create as many as 20 keys from your dashboard and revoke them any time."
+            title={page("keys.title")}
+            body={page("keys.body")}
             color="#5B4BFF"
           />
           <FeatureCard
             icon={Upload}
-            title="Resumable uploads"
-            body="Send large files in chunks and resume from the server’s offset after a failure."
+            title={page("uploads.title")}
+            body={page("uploads.body")}
             color="#12B5A6"
           />
           <FeatureCard
             icon={Radio}
-            title="Live progress"
-            body="Follow every task over Server-Sent Events, or poll the task endpoint."
+            title={page("progress.title")}
+            body={page("progress.body")}
             color="#F97316"
           />
           <FeatureCard
             icon={Gauge}
-            title="Fair-use limits"
-            body="Clear 429 responses with Retry-After and an exact reset time."
+            title={page("limits.title")}
+            body={page("limits.body")}
             color="#10B981"
           />
           <FeatureCard
             icon={BookOpen}
-            title="OpenAPI"
-            body="A complete interactive reference at /docs and the raw spec at /openapi.json."
+            title={page("openapi.title")}
+            body={page("openapi.body")}
             color="#2F80ED"
             className="sm:col-span-2"
           />
           <FeatureCard
             icon={Webhook}
-            title="Webhooks"
-            body="Signed HTTPS callbacks with retries and a delivery log when tasks or signature requests finish."
+            title={page("webhooks.title")}
+            body={page("webhooks.body")}
             color="#8B5CF6"
           />
           <FeatureCard
             icon={Activity}
-            title="Status"
-            body="Live health of the API, database and storage."
+            title={page("status.title")}
+            body={page("status.body")}
             color="#EC4899"
           />
         </BentoGrid>
       </Section>
       <Section tone="surface">
-        <SectionHeader title="Merge two PDFs in three languages" />
+        <SectionHeader title={page("samples")} />
         <CodeBlock samples={mergeSamples()} className="mt-8" />
       </Section>
     </>

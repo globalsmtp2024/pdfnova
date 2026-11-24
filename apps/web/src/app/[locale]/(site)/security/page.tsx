@@ -5,30 +5,28 @@ import { ShieldIllustration } from "@/components/illustrations";
 import { Callout } from "@/components/ui/blocks";
 import { PageHero } from "@/components/ui/page-hero";
 import { Section, SectionHeader } from "@/components/ui/section";
-import { LIFECYCLE, PROTECTIONS } from "@/content/pages";
+import { localizedLifecycle, localizedProtections } from "@/content/pages";
 import { Link } from "@/i18n/navigation";
 import { initPage, pageMetadata } from "@/lib/page";
-
-const TITLE = "Security and privacy, explained plainly";
-const SUBTITLE =
-  "These are the protections that are built and running today. We don’t claim certifications we don’t have.";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/security">): Promise<Metadata> {
   const { locale } = await params;
-  return pageMetadata(locale, "/security", "Security and privacy", SUBTITLE);
+  const t = await getTranslations({ locale, namespace: "sitePages.security" });
+  return pageMetadata(locale, "/security", t("metaTitle"), t("subtitle"));
 }
 
 export default async function SecurityPage({ params }: PageProps<"/[locale]/security">) {
-  await initPage(params);
+  const { locale } = await initPage(params);
   const t = await getTranslations();
+  const page = await getTranslations("sitePages.security");
   return (
     <>
       <PageHero
         eyebrow={t("nav.resourcesItems.security.title")}
-        title={TITLE}
-        subtitle={SUBTITLE}
+        title={page("title")}
+        subtitle={page("subtitle")}
         breadcrumbs={[
           { label: t("common.home"), href: "/" },
           { label: t("nav.resourcesItems.security.title") },
@@ -37,7 +35,7 @@ export default async function SecurityPage({ params }: PageProps<"/[locale]/secu
       />
       <Section>
         <ul className="grid gap-4 md:grid-cols-2">
-          {PROTECTIONS.map((item) => (
+          {localizedProtections(locale).map((item) => (
             <li
               key={item.title}
               className="flex gap-4 rounded-(--radius-card) border border-border bg-surface p-6 shadow-soft"
@@ -56,11 +54,11 @@ export default async function SecurityPage({ params }: PageProps<"/[locale]/secu
       <Section tone="surface" aria-labelledby="timeline-heading">
         <SectionHeader
           id="timeline-heading"
-          title="The auto-deletion timeline"
-          subtitle="Every file follows the same short lifecycle."
+          title={page("timelineTitle")}
+          subtitle={page("timelineSubtitle")}
         />
         <ol className="mt-8 grid gap-3 md:grid-cols-5">
-          {LIFECYCLE.map((step, index) => (
+          {localizedLifecycle(locale).map((step, index) => (
             <li
               key={step.title}
               className="rounded-(--radius-card) border border-border bg-background p-4"
@@ -75,12 +73,12 @@ export default async function SecurityPage({ params }: PageProps<"/[locale]/secu
         </ol>
       </Section>
       <Section>
-        <Callout tone="info" title="Found a vulnerability?">
-          Please report it privately through the{" "}
+        <Callout tone="info" title={page("reportTitle")}>
+          {page("reportBefore")}{" "}
           <Link href="/contact" className="font-medium underline">
-            contact form
+            {page("reportLink")}
           </Link>{" "}
-          with the topic Security report. We appreciate responsible disclosure.
+          {page("reportAfter")}
         </Callout>
       </Section>
     </>

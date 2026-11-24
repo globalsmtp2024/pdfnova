@@ -1,3 +1,5 @@
+import { WORKFLOWS_UR } from "./solutions.ur";
+
 export type WorkflowRecipe = {
   slug: string;
   title: string;
@@ -79,4 +81,15 @@ export const WORKFLOWS: WorkflowRecipe[] = [
 
 export function findWorkflow(slug: string): WorkflowRecipe | undefined {
   return WORKFLOWS.find((workflow) => workflow.slug === slug);
+}
+
+export function localizedWorkflow(workflow: WorkflowRecipe, locale: string): WorkflowRecipe {
+  const text = locale === "ur" ? WORKFLOWS_UR[workflow.slug] : undefined;
+  if (!text) return workflow;
+  return {
+    ...workflow,
+    title: text.title,
+    description: text.description,
+    steps: workflow.steps.map((step, index) => ({ ...step, note: text.notes[index] ?? step.note })),
+  };
 }

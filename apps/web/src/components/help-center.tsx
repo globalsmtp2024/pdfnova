@@ -1,27 +1,31 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
 import { Accordion } from "@/components/ui/accordion";
 import { EmptyState } from "@/components/ui/blocks";
 import { Input } from "@/components/ui/input";
-import { HELP_TOPICS } from "@/content/pages";
+import { localizedHelpTopics } from "@/content/pages";
 
 export function HelpCenter() {
   const t = useTranslations("common");
+  const page = useTranslations("sitePages.help");
+  const locale = useLocale();
   const [query, setQuery] = useState("");
   const topics = useMemo(() => {
     const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    return HELP_TOPICS.map((topic) => ({
-      ...topic,
-      items: topic.items.filter((item) => {
-        const haystack = `${item.question} ${item.answer} ${topic.title}`.toLowerCase();
-        return words.every((word) => haystack.includes(word));
-      }),
-    })).filter((topic) => topic.items.length > 0);
-  }, [query]);
+    return localizedHelpTopics(locale)
+      .map((topic) => ({
+        ...topic,
+        items: topic.items.filter((item) => {
+          const haystack = `${item.question} ${item.answer} ${topic.title}`.toLowerCase();
+          return words.every((word) => haystack.includes(word));
+        }),
+      }))
+      .filter((topic) => topic.items.length > 0);
+  }, [query, locale]);
   return (
     <div className="flex flex-col gap-10">
       <div className="relative mx-auto w-full max-w-2xl">
@@ -31,7 +35,7 @@ export function HelpCenter() {
         />
         <Input
           type="search"
-          placeholder="Search help articles"
+          placeholder={page("searchPlaceholder")}
           aria-label={t("search")}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
@@ -40,11 +44,7 @@ export function HelpCenter() {
         />
       </div>
       {topics.length === 0 ? (
-        <EmptyState
-          icon={Search}
-          title={`No answers match “${query}”.`}
-          body="Try different words, or contact us and a person will help."
-        />
+        <EmptyState icon={Search} title={page("noMatch", { query })} body={page("noMatchBody")} />
       ) : (
         <div className="grid gap-8 lg:grid-cols-2">
           {topics.map((topic) => (

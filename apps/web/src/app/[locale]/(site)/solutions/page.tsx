@@ -4,33 +4,33 @@ import { getTranslations } from "next-intl/server";
 
 import { PageHero } from "@/components/ui/page-hero";
 import { Section } from "@/components/ui/section";
-import { SOLUTIONS } from "@/content/solutions";
+import { localizedSolution, SOLUTIONS } from "@/content/solutions";
 import { Link } from "@/i18n/navigation";
 import { initPage, pageMetadata } from "@/lib/page";
-
-const SUBTITLE = "Ready-made ways to use every tool, tuned for how different people work.";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/solutions">): Promise<Metadata> {
   const { locale } = await params;
-  return pageMetadata(locale, "/solutions", "Solutions", SUBTITLE);
+  const t = await getTranslations({ locale, namespace: "sitePages.solutions" });
+  return pageMetadata(locale, "/solutions", t("metaTitle"), t("subtitle"));
 }
 
 export default async function SolutionsPage({ params }: PageProps<"/[locale]/solutions">) {
-  await initPage(params);
+  const { locale } = await initPage(params);
   const t = await getTranslations();
+  const page = await getTranslations("sitePages.solutions");
   return (
     <>
       <PageHero
         eyebrow={t("nav.solutions")}
-        title="Solutions for every kind of work"
-        subtitle={SUBTITLE}
+        title={page("title")}
+        subtitle={page("subtitle")}
         breadcrumbs={[{ label: t("common.home"), href: "/" }, { label: t("nav.solutions") }]}
       />
       <Section>
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {SOLUTIONS.map((solution) => (
+          {SOLUTIONS.map((entry) => localizedSolution(entry, locale)).map((solution) => (
             <li key={solution.slug}>
               <Link
                 href={`/solutions/${solution.slug}`}
