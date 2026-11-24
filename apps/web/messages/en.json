@@ -236,40 +236,7 @@
     },
     "bento": {
       "eyebrow": "Why it feels different",
-      "title": "Built to be fast, private and genuinely free",
-      "speed": {
-        "title": "Fast by default",
-        "body": "Resumable uploads, streaming progress and isolated workers keep every task moving."
-      },
-      "privacy": {
-        "title": "Private by design",
-        "body": "AES-256 encryption at rest, sandboxed processing and automatic deletion."
-      },
-      "batch": {
-        "title": "Batch friendly",
-        "body": "Up to 100 files per task, with per-file status and one ZIP to download."
-      },
-      "offline": {
-        "title": "On-device mode",
-        "body": "Selected tools will run entirely in your browser, so files never leave your device."
-      },
-      "api": {
-        "title": "A real API",
-        "body": "Every tool is available over REST with API keys and live progress events."
-      },
-      "ai": {
-        "title": "AI that helps",
-        "body": "Summaries, translation and data extraction, with your own key if you prefer."
-      },
-      "workflows": {
-        "title": "Workflows",
-        "body": "Chain tools like OCR, compress and protect into one repeatable run."
-      },
-      "free": {
-        "title": "100% free",
-        "body": "No plans, no paywalls, no watermarks. Fair-use limits only protect the servers."
-      },
-      "comingLater": "In a later release"
+      "title": "Built to be fast, private and genuinely free"
     },
     "how": {
       "eyebrow": "How it works",
@@ -2583,5 +2550,10 @@
   },
   "legalPage": {
     "englishOnly": "The full text of this document is currently available in English only. The English text is the version that applies."
+  },
+  "featuresShowcase": {
+    "noPlans": "No plans or paywalls",
+    "noWatermarks": "No watermarks",
+    "noAccount": "No account needed"
   }
 }

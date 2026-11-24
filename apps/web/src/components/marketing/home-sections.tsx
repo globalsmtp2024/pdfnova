@@ -1,21 +1,14 @@
 import {
   Accessibility,
-  Bot,
   Clock,
-  Code2,
   Download,
-  Gift,
   Keyboard,
   Languages,
-  Layers,
   Lock,
   MousePointerClick,
   ShieldCheck,
   Trash2,
   Upload,
-  WifiOff,
-  Workflow,
-  Zap,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
@@ -25,14 +18,13 @@ import { ToolGrid } from "@/components/marketing/tool-grid";
 import { ShieldIllustration, WorkflowIllustration } from "@/components/illustrations";
 import { Accordion } from "@/components/ui/accordion";
 import { MeshBackground } from "@/components/ui/backgrounds";
-import { Badge } from "@/components/ui/badge";
-import { BentoGrid, FeatureCard } from "@/components/ui/blocks";
 import { Button } from "@/components/ui/button";
 import { CodeBlock } from "@/components/ui/code-block";
 import { Reveal, RevealItem } from "@/components/ui/reveal";
 import { Section, SectionHeader } from "@/components/ui/section";
 import { TOOL_CATEGORIES, TOOLS } from "@/config/tools";
 import { mergeSamples } from "@/content/api-samples";
+import { FeaturesShowcase } from "@/components/marketing/features-showcase";
 import { WORKFLOWS } from "@/content/workflows";
 import { Link } from "@/i18n/navigation";
 
@@ -72,58 +64,12 @@ export async function ToolGridSection() {
 
 export async function BentoSection() {
   const t = await getTranslations("home.bento");
-  const later = <Badge>{t("comingLater")}</Badge>;
   return (
     <Section aria-labelledby="bento-heading">
       <SectionHeader id="bento-heading" eyebrow={t("eyebrow")} title={t("title")} align="center" />
-      <BentoGrid className="mt-10">
-        <FeatureCard
-          icon={Gift}
-          title={t("free.title")}
-          body={t("free.body")}
-          color="#5B4BFF"
-          className="sm:col-span-2 lg:row-span-2"
-          visual={
-            <div className="text-gradient-animated font-display text-7xl font-extrabold">100%</div>
-          }
-        />
-        <FeatureCard icon={Zap} title={t("speed.title")} body={t("speed.body")} color="#F59E0B" />
-        <FeatureCard
-          icon={ShieldCheck}
-          title={t("privacy.title")}
-          body={t("privacy.body")}
-          color="#10B981"
-        />
-        <FeatureCard
-          icon={Layers}
-          title={t("batch.title")}
-          body={t("batch.body")}
-          color="#12B5A6"
-        />
-        <FeatureCard icon={Code2} title={t("api.title")} body={t("api.body")} color="#2F80ED" />
-        <FeatureCard
-          icon={WifiOff}
-          title={t("offline.title")}
-          body={t("offline.body")}
-          color="#EC4899"
-          badge={later}
-        />
-        <FeatureCard
-          icon={Bot}
-          title={t("ai.title")}
-          body={t("ai.body")}
-          color="#8B5CF6"
-          badge={later}
-        />
-        <FeatureCard
-          icon={Workflow}
-          title={t("workflows.title")}
-          body={t("workflows.body")}
-          color="#F97316"
-          badge={later}
-          className="sm:col-span-2"
-        />
-      </BentoGrid>
+      <div className="mt-10">
+        <FeaturesShowcase />
+      </div>
     </Section>
   );
 }

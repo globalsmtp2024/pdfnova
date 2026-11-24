@@ -2,12 +2,10 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 import { DocumentStackIllustration } from "@/components/illustrations";
-import { Badge } from "@/components/ui/badge";
-import { BentoGrid, FeatureCard } from "@/components/ui/blocks";
+import { FeaturesShowcase } from "@/components/marketing/features-showcase";
 import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/ui/page-hero";
 import { Section } from "@/components/ui/section";
-import { localizedFeatures } from "@/content/pages";
 import { Link } from "@/i18n/navigation";
 import { initPage, pageMetadata } from "@/lib/page";
 
@@ -20,7 +18,7 @@ export async function generateMetadata({
 }
 
 export default async function FeaturesPage({ params }: PageProps<"/[locale]/features">) {
-  const { locale } = await initPage(params);
+  await initPage(params);
   const t = await getTranslations();
   const page = await getTranslations("sitePages.features");
   return (
@@ -40,25 +38,7 @@ export default async function FeaturesPage({ params }: PageProps<"/[locale]/feat
         </Button>
       </PageHero>
       <Section>
-        <BentoGrid>
-          {localizedFeatures(locale).map((feature) => (
-            <FeatureCard
-              key={feature.title}
-              icon={feature.icon}
-              title={feature.title}
-              body={feature.body}
-              color={feature.color}
-              className={feature.wide ? "sm:col-span-2" : undefined}
-              badge={
-                feature.status === "later" ? (
-                  <Badge>{t("home.bento.comingLater")}</Badge>
-                ) : (
-                  <Badge tone="success">{t("common.free")}</Badge>
-                )
-              }
-            />
-          ))}
-        </BentoGrid>
+        <FeaturesShowcase />
       </Section>
     </>
   );

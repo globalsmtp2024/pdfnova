@@ -43,21 +43,22 @@ export type Capability = {
   body: string;
   color: string;
   status: "available" | "later";
-  wide?: boolean;
+  href: string;
 };
 
 export const FEATURES: Capability[] = [
   {
     icon: Gift,
     title: "Free for everyone",
+    href: "/compare",
     body: "Every tool and every feature, with no plans, no paywalls and no watermarks. Fair-use limits only exist to keep the service fast for all.",
     color: "#5B4BFF",
     status: "available",
-    wide: true,
   },
   {
     icon: Zap,
     title: "Speed",
+    href: "/how-it-works",
     body: "Resumable chunked uploads, workers that process jobs as soon as they arrive and live progress streamed to your browser.",
     color: "#F59E0B",
     status: "available",
@@ -65,6 +66,7 @@ export const FEATURES: Capability[] = [
   {
     icon: ShieldCheck,
     title: "Privacy",
+    href: "/security",
     body: "AES-256 encryption at rest, isolated processing for every job and automatic deletion after one hour.",
     color: "#10B981",
     status: "available",
@@ -72,6 +74,7 @@ export const FEATURES: Capability[] = [
   {
     icon: Layers,
     title: "Batch processing",
+    href: "/batch",
     body: "Up to 100 files per task with per-file status and a single ZIP to download.",
     color: "#12B5A6",
     status: "available",
@@ -79,6 +82,7 @@ export const FEATURES: Capability[] = [
   {
     icon: Code2,
     title: "REST API",
+    href: "/developers",
     body: "Free API keys, resumable uploads, Server-Sent Events for progress and signed download links.",
     color: "#2F80ED",
     status: "available",
@@ -86,6 +90,7 @@ export const FEATURES: Capability[] = [
   {
     icon: Accessibility,
     title: "Accessibility",
+    href: "/accessibility",
     body: "Keyboard navigation everywhere, visible focus, screen reader labels and contrast that meets WCAG 2.2 AA.",
     color: "#EC4899",
     status: "available",
@@ -93,6 +98,7 @@ export const FEATURES: Capability[] = [
   {
     icon: Languages,
     title: "Languages",
+    href: "/roadmap",
     body: "English and Urdu today, with a right-to-left layout that mirrors the whole interface.",
     color: "#8B5CF6",
     status: "available",
@@ -100,6 +106,7 @@ export const FEATURES: Capability[] = [
   {
     icon: Workflow,
     title: "Workflows",
+    href: "/workflows",
     body: "Chain tools like OCR, compress and protect into a reusable pipeline you can run on many files.",
     color: "#F97316",
     status: "available",
@@ -107,14 +114,16 @@ export const FEATURES: Capability[] = [
   {
     icon: WifiOff,
     title: "On-device private mode",
-    body: "Merge, split, rotate and image to PDF directly in your browser, so files never leave your device.",
+    href: "/private",
+    body: "Merge, split, rotate, extract pages, turn images into PDF and edit metadata directly in your browser, so files never leave your device.",
     color: "#0EA5E9",
     status: "available",
   },
   {
     icon: Bot,
     title: "AI assistance",
-    body: "Summaries, translation, chat with citations and data extraction, with your own provider key if you prefer.",
+    href: "/categories/ai",
+    body: "Summaries, translation, chat with your document and data extraction, with your own provider key or any OpenAI-compatible server if you prefer.",
     color: "#A855F7",
     status: "available",
   },
