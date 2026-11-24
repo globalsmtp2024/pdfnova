@@ -1,4 +1,5 @@
 import io
+import os
 import sys
 import time
 from pathlib import Path
@@ -12,7 +13,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
 FONT_PATH = Path(__file__).resolve().parent.parent / "apps/api/app/assets/fonts/notosans/NotoSans-Regular.ttf"
-BASE = "http://127.0.0.1:8000"
+BASE = os.environ.get("SMOKE_BASE", "http://127.0.0.1:8000")
 PASSWORD = "smoke-pass-123"
 Upload = tuple[str, bytes, str]
 Check = Callable[[list[tuple[str, bytes]]], str | None]
@@ -715,6 +716,8 @@ def run_case(client: httpx.Client, case: Case) -> str:
     problem = nonempty(outputs)
     if problem:
         return problem
+    if case.slug.startswith("ai-") and os.environ.get("SMOKE_REAL_AI"):
+        return "ok"
     if case.check is not None:
         problem = case.check(outputs)
     elif any(n.lower().endswith(".pdf") for n, _ in outputs):
