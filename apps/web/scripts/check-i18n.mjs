@@ -1,7 +1,8 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const REQUIRED = ["ur"];
 const PHYSICAL = /\b(?:m[lr]|p[lr])-(?:\d|\[)|\btext-(?:left|right)\b|\brounded-(?:l|r|tl|tr|bl|br)(?:-|\b)|\bborder-(?:l|r)(?:-|\b)|\b(?:float|clear)-(?:left|right)\b/;
 const ALLOWED_DIRECTIONAL_FILES = new Set([
