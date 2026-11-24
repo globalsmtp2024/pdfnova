@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { AdminTitle, adminMetadata } from "@/components/admin/admin-title";
-import { Users } from "@/components/admin/admin-page";
+import { Users } from "@/components/admin/admin-users";
 import { initPage } from "@/lib/page";
 
 export async function generateMetadata({

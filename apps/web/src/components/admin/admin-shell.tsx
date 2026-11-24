@@ -1,44 +1,19 @@
 "use client";
 
-import {
-  Activity,
-  ChartColumn,
-  ExternalLink,
-  Flag,
-  LayoutDashboard,
-  LogOut,
-  ShieldAlert,
-  ShieldCheck,
-  Users,
-  Wrench,
-  Siren,
-  type LucideIcon,
-} from "lucide-react";
+import { ExternalLink, LogOut, ShieldAlert, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, type ReactNode } from "react";
 
+import { AdminHeaderBar } from "@/components/admin/admin-header";
+import { ADMIN_NAV } from "@/components/admin/admin-nav";
 import { Avatar } from "@/components/admin/admin-ui";
 import { LogoMark } from "@/components/layout/logo";
-import { LanguageSwitcher } from "@/components/layout/language-switcher";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { EmptyState } from "@/components/ui/blocks";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useLogout, useSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
-
-type NavItem = { href: string; key: string; icon: LucideIcon };
-
-const NAV: NavItem[] = [
-  { href: "/admin", key: "dashboard", icon: LayoutDashboard },
-  { href: "/admin/users", key: "users", icon: Users },
-  { href: "/admin/tools", key: "tools", icon: ChartColumn },
-  { href: "/admin/jobs", key: "jobs", icon: Wrench },
-  { href: "/admin/reports", key: "reports", icon: Siren },
-  { href: "/admin/settings", key: "settings", icon: Flag },
-  { href: "/admin/system", key: "system", icon: Activity },
-];
 
 function isActive(pathname: string, href: string) {
   return href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
@@ -101,7 +76,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </div>
         </div>
         <nav aria-label={t("console")} className="flex gap-1 overflow-x-auto lg:flex-col">
-          {NAV.map((item) => {
+          {ADMIN_NAV.map((item) => {
             const active = isActive(pathname, item.href);
             return (
               <Link
@@ -153,27 +128,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
       <div className="flex min-w-0 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-border bg-glass px-4 backdrop-blur-xl sm:px-6">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-subtle px-2.5 py-1 text-xs font-semibold text-primary">
-            <ShieldCheck className="size-3.5" aria-hidden />
-            {t("prefix")}
-          </span>
-          <div className="flex items-center gap-1">
-            <LanguageSwitcher />
-            <ThemeToggle />
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label={t("signOut")}
-              className="lg:hidden"
-              onClick={() =>
-                logout.mutate(undefined, { onSettled: () => router.replace("/admin/login") })
-              }
-            >
-              <LogOut aria-hidden />
-            </Button>
-          </div>
-        </header>
+        <AdminHeaderBar />
         <main
           id="main"
           tabIndex={-1}

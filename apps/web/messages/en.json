@@ -2659,7 +2659,17 @@
     "allToolsUsed": "Every tool ran at least once in this period.",
     "failures": {
       "signedIn": "Signed in",
-      "guest": "Guest"
+      "guest": "Guest",
+      "when": "When",
+      "code": "Error code",
+      "who": "Who",
+      "size": "Input size",
+      "message": "Message",
+      "shown": "Failures shown",
+      "shownHint": "After your filters",
+      "topTool": "Most failing tool",
+      "topCode": "Most common error",
+      "times": "{count} times"
     },
     "users": {
       "found": "{count} users",
@@ -2672,7 +2682,37 @@
       "unverified": "Email not verified",
       "lastSeen": "Last sign-in {when}",
       "neverSeen": "Never signed in",
-      "joined": "Joined {date}"
+      "joined": "Joined {date}",
+      "detailTitle": "User details",
+      "never": "Never",
+      "twoStepOn": "Two-step on",
+      "twoStepOff": "Two-step off",
+      "locked": "Locked",
+      "admins": "Admins",
+      "empty": "No users match.",
+      "clickHint": "Click a row to open the full details.",
+      "tasksTotal": "Tasks, all time",
+      "tasksMonth": "Tasks, 30 days",
+      "account": "Account",
+      "joinedLabel": "Joined",
+      "lastSignIn": "Last sign-in",
+      "language": "Language",
+      "providers": "Sign-in methods",
+      "passwordOnly": "Password",
+      "aiProvider": "AI provider",
+      "none": "None",
+      "failedLogins": "Failed sign-ins",
+      "assets": "What this user owns",
+      "apiKeys": "API keys",
+      "webhooks": "Webhooks",
+      "teams": "Teams",
+      "files": "Saved files",
+      "schedules": "Schedules",
+      "sessions": "Open sessions",
+      "topTools": "Most used tools",
+      "recent": "Recent tasks",
+      "controls": "Account controls",
+      "controlsSub": "Changes apply immediately."
     },
     "system": {
       "allGood": "All systems are running normally",
@@ -2684,7 +2724,45 @@
       "fairUseTitle": "Fair-use limits",
       "announcementTitle": "Announcement bar",
       "announcementSub": "A short message shown at the top of every page.",
-      "preview": "Preview"
+      "preview": "Preview",
+      "flagsOn": "Features switched on",
+      "hourlyLimit": "Tasks per hour limit",
+      "dailyLimit": "Tasks per day limit",
+      "perPerson": "Per person"
+    },
+    "table": {
+      "showing": "Showing {from}-{to} of {total}",
+      "rows": "Rows",
+      "page": "Page {current} of {pages}",
+      "previous": "Previous page",
+      "next": "Next page"
+    },
+    "search": {
+      "label": "Search the admin area",
+      "placeholder": "Search users, pages and tools",
+      "none": "Nothing found.",
+      "group": {
+        "users": "Users",
+        "pages": "Pages",
+        "tools": "Tools"
+      }
+    },
+    "profile": {
+      "role": "Administrator",
+      "account": "My account settings"
+    },
+    "toolsPage": {
+      "runs": "Total runs",
+      "used": "Tools used",
+      "slowest": "Slowest tool",
+      "worst": "Lowest success: {name}"
+    },
+    "reports": {
+      "kind": "Type",
+      "target": "Target",
+      "reason": "Reason",
+      "source": "Reported by",
+      "actions": "Action"
     }
   }
 }

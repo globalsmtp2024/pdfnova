@@ -6,6 +6,11 @@ import {
   CircleAlert,
   CircleCheck,
   Database,
+  Flag,
+  Gauge,
+  Siren,
+  Timer,
+  Wrench,
   HardDrive,
   Link2,
   ListChecks,
@@ -21,17 +26,14 @@ import {
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
+import { DataTable, type Column } from "@/components/admin/admin-table";
 import {
   AreaChart,
-  Avatar,
   Meter,
   Panel,
   Pill,
   StatCard,
   Switch,
-  TableShell,
-  TD,
-  TH,
   TONE_VAR,
 } from "@/components/admin/admin-ui";
 import { Button } from "@/components/ui/button";
@@ -40,16 +42,19 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast, toastError } from "@/components/ui/toaster";
 import {
   useAbuse,
+  useAnalytics,
   useAdminMutations,
-  useAdminUsers,
   useAnnouncementSettings,
   useFailures,
   useFairUse,
   useFlags,
   useHealth,
   useJobMetrics,
+  type AbuseItem,
   type AnnouncementSettings,
+  type Failure,
 } from "@/lib/admin";
+import { findTool } from "@/config/tools";
 import { isWebUrl } from "@/lib/validate";
 import { cn, formatBytes } from "@/lib/utils";
 
@@ -214,205 +219,136 @@ export function Failures() {
   const t = useTranslations("admin");
   const p = useTranslations("adminPanel");
   const format = useFormatter();
+  const tools = useTranslations("tools");
   const [tool, setTool] = useState("");
   const [code, setCode] = useState("");
   const failures = useFailures(tool, code);
+  const analytics = useAnalytics(30);
+  const rows = failures.data ?? [];
+  const nameOf = (slug: string) =>
+    tools.has(`${slug}.name`) ? tools(`${slug}.name`) : (findTool(slug)?.name ?? slug);
+  const counts = (pick: (row: Failure) => string) => {
+    const tally = new Map<string, number>();
+    for (const row of rows) tally.set(pick(row), (tally.get(pick(row)) ?? 0) + 1);
+    return [...tally.entries()].sort((a, b) => b[1] - a[1]);
+  };
+  const topTool = counts((row) => row.tool)[0];
+  const topCode = counts((row) => row.error_code ?? "error")[0];
+  const rate = analytics.data?.tasks.success_rate;
+  const columns: Column<Failure>[] = [
+    {
+      key: "when",
+      header: p("failures.when"),
+      sortValue: (row) => row.created_at,
+      cell: (row) => (
+        <span className="text-xs text-muted">
+          {format.dateTime(new Date(row.created_at), { dateStyle: "medium", timeStyle: "short" })}
+        </span>
+      ),
+    },
+    {
+      key: "tool",
+      header: p("cols.tool"),
+      sortValue: (row) => row.tool,
+      cell: (row) => <Pill tone="primary">{nameOf(row.tool)}</Pill>,
+    },
+    {
+      key: "code",
+      header: p("failures.code"),
+      sortValue: (row) => row.error_code ?? "",
+      cell: (row) => <Pill tone="danger">{row.error_code ?? "error"}</Pill>,
+    },
+    {
+      key: "who",
+      header: p("failures.who"),
+      sortValue: (row) => Number(row.signed_in),
+      cell: (row) => (
+        <Pill tone={row.signed_in ? "info" : "neutral"}>
+          {row.signed_in ? p("failures.signedIn") : p("failures.guest")}
+        </Pill>
+      ),
+    },
+    {
+      key: "size",
+      header: p("failures.size"),
+      sortValue: (row) => row.input_bytes,
+      cell: (row) => <span className="tabular-nums">{formatBytes(row.input_bytes)}</span>,
+    },
+    {
+      key: "message",
+      header: p("failures.message"),
+      className: "min-w-64 whitespace-normal",
+      cell: (row) => <span className="text-muted">{row.error_message}</span>,
+    },
+  ];
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-3 rounded-(--radius-card) border border-border bg-surface p-3 shadow-soft">
-        <Input
-          icon={<Search />}
-          value={tool}
-          onChange={(event) => setTool(event.target.value)}
-          placeholder={t("filterTool")}
-          aria-label={t("filterTool")}
-          className="h-10 w-56"
-          dir="ltr"
+    <div className="flex flex-col gap-6">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          tone="danger"
+          icon={CircleAlert}
+          label={p("failures.shown")}
+          value={rows.length}
+          hint={p("failures.shownHint")}
         />
-        <Input
-          icon={<CircleAlert />}
-          value={code}
-          onChange={(event) => setCode(event.target.value)}
-          placeholder={t("filterCode")}
-          aria-label={t("filterCode")}
-          className="h-10 w-56"
-          dir="ltr"
+        <StatCard
+          tone="warning"
+          icon={Wrench}
+          label={p("failures.topTool")}
+          value={topTool ? nameOf(topTool[0]) : "-"}
+          hint={topTool ? p("failures.times", { count: topTool[1] }) : undefined}
         />
-        <p className="ms-auto text-xs text-muted">{t("failuresPrivacy")}</p>
+        <StatCard
+          tone="accent"
+          icon={Activity}
+          label={p("failures.topCode")}
+          value={topCode ? topCode[0] : "-"}
+          hint={topCode ? p("failures.times", { count: topCode[1] }) : undefined}
+        />
+        <StatCard
+          tone="success"
+          icon={Gauge}
+          label={p("stats.successRate")}
+          value={rate === null || rate === undefined ? "-" : `${rate}%`}
+          hint={p("lastDays", { days: 30 })}
+        />
       </div>
       {failures.isPending ? (
-        <Skeleton className="h-48 w-full" />
-      ) : failures.data?.length ? (
-        <ul className="flex flex-col gap-3">
-          {failures.data.map((failure) => (
-            <li
-              key={failure.id}
-              className="flex flex-col gap-2 rounded-(--radius-card) border border-s-4 border-border border-s-danger bg-surface p-4 shadow-soft"
-            >
-              <span className="flex flex-wrap items-center gap-2">
-                <Pill tone="primary">{failure.tool}</Pill>
-                <Pill tone="danger">{failure.error_code ?? "error"}</Pill>
-                <Pill tone={failure.signed_in ? "info" : "neutral"}>
-                  {failure.signed_in ? p("failures.signedIn") : p("failures.guest")}
-                </Pill>
-                <span className="ms-auto text-xs text-muted">
-                  {format.dateTime(new Date(failure.created_at), {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}{" "}
-                  · {formatBytes(failure.input_bytes)}
-                </span>
-              </span>
-              <p className="text-sm text-muted">{failure.error_message}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <Panel>
-          <div className="flex flex-col items-center gap-2 py-8 text-center">
-            <CircleCheck className="size-10 text-success-strong" aria-hidden />
-            <p className="text-sm text-muted">{t("noFailures")}</p>
-          </div>
-        </Panel>
-      )}
-    </div>
-  );
-}
-
-export function Users() {
-  const t = useTranslations("admin");
-  const p = useTranslations("adminPanel");
-  const format = useFormatter();
-  const [query, setQuery] = useState("");
-  const users = useAdminUsers(query);
-  const mutations = useAdminMutations();
-  const list = users.data ?? [];
-  const toggle = (
-    id: string,
-    field: "is_active" | "is_admin" | "retention_extended",
-    next: boolean,
-  ) => mutations.patchUser.mutate({ id, body: { [field]: next } }, { onError: toastError });
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Input
-          icon={<Search />}
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder={t("searchUsers")}
-          aria-label={t("searchUsers")}
-          className="h-11 w-80 max-w-full"
-        />
-        <Pill tone="primary">{p("users.found", { count: list.length })}</Pill>
-      </div>
-      {users.isPending ? (
         <Skeleton className="h-64 w-full" />
       ) : (
-        <TableShell>
-          <table className="w-full min-w-[56rem] text-sm">
-            <thead className="bg-surface-muted">
-              <tr>
-                <th scope="col" className={TH}>
-                  {p("users.user")}
-                </th>
-                <th scope="col" className={TH}>
-                  {p("users.status")}
-                </th>
-                <th scope="col" className={TH}>
-                  {p("users.activity")}
-                </th>
-                <th scope="col" className={TH}>
-                  {t("active")}
-                </th>
-                <th scope="col" className={TH}>
-                  {t("admin")}
-                </th>
-                <th scope="col" className={TH}>
-                  {t("extendedRetention")}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {list.map((user) => (
-                <tr
-                  key={user.id}
-                  className="transition-colors hover:bg-surface-muted/60"
-                  data-admin-user
-                >
-                  <td className={TD}>
-                    <div className="flex items-center gap-3">
-                      <Avatar name={user.display_name || user.email} />
-                      <span className="flex min-w-0 flex-col">
-                        <span className="truncate font-medium">
-                          {user.display_name || user.email}
-                        </span>
-                        <span className="truncate text-xs text-muted" dir="ltr">
-                          {user.email}
-                        </span>
-                      </span>
-                    </div>
-                  </td>
-                  <td className={TD}>
-                    <div className="flex flex-wrap gap-1.5">
-                      <Pill tone={user.is_active ? "success" : "danger"}>
-                        {user.is_active ? p("users.statusActive") : p("users.statusDisabled")}
-                      </Pill>
-                      {user.is_admin ? (
-                        <Pill tone="primary">
-                          <ShieldCheck className="size-3" aria-hidden />
-                          {t("admin")}
-                        </Pill>
-                      ) : null}
-                      <Pill tone={user.email_verified ? "info" : "warning"}>
-                        {user.email_verified ? p("users.verified") : p("users.unverified")}
-                      </Pill>
-                    </div>
-                  </td>
-                  <td className={TD}>
-                    <div className="flex flex-col text-xs">
-                      <span className="font-medium">
-                        {t("tasks30d", { count: user.tasks_30d })}
-                      </span>
-                      <span className="text-muted">
-                        {user.last_login_at
-                          ? p("users.lastSeen", {
-                              when: format.relativeTime(new Date(user.last_login_at)),
-                            })
-                          : p("users.neverSeen")}
-                      </span>
-                      <span className="text-muted">
-                        {p("users.joined", {
-                          date: format.dateTime(new Date(user.created_at), { dateStyle: "medium" }),
-                        })}
-                      </span>
-                    </div>
-                  </td>
-                  <td className={TD}>
-                    <Switch
-                      label={`${t("active")}: ${user.email}`}
-                      checked={user.is_active}
-                      onChange={(next) => toggle(user.id, "is_active", next)}
-                    />
-                  </td>
-                  <td className={TD}>
-                    <Switch
-                      label={`${t("admin")}: ${user.email}`}
-                      checked={user.is_admin}
-                      onChange={(next) => toggle(user.id, "is_admin", next)}
-                    />
-                  </td>
-                  <td className={TD}>
-                    <Switch
-                      label={`${t("extendedRetention")}: ${user.email}`}
-                      checked={user.retention_extended}
-                      onChange={(next) => toggle(user.id, "retention_extended", next)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </TableShell>
+        <DataTable
+          columns={columns}
+          rows={rows}
+          rowKey={(row) => row.id}
+          minWidth="60rem"
+          initialSort={{ key: "when", dir: "desc" }}
+          empty={t("noFailures")}
+          toolbar={
+            <>
+              <div className="flex flex-wrap gap-3">
+                <Input
+                  icon={<Search />}
+                  value={tool}
+                  onChange={(event) => setTool(event.target.value)}
+                  placeholder={t("filterTool")}
+                  aria-label={t("filterTool")}
+                  className="h-10 w-52"
+                  dir="ltr"
+                />
+                <Input
+                  icon={<CircleAlert />}
+                  value={code}
+                  onChange={(event) => setCode(event.target.value)}
+                  placeholder={t("filterCode")}
+                  aria-label={t("filterCode")}
+                  className="h-10 w-52"
+                  dir="ltr"
+                />
+              </div>
+              <p className="text-xs text-muted">{t("failuresPrivacy")}</p>
+            </>
+          }
+        />
       )}
     </div>
   );
@@ -512,91 +448,179 @@ export function FairUseEditor() {
 
 export function Abuse() {
   const t = useTranslations("admin");
+  const p = useTranslations("adminPanel");
   const format = useFormatter();
   const [status, setStatus] = useState("open");
   const queue = useAbuse(status);
+  const open = useAbuse("open");
+  const actioned = useAbuse("actioned");
+  const dismissed = useAbuse("dismissed");
   const mutations = useAdminMutations();
+  const resolve = (id: string, next: "actioned" | "dismissed") =>
+    mutations.resolveAbuse.mutate({ id, status: next, note: "" }, { onError: toastError });
+  const columns: Column<AbuseItem>[] = [
+    {
+      key: "kind",
+      header: p("reports.kind"),
+      sortValue: (row) => row.kind,
+      cell: (row) => <Pill tone="warning">{row.kind}</Pill>,
+    },
+    {
+      key: "target",
+      header: p("reports.target"),
+      cell: (row) => <code className="font-mono text-xs">{row.target}</code>,
+    },
+    {
+      key: "reason",
+      header: p("reports.reason"),
+      className: "min-w-64 whitespace-normal",
+      cell: (row) => <span>{row.reason}</span>,
+    },
+    {
+      key: "source",
+      header: p("reports.source"),
+      cell: (row) => (
+        <Pill tone={row.reported_by_user ? "info" : "neutral"}>
+          {row.reported_by_user ? p("failures.signedIn") : p("failures.guest")}
+        </Pill>
+      ),
+    },
+    {
+      key: "when",
+      header: p("failures.when"),
+      sortValue: (row) => row.created_at,
+      cell: (row) => (
+        <span className="text-xs text-muted">
+          {format.dateTime(new Date(row.created_at), { dateStyle: "medium", timeStyle: "short" })}
+        </span>
+      ),
+    },
+    {
+      key: "actions",
+      header: p("reports.actions"),
+      cell: (row) =>
+        row.status === "open" ? (
+          <span className="flex gap-2">
+            <Button
+              icon={<Check />}
+              size="sm"
+              variant="solid"
+              onClick={() => resolve(row.id, "actioned")}
+            >
+              {t("markActioned")}
+            </Button>
+            <Button
+              icon={<X />}
+              size="sm"
+              variant="outline"
+              onClick={() => resolve(row.id, "dismissed")}
+            >
+              {t("dismiss")}
+            </Button>
+          </span>
+        ) : (
+          <Pill tone={row.status === "actioned" ? "success" : "neutral"}>
+            {t(`abuseStatus.${row.status}`)}
+          </Pill>
+        ),
+    },
+  ];
   return (
-    <div className="flex flex-col gap-4">
-      <div className="inline-flex w-fit rounded-full border border-border bg-surface p-1 shadow-soft">
-        {["open", "actioned", "dismissed"].map((entry) => (
-          <button
-            key={entry}
-            type="button"
-            aria-pressed={status === entry}
-            onClick={() => setStatus(entry)}
-            className={cn(
-              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-              status === entry
-                ? "bg-cta-gradient text-primary-foreground shadow-soft"
-                : "text-muted hover:text-foreground",
-            )}
-          >
-            {t(`abuseStatus.${entry}`)}
-          </button>
-        ))}
+    <div className="flex flex-col gap-6">
+      <div className="grid gap-4 sm:grid-cols-3">
+        <StatCard
+          tone={open.data?.length ? "danger" : "success"}
+          icon={Siren}
+          label={t("abuseStatus.open")}
+          value={open.data?.length ?? "-"}
+        />
+        <StatCard
+          tone="success"
+          icon={CircleCheck}
+          label={t("abuseStatus.actioned")}
+          value={actioned.data?.length ?? "-"}
+        />
+        <StatCard
+          tone="info"
+          icon={X}
+          label={t("abuseStatus.dismissed")}
+          value={dismissed.data?.length ?? "-"}
+        />
       </div>
       {queue.isPending ? (
-        <Skeleton className="h-40 w-full" />
-      ) : queue.data?.length ? (
-        <ul className="flex flex-col gap-3">
-          {queue.data.map((item) => (
-            <li
-              key={item.id}
-              className="flex flex-col gap-3 rounded-(--radius-card) border border-s-4 border-border border-s-warning bg-surface p-4 shadow-soft"
-            >
-              <span className="flex flex-wrap items-center gap-2">
-                <Pill tone="warning">{item.kind}</Pill>
-                <code className="font-mono text-xs">{item.target}</code>
-                <span className="ms-auto text-xs text-muted">
-                  {format.dateTime(new Date(item.created_at), {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}
-                </span>
-              </span>
-              <p className="text-sm">{item.reason}</p>
-              {item.status === "open" ? (
-                <span className="flex gap-2">
-                  <Button
-                    icon={<Check />}
-                    size="sm"
-                    variant="solid"
-                    onClick={() =>
-                      mutations.resolveAbuse.mutate(
-                        { id: item.id, status: "actioned", note: "" },
-                        { onError: toastError },
-                      )
-                    }
-                  >
-                    {t("markActioned")}
-                  </Button>
-                  <Button
-                    icon={<X />}
-                    size="sm"
-                    variant="outline"
-                    onClick={() =>
-                      mutations.resolveAbuse.mutate(
-                        { id: item.id, status: "dismissed", note: "" },
-                        { onError: toastError },
-                      )
-                    }
-                  >
-                    {t("dismiss")}
-                  </Button>
-                </span>
-              ) : null}
-            </li>
-          ))}
-        </ul>
+        <Skeleton className="h-48 w-full" />
       ) : (
-        <Panel>
-          <div className="flex flex-col items-center gap-2 py-8 text-center">
-            <CircleCheck className="size-10 text-success-strong" aria-hidden />
-            <p className="text-sm text-muted">{t("noReports")}</p>
-          </div>
-        </Panel>
+        <DataTable
+          columns={columns}
+          rows={queue.data ?? []}
+          rowKey={(row) => row.id}
+          minWidth="56rem"
+          initialSort={{ key: "when", dir: "desc" }}
+          empty={t("noReports")}
+          toolbar={
+            <div className="inline-flex rounded-full border border-border bg-surface p-1">
+              {["open", "actioned", "dismissed"].map((entry) => (
+                <button
+                  key={entry}
+                  type="button"
+                  aria-pressed={status === entry}
+                  onClick={() => setStatus(entry)}
+                  className={cn(
+                    "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+                    status === entry
+                      ? "bg-cta-gradient text-primary-foreground shadow-soft"
+                      : "text-muted hover:text-foreground",
+                  )}
+                >
+                  {t(`abuseStatus.${entry}`)}
+                </button>
+              ))}
+            </div>
+          }
+        />
       )}
+    </div>
+  );
+}
+
+export function SettingsWidgets() {
+  const t = useTranslations("admin");
+  const p = useTranslations("adminPanel");
+  const flags = useFlags();
+  const fair = useFairUse();
+  const announcement = useAnnouncementSettings();
+  const enabled = (flags.data ?? []).filter((flag) => flag.enabled).length;
+  const total = flags.data?.length ?? 0;
+  const limit = (key: string) => fair.data?.find((entry) => entry.key === key)?.value ?? "-";
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <StatCard
+        tone="primary"
+        icon={Flag}
+        label={p("settings.flagsOn")}
+        value={`${enabled} / ${total}`}
+        hint={p("settings.flagsSub")}
+      />
+      <StatCard
+        tone={announcement.data?.enabled ? "success" : "warning"}
+        icon={Megaphone}
+        label={p("settings.announcementTitle")}
+        value={announcement.data?.enabled ? t("on") : t("off")}
+      />
+      <StatCard
+        tone="accent"
+        icon={Gauge}
+        label={p("settings.hourlyLimit")}
+        value={limit("hourly_tasks")}
+        hint={p("settings.perPerson")}
+      />
+      <StatCard
+        tone="info"
+        icon={Timer}
+        label={p("settings.dailyLimit")}
+        value={limit("daily_tasks")}
+        hint={p("settings.perPerson")}
+      />
     </div>
   );
 }

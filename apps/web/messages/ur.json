@@ -2895,7 +2895,17 @@
     "allToolsUsed": "اس مدت میں ہر ٹول کم از کم ایک بار چلا۔",
     "failures": {
       "signedIn": "سائن اِن",
-      "guest": "مہمان"
+      "guest": "مہمان",
+      "when": "کب",
+      "code": "غلطی کا کوڈ",
+      "who": "کون",
+      "size": "ان پٹ کا سائز",
+      "message": "پیغام",
+      "shown": "دکھائی گئی ناکامیاں",
+      "shownHint": "آپ کے فلٹر کے بعد",
+      "topTool": "سب سے زیادہ ناکام ٹول",
+      "topCode": "سب سے عام غلطی",
+      "times": "{count} بار"
     },
     "users": {
       "found": "{count} صارفین",
@@ -2908,7 +2918,37 @@
       "unverified": "ای میل تصدیق شدہ نہیں",
       "lastSeen": "آخری سائن اِن {when}",
       "neverSeen": "کبھی سائن اِن نہیں ہوئے",
-      "joined": "شمولیت {date}"
+      "joined": "شمولیت {date}",
+      "detailTitle": "صارف کی تفصیلات",
+      "never": "کبھی نہیں",
+      "twoStepOn": "دو مرحلہ آن",
+      "twoStepOff": "دو مرحلہ آف",
+      "locked": "مقفل",
+      "admins": "ایڈمن",
+      "empty": "کوئی صارف نہیں ملا۔",
+      "clickHint": "مکمل تفصیلات کھولنے کے لیے قطار پر کلک کریں۔",
+      "tasksTotal": "کل کام",
+      "tasksMonth": "30 دن کے کام",
+      "account": "اکاؤنٹ",
+      "joinedLabel": "شمولیت",
+      "lastSignIn": "آخری سائن اِن",
+      "language": "زبان",
+      "providers": "سائن اِن کے طریقے",
+      "passwordOnly": "پاس ورڈ",
+      "aiProvider": "AI فراہم کنندہ",
+      "none": "کوئی نہیں",
+      "failedLogins": "ناکام سائن اِن",
+      "assets": "اس صارف کے پاس کیا ہے",
+      "apiKeys": "API کلیدیں",
+      "webhooks": "ویب ہکس",
+      "teams": "ٹیمیں",
+      "files": "محفوظ فائلیں",
+      "schedules": "شیڈولز",
+      "sessions": "کھلے سیشن",
+      "topTools": "سب سے زیادہ استعمال ہونے والے ٹولز",
+      "recent": "حالیہ کام",
+      "controls": "اکاؤنٹ کے کنٹرول",
+      "controlsSub": "تبدیلیاں فوراً لاگو ہوتی ہیں۔"
     },
     "system": {
       "allGood": "تمام سسٹم معمول کے مطابق چل رہے ہیں",
@@ -2920,7 +2960,45 @@
       "fairUseTitle": "منصفانہ استعمال کی حدیں",
       "announcementTitle": "اعلان کی پٹی",
       "announcementSub": "ہر صفحے کے اوپر دکھایا جانے والا مختصر پیغام۔",
-      "preview": "پیش منظر"
+      "preview": "پیش منظر",
+      "flagsOn": "آن کیے گئے فیچر",
+      "hourlyLimit": "فی گھنٹہ کاموں کی حد",
+      "dailyLimit": "فی دن کاموں کی حد",
+      "perPerson": "فی شخص"
+    },
+    "table": {
+      "showing": "{total} میں سے {from}-{to} دکھائے جا رہے ہیں",
+      "rows": "قطاریں",
+      "page": "صفحہ {current} از {pages}",
+      "previous": "پچھلا صفحہ",
+      "next": "اگلا صفحہ"
+    },
+    "search": {
+      "label": "ایڈمن حصے میں تلاش",
+      "placeholder": "صارفین، صفحات اور ٹولز تلاش کریں",
+      "none": "کچھ نہیں ملا۔",
+      "group": {
+        "users": "صارفین",
+        "pages": "صفحات",
+        "tools": "ٹولز"
+      }
+    },
+    "profile": {
+      "role": "ایڈمنسٹریٹر",
+      "account": "میرے اکاؤنٹ کی ترتیبات"
+    },
+    "toolsPage": {
+      "runs": "کل بار چلے",
+      "used": "استعمال شدہ ٹولز",
+      "slowest": "سب سے سست ٹول",
+      "worst": "سب سے کم کامیابی: {name}"
+    },
+    "reports": {
+      "kind": "قسم",
+      "target": "ہدف",
+      "reason": "وجہ",
+      "source": "رپورٹ کرنے والا",
+      "actions": "کارروائی"
     }
   }
 }

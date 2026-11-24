@@ -77,6 +77,9 @@ export type AdminAnalytics = {
     new_in_period: number;
     new_this_week: number;
     active_this_week: number;
+    disabled: number;
+    unverified: number;
+    two_step: number;
   };
   tasks: {
     total: number;
@@ -101,6 +104,47 @@ export type AdminAnalytics = {
   recent_users: { id: string; email: string; display_name: string; created_at: string }[];
 };
 
+export type AdminUserDetail = {
+  id: string;
+  email: string;
+  display_name: string;
+  is_active: boolean;
+  is_admin: boolean;
+  email_verified: boolean;
+  retention_extended: boolean;
+  two_step: boolean;
+  locale: string;
+  created_at: string;
+  last_login_at: string | null;
+  failed_logins: number;
+  locked: boolean;
+  oauth: string[];
+  ai_provider: string | null;
+  tasks: {
+    total: number;
+    last_30_days: number;
+    succeeded: number;
+    failed: number;
+    input_bytes: number;
+  };
+  top_tools: { tool: string; total: number }[];
+  recent_tasks: {
+    id: string;
+    tool: string;
+    status: string;
+    error_code: string | null;
+    created_at: string;
+  }[];
+  assets: {
+    api_keys: number;
+    webhooks: number;
+    teams: number;
+    library_files: number;
+    schedules: number;
+    open_sessions: number;
+  };
+};
+
 const ROOT = ["admin"] as const;
 
 export const useHealth = () =>
@@ -108,6 +152,12 @@ export const useHealth = () =>
     queryKey: [...ROOT, "health"],
     queryFn: () => apiJson<HealthReport>("/api/v1/admin/health"),
     refetchInterval: 30000,
+  });
+export const useAdminUserDetail = (id: string | null) =>
+  useQuery({
+    queryKey: [...ROOT, "user", id],
+    queryFn: () => apiJson<AdminUserDetail>(`/api/v1/admin/users/${id}/detail`),
+    enabled: id !== null,
   });
 export const useAnalytics = (days: number) =>
   useQuery({

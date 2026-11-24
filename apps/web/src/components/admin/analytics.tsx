@@ -13,6 +13,7 @@ import {
   UserPlus,
   Users,
   UserRound,
+  Wrench,
 } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
@@ -27,10 +28,8 @@ import {
   Pill,
   RankBars,
   StatCard,
-  TableShell,
-  TD,
-  TH,
 } from "@/components/admin/admin-ui";
+import { DataTable, type Column } from "@/components/admin/admin-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { findTool } from "@/config/tools";
 import { useAnalytics, useJobMetrics } from "@/lib/admin";
@@ -363,86 +362,120 @@ export function ToolUsage() {
   const nameOf = (slug: string) =>
     tools.has(`${slug}.name`) ? tools(`${slug}.name`) : (findTool(slug)?.name ?? slug);
   const grand = rows.reduce((sum, row) => sum + row.total, 0);
+  const succeeded = rows.reduce((sum, row) => sum + row.succeeded, 0);
+  const failed = rows.reduce((sum, row) => sum + row.failed, 0);
   const topTotal = rows[0]?.total ?? 1;
+  const slowest = [...rows].sort((a, b) => b.avg_seconds - a.avg_seconds)[0];
+  const worst = [...rows]
+    .filter((row) => row.succeeded + row.failed >= 3)
+    .sort((a, b) => b.failed / (b.succeeded + b.failed) - a.failed / (a.succeeded + a.failed))[0];
+  const done = succeeded + failed;
+  const columns: Column<(typeof rows)[number]>[] = [
+    {
+      key: "tool",
+      header: t("cols.tool"),
+      sortValue: (row) => nameOf(row.tool).toLowerCase(),
+      cell: (row) => <span className="font-medium">{nameOf(row.tool)}</span>,
+    },
+    {
+      key: "total",
+      header: t("cols.total"),
+      sortValue: (row) => row.total,
+      cell: (row) => (
+        <div className="flex min-w-28 flex-col gap-1">
+          <span className="font-semibold tabular-nums">{format.number(row.total)}</span>
+          <Meter value={(row.total / topTotal) * 100} tone="primary" />
+        </div>
+      ),
+    },
+    {
+      key: "share",
+      header: t("cols.share"),
+      sortValue: (row) => row.total,
+      cell: (row) => (
+        <span className="text-muted tabular-nums">
+          {grand ? `${((row.total / grand) * 100).toFixed(1)}%` : "-"}
+        </span>
+      ),
+    },
+    {
+      key: "rate",
+      header: t("cols.successRate"),
+      sortValue: (row) =>
+        row.succeeded + row.failed ? row.succeeded / (row.succeeded + row.failed) : -1,
+      cell: (row) => {
+        const finished = row.succeeded + row.failed;
+        if (!finished) return "-";
+        const success = Math.round((row.succeeded / finished) * 100);
+        return (
+          <Pill tone={success >= 90 ? "success" : success >= 70 ? "warning" : "danger"}>
+            {success}%
+          </Pill>
+        );
+      },
+    },
+    {
+      key: "failed",
+      header: t("cols.failed"),
+      sortValue: (row) => row.failed,
+      cell: (row) =>
+        row.failed > 0 ? (
+          <Pill tone="danger">{format.number(row.failed)}</Pill>
+        ) : (
+          <span className="text-muted">0</span>
+        ),
+    },
+    {
+      key: "avg",
+      header: t("cols.avg"),
+      sortValue: (row) => row.avg_seconds,
+      cell: (row) => <span className="tabular-nums">{row.avg_seconds}s</span>,
+    },
+    {
+      key: "p95",
+      header: t("cols.p95"),
+      sortValue: (row) => row.p95_seconds,
+      cell: (row) => <span className="tabular-nums">{row.p95_seconds}s</span>,
+    },
+  ];
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-muted">{t("toolsNote")}</p>
         <RangePicker value={days} onChange={setDays} />
       </div>
-      {rows.length === 0 ? (
-        <p className="text-sm text-muted">{t("noData")}</p>
-      ) : (
-        <TableShell>
-          <table className="w-full min-w-[48rem] text-sm">
-            <thead className="bg-surface-muted">
-              <tr>
-                <th scope="col" className={TH}>
-                  {t("cols.tool")}
-                </th>
-                <th scope="col" className={TH}>
-                  {t("cols.total")}
-                </th>
-                <th scope="col" className={TH}>
-                  {t("cols.share")}
-                </th>
-                <th scope="col" className={TH}>
-                  {t("cols.successRate")}
-                </th>
-                <th scope="col" className={TH}>
-                  {t("cols.failed")}
-                </th>
-                <th scope="col" className={TH}>
-                  {t("cols.avg")}
-                </th>
-                <th scope="col" className={TH}>
-                  {t("cols.p95")}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {rows.map((row) => {
-                const done = row.succeeded + row.failed;
-                const success = done ? Math.round((row.succeeded / done) * 100) : null;
-                return (
-                  <tr key={row.tool} className="transition-colors hover:bg-surface-muted/60">
-                    <td className={cn(TD, "font-medium")}>{nameOf(row.tool)}</td>
-                    <td className={cn(TD, "tabular-nums")}>
-                      <div className="flex min-w-28 flex-col gap-1">
-                        <span className="font-semibold">{format.number(row.total)}</span>
-                        <Meter value={(row.total / topTotal) * 100} tone="primary" />
-                      </div>
-                    </td>
-                    <td className={cn(TD, "text-muted tabular-nums")}>
-                      {grand ? `${((row.total / grand) * 100).toFixed(1)}%` : "-"}
-                    </td>
-                    <td className={TD}>
-                      {success === null ? (
-                        "-"
-                      ) : (
-                        <Pill
-                          tone={success >= 90 ? "success" : success >= 70 ? "warning" : "danger"}
-                        >
-                          {success}%
-                        </Pill>
-                      )}
-                    </td>
-                    <td className={cn(TD, "tabular-nums")}>
-                      {row.failed > 0 ? (
-                        <Pill tone="danger">{format.number(row.failed)}</Pill>
-                      ) : (
-                        <span className="text-muted">0</span>
-                      )}
-                    </td>
-                    <td className={cn(TD, "tabular-nums")}>{row.avg_seconds}s</td>
-                    <td className={cn(TD, "tabular-nums")}>{row.p95_seconds}s</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </TableShell>
-      )}
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          tone="primary"
+          icon={ListChecks}
+          label={t("toolsPage.runs")}
+          value={format.number(grand)}
+        />
+        <StatCard tone="accent" icon={Wrench} label={t("toolsPage.used")} value={rows.length} />
+        <StatCard
+          tone={done && succeeded / done < 0.8 ? "warning" : "success"}
+          icon={Gauge}
+          label={t("stats.successRate")}
+          value={done ? `${Math.round((succeeded / done) * 100)}%` : "-"}
+          hint={worst ? t("toolsPage.worst", { name: nameOf(worst.tool) }) : undefined}
+        />
+        <StatCard
+          tone="info"
+          icon={Timer}
+          label={t("toolsPage.slowest")}
+          value={slowest ? `${slowest.avg_seconds}s` : "-"}
+          hint={slowest ? nameOf(slowest.tool) : undefined}
+        />
+      </div>
+      <DataTable
+        columns={columns}
+        rows={rows}
+        rowKey={(row) => row.tool}
+        pageSize={25}
+        minWidth="48rem"
+        initialSort={{ key: "total", dir: "desc" }}
+        empty={t("noData")}
+      />
     </div>
   );
 }

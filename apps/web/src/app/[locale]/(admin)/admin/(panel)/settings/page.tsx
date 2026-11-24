@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 
 import { AdminTitle, adminMetadata } from "@/components/admin/admin-title";
-import { AnnouncementEditor, FairUseEditor, Flags } from "@/components/admin/admin-page";
+import {
+  AnnouncementEditor,
+  FairUseEditor,
+  Flags,
+  SettingsWidgets,
+} from "@/components/admin/admin-page";
 import { initPage } from "@/lib/page";
 
 export async function generateMetadata({
@@ -16,6 +21,7 @@ export default async function AdminSettingsPage({ params }: PageProps<"/[locale]
   return (
     <>
       <AdminTitle navKey="settings" />
+      <SettingsWidgets />
       <Flags />
       <FairUseEditor />
       <AnnouncementEditor />
